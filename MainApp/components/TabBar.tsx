@@ -1,59 +1,65 @@
-import { StyleSheet, View, Platform, LayoutChangeEvent } from 'react-native';
-import { useLinkBuilder, useTheme } from '@react-navigation/native';
-import { Text, PlatformPressable } from '@react-navigation/elements';
+import { StyleSheet, View, LayoutChangeEvent } from 'react-native';
+import { useTheme, useLinkBuilder } from '@react-navigation/native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import { House, CookingPot, UsersRound, UserRound } from 'lucide-react-native';
 import TabBarButton from './TabBarButton';
 import { useEffect, useState } from 'react';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 
 export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const { colors } = useTheme();
-  const { buildHref } = useLinkBuilder();
-  const [dimensions, setDimensions] = useState({ height: 20, width: 100 })
-  const buttonWidth = dimensions.width / state.routes.length
+  const [dimensions, setDimensions] = useState({ height: 50, width: 300 });
+
+  const buttonWidth = dimensions.width / state.routes.length;
+
   const onTabbarLayout = (e: LayoutChangeEvent) => {
     setDimensions({
       height: e.nativeEvent.layout.height,
-      width: e.nativeEvent.layout.width
+      width: e.nativeEvent.layout.width,
     });
-  }
+  };
 
-  const tabPositionX = useSharedValue(0)
+  const tabPositionX = useSharedValue(0);
+  const bubbleWidth = buttonWidth - 25;
+  const bubbleInset = (buttonWidth - bubbleWidth) / 2;
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
-      transform: [{ translateX: tabPositionX.value }]
-    }
+      transform: [{ translateX: tabPositionX.value }],
+    };
   });
 
   useEffect(() => {
     tabPositionX.value = withSpring(buttonWidth * state.index, { duration: 1500 });
-  }, [state.index])
+  }, [state.index, buttonWidth]);
 
   return (
     <View onLayout={onTabbarLayout} style={styles.tabbar}>
-      <Animated.View style={[animatedStyle, {
-        position: 'absolute',
-        backgroundColor: '#723FEB',
-        borderRadius: 30,
-        marginHorizontal: 12,
-        height: dimensions.height - 15,
-        width: buttonWidth - 25,
-      }]} />
+      <Animated.View
+        style={[
+          animatedStyle,
+          {
+            position: 'absolute',
+            backgroundColor: '#723FEB',
+            borderRadius: 30,
+            left: bubbleInset,
+            top: 10,
+            height: dimensions.height - 20,
+            width: bubbleWidth,
+          },
+        ]}
+      />
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label =
           options.tabBarLabel !== undefined
             ? options.tabBarLabel
             : options.title !== undefined
-              ? options.title
-              : route.name;
+            ? options.title
+            : route.name;
 
         const isFocused = state.index === index;
 
         const onPress = () => {
-          // tabPositionX.value = withSpring(buttonWidth * index, {duration: 1500})
           const event = navigation.emit({
             type: 'tabPress',
             target: route.key,
@@ -82,23 +88,6 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
             color={isFocused ? colors.primary : colors.text}
             label={label}
           />
-          // <PlatformPressable
-          //   key={route.key}
-          //   href={buildHref(route.name, route.params)}
-          //   accessibilityState={isFocused ? { selected: true } : {}}
-          //   accessibilityLabel={options.tabBarAccessibilityLabel}
-          //   testID={options.tabBarButtonTestID}
-          //   onPress={onPress}
-          //   onLongPress={onLongPress}
-          //   style={styles.tabbarItem}
-          // >
-          //   {icon[route.name]({
-          //     color: isFocused ? colors.primary : colors.text
-          //   })}
-          //   <Text style={{ color: isFocused ? colors.primary : colors.text }}>
-          //     {label}
-          //   </Text>
-          // </PlatformPressable>
         );
       })}
     </View>
@@ -108,24 +97,18 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
 const styles = StyleSheet.create({
   tabbar: {
     position: 'absolute',
-    bottom: 0,
+    bottom: 25,
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: '#fff',
-    marginHorizontal: 10,
-    marginVertical: 40,
+    marginHorizontal: 20,
     paddingVertical: 15,
     borderRadius: 35,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
+    elevation: 5,
   },
-  tabbarItem: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 5
-  },
-})
+});

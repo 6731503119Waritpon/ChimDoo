@@ -4,10 +4,10 @@ import { icon } from "@/constants/icon"
 import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated"
 
 interface TabBarButtonProps {
-    onPress: (props: any) => void; // แก้เป็น Function ที่รับ event หรือ any
+    onPress: (props: any) => void;
     onLongPress: (props: any) => void;
     isFocused: boolean;
-    label: any; // แก้เป็น any เพื่อรองรับ string หรือ function จาก navigation options
+    label: any;
     routeName: string;
     color: string;
 }
