@@ -4,7 +4,7 @@ import { TabBar } from "@/components/TabBar";
 
 const TabLayout = () => {
     return (
-        <Tabs tabBar={props => <TabBar {...props} />}>
+        <Tabs screenOptions={{ headerShown: false }} tabBar={props => <TabBar {...props} />}>
             <Tabs.Screen name="index" options={{ title: "Home" }} />
             <Tabs.Screen name="recipes" options={{ title: "Recipes" }} />
             <Tabs.Screen name="community" options={{ title: "Community" }} />

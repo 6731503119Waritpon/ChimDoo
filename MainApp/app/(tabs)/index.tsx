@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { Canvas } from '@react-three/fiber/native';
 import { useGLTF, OrbitControls, Stage } from '@react-three/drei/native';
 import { ThemedView } from '@/components/themed-view';
@@ -19,6 +19,9 @@ export default function HomeScreen() {
         <ThemedText>Choose your place to Chim</ThemedText>
       </View>
 
+      <View style={styles.selectCountry}>
+        <Text>Choose your place to Chim</Text>
+      </View>
       <View style={styles.canvasContainer}>
         <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
           <Suspense fallback={null}>
@@ -38,7 +41,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    paddingTop: 60,
+    paddingTop: 100,
     paddingHorizontal: 20,
     alignItems: 'center',
   },
@@ -46,4 +49,9 @@ const styles = StyleSheet.create({
     flex: 1,
     marginVertical: 20,
   },
+  selectCountry: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });
