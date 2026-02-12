@@ -2,8 +2,6 @@ import React, { Suspense } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 import { Canvas } from '@react-three/fiber/native';
 import { useGLTF, OrbitControls, Stage } from '@react-three/drei/native';
-import { ThemedView } from '@/components/themed-view';
-import { ThemedText } from '@/components/themed-text';
 import modelPath from '@/assets/models/earth.glb';
 
 function EarthModel(props: any) {
@@ -13,10 +11,10 @@ function EarthModel(props: any) {
 
 export default function HomeScreen() {
   return (
-    <ThemedView style={styles.container}>
+    <View style={styles.container}>
       <View style={styles.header}>
-        <ThemedText type="title">ChimDoo</ThemedText>
-        <ThemedText>Choose your place to Chim</ThemedText>
+        <Text>ChimDoo</Text>
+        <Text>Choose your place to Chim</Text>
       </View>
 
       <View style={styles.selectCountry}>
@@ -32,7 +30,7 @@ export default function HomeScreen() {
           <OrbitControls enablePan={false} autoRotate autoRotateSpeed={0.5} />
         </Canvas>
       </View>
-    </ThemedView>
+    </View>
   );
 }
 
