@@ -17,6 +17,7 @@ import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
+import * as AuthSession from 'expo-auth-session'
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -31,30 +32,31 @@ export default function SignupScreen() {
     const [confirmPassword, setConfirmPassword] = useState('');
 
     const [request, response, promptAsync] = Google.useAuthRequest({
-            webClientId: '933320863780-ttvppvaqsjkh5bmmfce45nvnt6do6isn.apps.googleusercontent.com',
-            iosClientId: '933320863780-ttvppvaqsjkh5bmmfce45nvnt6do6isn.apps.googleusercontent.com',
-            androidClientId: '933320863780-ttvppvaqsjkh5bmmfce45nvnt6do6isn.apps.googleusercontent.com',
-        });
+        webClientId: process.env.EXPO_PUBLIC_WEBCLIENT_ID,
+        iosClientId: process.env.EXPO_PUBLIC_IOSCLIENT_ID,
+        androidClientId: process.env.EXPO_PUBLIC_ANDROIDCLIENT_ID,
+        redirectUri: AuthSession.makeRedirectUri(),
+    });
 
-        useEffect(() => {
-            if (response?.type === 'success') {
-                const { id_token } = response.params;
-                handleGoogleSignIn(id_token);
-            }
-        }, [response]);
+    useEffect(() => {
+        if (response?.type === 'success') {
+            const { id_token } = response.params;
+            handleGoogleSignIn(id_token);
+        }
+    }, [response]);
 
-        const handleGoogleSignIn = async (idToken: string) => {
-            setGoogleLoading(true);
-            try {
-                const credential = GoogleAuthProvider.credential(idToken);
-                await signInWithCredential(auth, credential);
-                router.replace('/(tabs)');
-            } catch (error: any) {
-                Alert.alert('Google Login Error', error.message);
-            } finally {
-                setGoogleLoading(false);
-            }
-        };
+    const handleGoogleSignIn = async (idToken: string) => {
+        setGoogleLoading(true);
+        try {
+            const credential = GoogleAuthProvider.credential(idToken);
+            await signInWithCredential(auth, credential);
+            router.replace('/(tabs)');
+        } catch (error: any) {
+            Alert.alert('Google Login Error', error.message);
+        } finally {
+            setGoogleLoading(false);
+        }
+    };
 
     const handleSignup = async () => {
         if (!displayName || !email || !password || !confirmPassword) {
@@ -198,7 +200,7 @@ export default function SignupScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0a0a0a',
+        backgroundColor: '#fff',
     },
     scrollContent: {
         flexGrow: 1,
@@ -215,7 +217,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 32,
         fontWeight: 'bold',
-        color: '#fff',
+        // color: '#fff',
         marginBottom: 8,
     },
     subtitle: {
@@ -231,7 +233,7 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#fff',
+        // color: '#fff',
         marginBottom: 8,
     },
     input: {
@@ -282,7 +284,7 @@ const styles = StyleSheet.create({
     },
     backButtonText: {
         fontSize: 16,
-        color: '#fff',
+        // color: '#fff',
     },
     dividerContainer: {
         flexDirection: 'row',
