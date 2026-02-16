@@ -199,11 +199,11 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     input: {
-        backgroundColor: '#1a1a1a',
+        // backgroundColor: '#1a1a1a',
         borderRadius: 12,
         padding: 16,
         fontSize: 16,
-        color: '#fff',
+        // color: '#fff',
         borderWidth: 1,
         borderColor: '#333',
     },
@@ -212,11 +212,11 @@ const styles = StyleSheet.create({
         marginBottom: 24,
     },
     forgotPasswordText: {
-        color: '#ff6b35',
+        color: '#E63946',
         fontSize: 14,
     },
     button: {
-        backgroundColor: '#ff6b35',
+        backgroundColor: '#E63946',
         borderRadius: 12,
         padding: 16,
         alignItems: 'center',
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     signupLink: {
-        color: '#ff6b35',
+        color: '#E63946',
         fontSize: 14,
         fontWeight: '600',
     },

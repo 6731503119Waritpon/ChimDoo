@@ -12,7 +12,6 @@ import {
 import { useRouter } from 'expo-router';
 import { ChevronLeft, ChevronDown, ChevronUp, HelpCircle } from 'lucide-react-native';
 
-// Enable LayoutAnimation on Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }
@@ -160,7 +159,7 @@ export default function FAQScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0a0a0a',
+        backgroundColor: '#F8F9FA',
     },
     header: {
         flexDirection: 'row',
@@ -180,8 +179,7 @@ const styles = StyleSheet.create({
     },
     headerTitle: {
         fontSize: 20,
-        fontWeight: '700',
-        color: '#fff',
+        fontWeight: '700', 
     },
 
     // Hero
@@ -199,11 +197,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 16,
+        borderWidth: 2,
+        borderColor: '#96b9e9ff',
     },
     heroTitle: {
         fontSize: 26,
         fontWeight: '800',
-        color: '#fff',
         marginBottom: 8,
     },
     heroSubtitle: {
@@ -223,7 +222,6 @@ const styles = StyleSheet.create({
 
     // FAQ Card
     faqCard: {
-        backgroundColor: '#141414',
         borderRadius: 16,
         padding: 18,
         marginBottom: 12,
@@ -232,7 +230,6 @@ const styles = StyleSheet.create({
     },
     faqCardExpanded: {
         borderColor: '#3b82f6',
-        backgroundColor: '#181410',
     },
     questionRow: {
         flexDirection: 'row',
@@ -243,7 +240,6 @@ const styles = StyleSheet.create({
     questionText: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#ddd',
         flex: 1,
     },
     questionTextActive: {
@@ -259,7 +255,6 @@ const styles = StyleSheet.create({
     },
     answerText: {
         fontSize: 14,
-        color: '#999',
         lineHeight: 22,
     },
 

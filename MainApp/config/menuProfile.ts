@@ -1,0 +1,48 @@
+import {
+  UserPen,
+  KeyRound,
+  Globe,
+  Heart,
+  HelpCircle,
+  Mail,
+  Info,
+  Smartphone,
+  MessageCircleMore,
+  Bell,
+  FileText,
+} from 'lucide-react-native';
+import { ProfileMenuSection } from '../types/menuProfile';
+
+export const profileMenuConfig: ProfileMenuSection[] = [
+  {
+    section: 'My Kitchen',
+    items: [
+      { label: 'Favorites', icon: Heart, iconColor: '#E63946', href: '/profile/mykitchen/favorites' },
+      { label: 'My Reviews', icon: MessageCircleMore, iconColor: '#E63946', href: '/profile/mykitchen/my-reviews' },
+    ],
+  },
+  {
+    section: 'Account',
+    items: [
+      { label: 'Edit Profile', icon: UserPen, iconColor: '#1D3557', href: '/profile/account/edit-profile' },
+      { label: 'Change Password', icon: KeyRound, iconColor: '#1D3557', action: 'coming_soon' },
+      { label: 'Notifications', icon: Bell, iconColor: '#1D3557', action: 'coming_soon' },
+      { label: 'Language', icon: Globe, iconColor: '#1D3557', href: '/profile/account/language-settings' },
+    ],
+  },
+  {
+    section: 'Support',
+    items: [
+      { label: 'FAQ', icon: HelpCircle, iconColor: '#3b82f6', href: '/profile/support/faq' },
+      { label: 'Contact Us', icon: Mail, iconColor: '#3b82f6', action: 'contact' },
+    ],
+  },
+  {
+    section: 'General',
+    items: [
+      { label: 'Privacy Policy & Terms of Service', icon: FileText, iconColor: '#8b5cf6', action: 'coming_soon' },
+      { label: 'About ChimDoo', icon: Info, iconColor: '#8b5cf6', action: 'about' },
+      { label: 'App Version', icon: Smartphone, iconColor: '#8b5cf6', action: 'version' },
+    ],
+  },
+];
