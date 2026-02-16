@@ -14,21 +14,11 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth';
 import {
     UserPen,
-    KeyRound,
-    HelpCircle,
-    Mail,
-    Info,
-    Smartphone,
     ChevronRight,
     LogOut,
 } from 'lucide-react-native';
-
-interface MenuItem {
-    icon: React.ReactNode;
-    label: string;
-    onPress: () => void;
-    color?: string;
-}
+import { ProfileMenuItem } from '@/types/menuProfile';
+import { profileMenuConfig } from '@/config/menuProfile';
 
 const Page = () => {
     const router = useRouter();
@@ -51,6 +41,30 @@ const Page = () => {
         ]);
     };
 
+    const handleMenuPress = (item: ProfileMenuItem) => {
+        if (item.href) {
+            router.push(item.href as any);
+        } else if (item.action) {
+            switch (item.action) {
+                case 'coming_soon':
+                    Alert.alert('Coming Soon', 'This feature will be available soon!');
+                    break;
+                case 'contact':
+                    Alert.alert('Contact', 'Email us at support@chimdoo.com');
+                    break;
+                case 'about':
+                    Alert.alert(
+                        'About',
+                        'ChimDoo — your ultimate cooking companion 🍳\nDiscover, save, and share amazing recipes with a vibrant community.'
+                    );
+                    break;
+                case 'version':
+                    Alert.alert('Version', 'ChimDoo v1.0.0');
+                    break;
+            }
+        }
+    };
+
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
@@ -59,7 +73,6 @@ const Page = () => {
         );
     }
 
-    // --- Logged-out state ---
     if (!user) {
         return (
             <View style={styles.guestContainer}>
@@ -94,85 +107,33 @@ const Page = () => {
         );
     }
 
-    // --- Logged-in state ---
-    const avatarLetter = (user.displayName || user.email || '?')
-        .charAt(0)
-        .toUpperCase();
+    const avatarLetter = (user.displayName || user.email || '?').charAt(0).toUpperCase();
 
-    const accountItems: MenuItem[] = [
-        {
-            icon: <UserPen size={20} color="#ff6b35" />,
-            label: 'Edit Profile',
-            onPress: () => router.push('/profile/edit-profile' as any),
-        },
-        {
-            icon: <KeyRound size={20} color="#ff6b35" />,
-            label: 'Change Password',
-            onPress: () =>
-                Alert.alert('Coming Soon', 'This feature will be available soon!'),
-        },
-    ];
-
-    const supportItems: MenuItem[] = [
-        {
-            icon: <HelpCircle size={20} color="#3b82f6" />,
-            label: 'FAQ',
-            onPress: () => router.push('/profile/faq' as any),
-        },
-        {
-            icon: <Mail size={20} color="#3b82f6" />,
-            label: 'Contact Us',
-            onPress: () =>
-                Alert.alert('Contact', 'Email us at support@chimdoo.com'),
-        },
-    ];
-
-    const generalItems: MenuItem[] = [
-        {
-            icon: <Info size={20} color="#8b5cf6" />,
-            label: 'About ChimDoo',
-            onPress: () =>
-                Alert.alert(
-                    'About',
-                    'ChimDoo — your ultimate cooking companion 🍳\nDiscover, save, and share amazing recipes with a vibrant community.'
-                ),
-        },
-        {
-            icon: <Smartphone size={20} color="#8b5cf6" />,
-            label: 'App Version',
-            onPress: () => Alert.alert('Version', 'ChimDoo v1.0.0'),
-        },
-    ];
-
-    const renderMenuSection = (
-        title: string,
-        items: MenuItem[]
-    ) => (
-        <View style={styles.menuSection}>
+    const renderMenuSection = (title: string, items: ProfileMenuItem[]) => (
+        <View style={styles.menuSection} key={title}>
             <Text style={styles.sectionTitle}>{title}</Text>
             <View style={styles.menuCard}>
-                {items.map((item, index) => (
-                    <React.Fragment key={item.label}>
-                        <TouchableOpacity
-                            style={styles.menuItem}
-                            onPress={item.onPress}
-                            activeOpacity={0.6}
-                        >
-                            <View style={styles.menuItemLeft}>
-                                <View style={styles.menuIconWrapper}>
-                                    {item.icon}
+                {items.map((item, index) => {
+                    const Icon = item.icon;
+                    return (
+                        <React.Fragment key={item.label}>
+                            <TouchableOpacity
+                                style={styles.menuItem}
+                                onPress={() => handleMenuPress(item)}
+                                activeOpacity={0.6}
+                            >
+                                <View style={styles.menuItemLeft}>
+                                    <View style={styles.menuIconWrapper}>
+                                        <Icon size={20} color={item.iconColor} />
+                                    </View>
+                                    <Text style={styles.menuItemLabel}>{item.label}</Text>
                                 </View>
-                                <Text style={styles.menuItemLabel}>
-                                    {item.label}
-                                </Text>
-                            </View>
-                            <ChevronRight size={18} color="#444" />
-                        </TouchableOpacity>
-                        {index < items.length - 1 && (
-                            <View style={styles.menuDivider} />
-                        )}
-                    </React.Fragment>
-                ))}
+                                <ChevronRight size={18} color="#444" />
+                            </TouchableOpacity>
+                            {index < items.length - 1 && <View style={styles.menuDivider} />}
+                        </React.Fragment>
+                    );
+                })}
             </View>
         </View>
     );
@@ -200,24 +161,28 @@ const Page = () => {
                     )}
                 </View>
 
-                <Text style={styles.displayName}>
-                    {user.displayName || 'Unnamed User'}
-                </Text>
-                <Text style={styles.email}>{user.email}</Text>
+                <View style={styles.profileInfo}>
+                    <Text style={styles.displayName} numberOfLines={1}>
+                        {user.displayName || 'Unnamed User'}
+                    </Text>
+                    <Text style={styles.email} numberOfLines={1}>
+                        {user.email}
+                    </Text>
 
-                <TouchableOpacity
-                    style={styles.editBadge}
-                    onPress={() => router.push('/profile/edit-profile' as any)}
-                >
-                    <UserPen size={14} color="#eeb099ff" />
-                    <Text style={styles.editBadgeText}>Edit</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity
+                        style={styles.editBadge}
+                        onPress={() => router.push('/profile/account/edit-profile' as any)}
+                    >
+                        <UserPen size={14} color="#1D3557" />
+                        <Text style={styles.editBadgeText}>Edit Profile</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
 
             {/* Menu Sections */}
-            {renderMenuSection('Account', accountItems)}
-            {renderMenuSection('Support', supportItems)}
-            {renderMenuSection('General', generalItems)}
+            {profileMenuConfig.map((section) =>
+                renderMenuSection(section.section, section.items)
+            )}
 
             {/* Logout */}
             <TouchableOpacity
@@ -267,7 +232,6 @@ const styles = StyleSheet.create({
     guestTitle: {
         fontSize: 26,
         fontWeight: '800',
-        // color: '#fff',
         marginBottom: 10,
     },
     guestSubtitle: {
@@ -283,7 +247,7 @@ const styles = StyleSheet.create({
         gap: 14,
     },
     primaryButton: {
-        backgroundColor: '#ff6b35',
+        backgroundColor: '#E63946',
         borderRadius: 14,
         paddingVertical: 16,
         alignItems: 'center',
@@ -295,13 +259,13 @@ const styles = StyleSheet.create({
     },
     outlineButton: {
         borderWidth: 1.5,
-        borderColor: '#ff6b35',
+        borderColor: '#E63946',
         borderRadius: 14,
         paddingVertical: 16,
         alignItems: 'center',
     },
     outlineButtonText: {
-        color: '#ff6b35',
+        color: '#E63946',
         fontSize: 17,
         fontWeight: '700',
     },
@@ -309,7 +273,7 @@ const styles = StyleSheet.create({
     // Logged-in Container
     container: {
         flex: 1,
-        backgroundColor: '#0a0a0a',
+        backgroundColor: '#F8F9FA',
     },
     scrollContent: {
         paddingTop: Platform.OS === 'ios' ? 60 : 48,
@@ -318,25 +282,38 @@ const styles = StyleSheet.create({
 
     // Profile Card
     profileCard: {
+        flexDirection: 'row',
         alignItems: 'center',
+        padding: 20,
         paddingVertical: 28,
         marginHorizontal: 20,
         marginBottom: 8,
-        backgroundColor: '#111',
+        backgroundColor: '#FFFFFF',
         borderRadius: 24,
-        borderWidth: 1,
-        borderColor: '#1e1e1e',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.08,
+        shadowRadius: 12,
+        elevation: 5,
     },
     avatarRing: {
         width: 96,
         height: 96,
         borderRadius: 48,
         borderWidth: 3,
-        borderColor: '#eeb099ff',
+        borderColor: '#1D3557',
         alignItems: 'center',
         justifyContent: 'center',
         padding: 3,
-        marginBottom: 16,
+        marginRight: 16,
+    },
+    profileInfo: {
+        flex: 1,
+        alignItems: 'flex-start',
+        justifyContent: 'center',
     },
     avatar: {
         width: 84,
@@ -347,19 +324,18 @@ const styles = StyleSheet.create({
         width: 84,
         height: 84,
         borderRadius: 42,
-        backgroundColor: '#1a1a1a',
+        backgroundColor: '#FFFFFF',
         alignItems: 'center',
         justifyContent: 'center',
     },
     avatarInitial: {
         fontSize: 36,
         fontWeight: 'bold',
-        color: '#eeb099ff',
+        color: '#1D3557',
     },
     displayName: {
         fontSize: 22,
         fontWeight: '700',
-        color: '#fff',
         marginBottom: 4,
     },
     email: {
@@ -371,13 +347,12 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 6,
-        backgroundColor: 'rgba(255, 107, 53, 0.12)',
+        backgroundColor: '#dad8d8ff',
         paddingHorizontal: 16,
         paddingVertical: 8,
         borderRadius: 20,
     },
     editBadgeText: {
-        color: '#eeb099ff',
         fontSize: 13,
         fontWeight: '600',
     },
@@ -397,11 +372,19 @@ const styles = StyleSheet.create({
         marginLeft: 4,
     },
     menuCard: {
-        backgroundColor: '#111',
+        backgroundColor: '#FFFFFF',
         borderRadius: 18,
-        borderWidth: 1,
-        borderColor: '#1e1e1e',
+        borderWidth: 0.2,
+        borderColor: '#a7a6a6ff',
         overflow: 'hidden',
+        shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.08,
+        shadowRadius: 12,
+        elevation: 5,
     },
     menuItem: {
         flexDirection: 'row',
@@ -419,19 +402,25 @@ const styles = StyleSheet.create({
         width: 36,
         height: 36,
         borderRadius: 10,
-        backgroundColor: '#1a1a1a',
+        backgroundColor: '#F8F9FA',
         alignItems: 'center',
         justifyContent: 'center',
+         shadowColor: '#000',
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.28,
+        shadowRadius: 12,
+        elevation: 5,
     },
     menuItemLabel: {
         fontSize: 16,
-        color: '#ddd',
         fontWeight: '500',
     },
     menuDivider: {
-        height: 1,
-        backgroundColor: '#1e1e1e',
-        marginLeft: 66,
+        height: 0.5,
+        backgroundColor: '#919497ff',
     },
 
     // Logout

@@ -15,7 +15,7 @@ import {
 import { useRouter } from 'expo-router';
 import { ChevronLeft, Camera } from 'lucide-react-native';
 import { updateProfile } from 'firebase/auth';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../../../hooks/useAuth';
 
 export default function EditProfileScreen() {
     const router = useRouter();
@@ -147,7 +147,7 @@ export default function EditProfileScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0a0a0a',
+        backgroundColor: '#F8F9FA',
     },
     scrollContent: {
         flexGrow: 1,
@@ -189,7 +189,7 @@ const styles = StyleSheet.create({
         height: 110,
         borderRadius: 55,
         borderWidth: 3,
-        borderColor: '#eeb099ff',
+        borderColor: '#1D3557',
         alignItems: 'center',
         justifyContent: 'center',
         padding: 3,
@@ -203,14 +203,14 @@ const styles = StyleSheet.create({
         width: 98,
         height: 98,
         borderRadius: 49,
-        backgroundColor: '#1a1a1a',
+        backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
     },
     avatarInitial: {
         fontSize: 40,
         fontWeight: 'bold',
-        color: '#eeb099ff',
+        color: '#1D3557',
     },
     cameraButton: {
         position: 'absolute',
@@ -219,7 +219,7 @@ const styles = StyleSheet.create({
         width: 34,
         height: 34,
         borderRadius: 17,
-        backgroundColor: '#eeb099ff',
+        backgroundColor: '#1D3557',
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 3,
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     changePhotoText: {
         marginTop: 12,
         fontSize: 14,
-        color: '#f39584ff',
+        color: '#1D3557',
         fontWeight: '600',
     },
 
@@ -248,19 +248,16 @@ const styles = StyleSheet.create({
         letterSpacing: 0.8,
     },
     input: {
-        backgroundColor: '#1a1a1a',
         borderRadius: 14,
         padding: 16,
         fontSize: 16,
-        color: '#fff',
         borderWidth: 1,
         borderColor: '#2a2a2a',
     },
     readOnlyInput: {
-        backgroundColor: '#111',
+        backgroundColor: '#cacacaff',
         borderRadius: 14,
         padding: 16,
-        borderWidth: 1,
         borderColor: '#1e1e1e',
     },
     readOnlyText: {
@@ -277,7 +274,7 @@ const styles = StyleSheet.create({
     saveButton: {
         marginHorizontal: 24,
         marginTop: 40,
-        backgroundColor: '#ff6b35',
+        backgroundColor: '#E63946',
         borderRadius: 14,
         padding: 18,
         alignItems: 'center',
