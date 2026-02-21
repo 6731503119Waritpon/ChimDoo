@@ -13,6 +13,12 @@ const firebaseConfig = {
   measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
+export const GoogleConfig = {
+  webClientId: process.env.EXPO_PUBLIC_WEBCLIENT_ID,
+  iosClientId: process.env.EXPO_PUBLIC_IOSCLIENT_ID,
+  androidClientId: process.env.EXPO_PUBLIC_ANDROIDCLIENT_ID,
+};
+
 const app = initializeApp(firebaseConfig);
 export const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(ReactNativeAsyncStorage)

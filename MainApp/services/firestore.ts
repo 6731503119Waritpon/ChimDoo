@@ -19,13 +19,11 @@ import {
 } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 
-// Generic type for Firestore documents
 export interface FirestoreDocument {
     id: string;
     [key: string]: any;
 }
 
-// Get a single document by ID
 export const getDocument = async <T extends FirestoreDocument>(
     collectionName: string,
     docId: string
@@ -39,7 +37,6 @@ export const getDocument = async <T extends FirestoreDocument>(
     return null;
 };
 
-// Get all documents from a collection
 export const getDocuments = async <T extends FirestoreDocument>(
     collectionName: string,
     ...queryConstraints: QueryConstraint[]
@@ -54,7 +51,6 @@ export const getDocuments = async <T extends FirestoreDocument>(
     })) as T[];
 };
 
-// Add a new document
 export const addDocument = async <T extends WithFieldValue<DocumentData>>(
     collectionName: string,
     data: T
@@ -63,7 +59,6 @@ export const addDocument = async <T extends WithFieldValue<DocumentData>>(
     return await addDoc(collectionRef, data);
 };
 
-// Update a document
 export const updateDocument = async (
     collectionName: string,
     docId: string,
@@ -73,7 +68,6 @@ export const updateDocument = async (
     await updateDoc(docRef, data);
 };
 
-// Delete a document
 export const deleteDocument = async (
     collectionName: string,
     docId: string
@@ -82,7 +76,6 @@ export const deleteDocument = async (
     await deleteDoc(docRef);
 };
 
-// Subscribe to a collection (real-time updates)
 export const subscribeToCollection = <T extends FirestoreDocument>(
     collectionName: string,
     callback: (documents: T[]) => void,
@@ -100,7 +93,6 @@ export const subscribeToCollection = <T extends FirestoreDocument>(
     });
 };
 
-// Subscribe to a single document (real-time updates)
 export const subscribeToDocument = <T extends FirestoreDocument>(
     collectionName: string,
     docId: string,
@@ -117,5 +109,4 @@ export const subscribeToDocument = <T extends FirestoreDocument>(
     });
 };
 
-// Export query helpers for convenience
-export { where, orderBy, limit };
+export { where, orderBy, limit, db };
