@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -13,15 +13,50 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth';
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
+import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
+import { auth } from '../../firebaseConfig';
+import * as AuthSession from 'expo-auth-session'
+
+WebBrowser.maybeCompleteAuthSession();
 
 export default function SignupScreen() {
     const router = useRouter();
     const { signUp, loading } = useAuth();
+    const [googleLoading, setGoogleLoading] = useState(false);
 
     const [displayName, setDisplayName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
+
+    const [request, response, promptAsync] = Google.useAuthRequest({
+        webClientId: process.env.EXPO_PUBLIC_WEBCLIENT_ID,
+        iosClientId: process.env.EXPO_PUBLIC_IOSCLIENT_ID,
+        androidClientId: process.env.EXPO_PUBLIC_ANDROIDCLIENT_ID,
+        redirectUri: AuthSession.makeRedirectUri(),
+    });
+
+    useEffect(() => {
+        if (response?.type === 'success') {
+            const { id_token } = response.params;
+            handleGoogleSignIn(id_token);
+        }
+    }, [response]);
+
+    const handleGoogleSignIn = async (idToken: string) => {
+        setGoogleLoading(true);
+        try {
+            const credential = GoogleAuthProvider.credential(idToken);
+            await signInWithCredential(auth, credential);
+            router.replace('/(tabs)');
+        } catch (error: any) {
+            Alert.alert('Google Login Error', error.message);
+        } finally {
+            setGoogleLoading(false);
+        }
+    };
 
     const handleSignup = async () => {
         if (!displayName || !email || !password || !confirmPassword) {
@@ -58,7 +93,11 @@ export default function SignupScreen() {
             >
                 <View style={styles.content}>
                     <View style={styles.header}>
-                        <Text style={styles.logo}>🚀</Text>
+                        <TouchableOpacity onPress={() => router.back()}>
+                            <View>
+                                <Text style={styles.backButtonText}>Back</Text>
+                            </View>
+                        </TouchableOpacity>
                         <Text style={styles.title}>Create Account</Text>
                         <Text style={styles.subtitle}>Join us today</Text>
                     </View>
@@ -125,6 +164,25 @@ export default function SignupScreen() {
                                 <Text style={styles.buttonText}>Create Account</Text>
                             )}
                         </TouchableOpacity>
+                        <View style={styles.dividerContainer}>
+                            <View style={styles.dividerLine} />
+                            <Text style={styles.dividerText}>OR</Text>
+                            <View style={styles.dividerLine} />
+                        </View>
+
+                        <TouchableOpacity
+                            style={styles.googleButton}
+                            disabled={!request || googleLoading}
+                            onPress={() => {
+                                promptAsync();
+                            }}
+                        >
+                            {googleLoading ? (
+                                <ActivityIndicator color="#000" />
+                            ) : (
+                                <Text style={styles.googleButtonText}>Sign in with Google</Text>
+                            )}
+                        </TouchableOpacity>
                     </View>
 
                     <View style={styles.footer}>
@@ -142,7 +200,7 @@ export default function SignupScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#0a0a0a',
+        backgroundColor: '#fff',
     },
     scrollContent: {
         flexGrow: 1,
@@ -156,14 +214,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 40,
     },
-    logo: {
-        fontSize: 64,
-        marginBottom: 16,
-    },
     title: {
         fontSize: 32,
         fontWeight: 'bold',
-        color: '#fff',
+        // color: '#fff',
         marginBottom: 8,
     },
     subtitle: {
@@ -179,20 +233,20 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#fff',
+        // color: '#fff',
         marginBottom: 8,
     },
     input: {
-        backgroundColor: '#1a1a1a',
+        // backgroundColor: '#1a1a1a',
         borderRadius: 12,
         padding: 16,
         fontSize: 16,
-        color: '#fff',
+        // color: '#fff',
         borderWidth: 1,
         borderColor: '#333',
     },
     button: {
-        backgroundColor: '#ff6b35',
+        backgroundColor: '#E63946',
         borderRadius: 12,
         padding: 16,
         alignItems: 'center',
@@ -216,8 +270,51 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     loginLink: {
-        color: '#ff6b35',
+        color: '#E63946',
         fontSize: 14,
         fontWeight: '600',
+    },
+    backButton: {
+        marginTop: Platform.OS === 'android' ? -10 : 30,
+        alignSelf: 'flex-start',
+        paddingVertical: Platform.OS === 'android' ? 0 : 16,
+        paddingHorizontal: 20,
+        borderRadius: 12,
+        marginBottom: Platform.OS === 'android' ? 10 : 0,
+    },
+    backButtonText: {
+        fontSize: 16,
+        // color: '#fff',
+    },
+    dividerContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 20,
+    },
+    dividerLine: {
+        flex: 1,
+        height: 1,
+        backgroundColor: '#ddd',
+    },
+    dividerText: {
+        marginHorizontal: 10,
+        color: '#666',
+    },
+    googleButton: {
+        backgroundColor: '#fff',
+        borderWidth: 1,
+        borderColor: '#ddd',
+        padding: 15,
+        borderRadius: 10,
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginBottom: 10,
+    },
+    googleButtonText: {
+        color: '#000',
+        fontSize: 16,
+        fontWeight: '600',
+        marginLeft: 10,
     },
 });
