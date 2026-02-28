@@ -8,10 +8,10 @@ import {
     KeyboardAvoidingView,
     Platform,
     ActivityIndicator,
-    Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '@/components/ToastProvider';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
@@ -23,6 +23,7 @@ WebBrowser.maybeCompleteAuthSession();
 export default function LoginScreen() {
     const router = useRouter();
     const { signIn, loading, error } = useAuth();
+    const toast = useToast();
     const [googleLoading, setGoogleLoading] = useState(false);
 
     const [email, setEmail] = useState('');
@@ -30,7 +31,7 @@ export default function LoginScreen() {
 
     const handleLogin = async () => {
         if (!email || !password) {
-            Alert.alert('Error', 'Please fill in all fields');
+            toast.warning('Missing Fields', 'Please fill in all fields');
             return;
         }
 
@@ -38,7 +39,7 @@ export default function LoginScreen() {
             await signIn(email, password);
             router.replace('/(tabs)');
         } catch (err: any) {
-            Alert.alert('Login Failed', err.message || 'Please check your credentials');
+            toast.error('Login Failed', err.message || 'Please check your credentials');
         }
     };
 
@@ -63,7 +64,7 @@ export default function LoginScreen() {
             await signInWithCredential(auth, credential);
             router.replace('/(tabs)');
         } catch (error: any) {
-            Alert.alert('Google Login Error', error.message);
+            toast.error('Google Login Error', error.message);
         } finally {
             setGoogleLoading(false);
         }
