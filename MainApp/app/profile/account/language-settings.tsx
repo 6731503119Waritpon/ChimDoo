@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native
 import { router, Stack } from 'expo-router';
 import { ChevronLeft, Globe } from 'lucide-react-native';
 
-import ComingSoonModal from '@/components/error/commingsoonModal';
 
 const LanguageSettings = () => {
     const [isModalVisible, setModalVisible] = useState(false);
@@ -38,13 +37,6 @@ const LanguageSettings = () => {
                     <Text style={styles.buttonText}>Select Language</Text>
                 </TouchableOpacity>
             </View>
-
-            <ComingSoonModal
-                visible={isModalVisible}
-                onClose={() => setModalVisible(false)}
-                title="More Languages!"
-                message="Multilingual support is currently under development. Stay tuned for Thai and other languages!"
-            />
         </View>
     );
 };

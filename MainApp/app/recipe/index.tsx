@@ -1,14 +1,46 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Platform, Alert, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ArrowLeft, Clock, Flame, Utensils } from 'lucide-react-native';
+import { ArrowLeft, Clock, Flame, Utensils, UtensilsCrossed, Check } from 'lucide-react-native';
 import { FoodItem, Taste } from '@/types/recipe';
+import { useChimDoo } from '@/hooks/useChimDoo';
+import { useToast } from '@/components/ToastProvider';
 
 export default function RecipePage() {
     const router = useRouter();
     const params = useLocalSearchParams();
-    
+    const toast = useToast();
+
     const food: FoodItem = params.food ? JSON.parse(params.food as string) : null;
+    const category = (params.category as string) || '';
+
+    const { isChimDoo, loading, toggleChimDoo, isLoggedIn } = useChimDoo(food?.name);
+
+    const handleChimDoo = async () => {
+        if (!isLoggedIn) {
+            Alert.alert(
+                'Login Required',
+                'Please log in to save your Chim Doo recipes!',
+                [
+                    { text: 'Cancel', style: 'cancel' },
+                    { text: 'Log In', onPress: () => router.push('/auth/login') },
+                ]
+            );
+            return;
+        }
+
+        if (!food) return;
+
+        try {
+            const saved = await toggleChimDoo(food, category);
+            if (saved) {
+                toast.success('Chim Doo!', `${food.name} has been added to your list!`);
+            }
+        } catch (err: any) {
+            console.error('ChimDoo Error:', err);
+            toast.error('Error', 'Something went wrong. Please try again.');
+        }
+    };
 
     if (!food) return null;
 
@@ -16,8 +48,8 @@ export default function RecipePage() {
         <View style={styles.container}>
             <View style={styles.imageContainer}>
                 <Image source={{ uri: food.image }} style={styles.image} />
-                <TouchableOpacity 
-                    style={styles.backButton} 
+                <TouchableOpacity
+                    style={styles.backButton}
                     onPress={() => router.back()}
                 >
                     <ArrowLeft size={24} color="#fff" />
@@ -65,9 +97,35 @@ export default function RecipePage() {
                         </View>
                     )) || <Text style={styles.emptyText}>No instructions info</Text>}
                 </View>
-                
-                <View style={{ height: 40 }} />
+
+                <View style={{ height: 100 }} />
             </ScrollView>
+
+            <View style={styles.bottomBar}>
+                <TouchableOpacity
+                    style={[
+                        styles.chimDooButton,
+                        isChimDoo && styles.chimDooButtonDone,
+                    ]}
+                    onPress={handleChimDoo}
+                    activeOpacity={0.7}
+                    disabled={loading}
+                >
+                    {loading ? (
+                        <ActivityIndicator size="small" color="#fff" />
+                    ) : isChimDoo ? (
+                        <>
+                            <Check size={22} color="#1D3557" />
+                            <Text style={styles.chimDooTextDone}>Tasted!</Text>
+                        </>
+                    ) : (
+                        <>
+                            <UtensilsCrossed size={22} color="#fff" />
+                            <Text style={styles.chimDooText}>Chim Doo</Text>
+                        </>
+                    )}
+                </TouchableOpacity>
+            </View>
         </View>
     );
 }
@@ -133,4 +191,46 @@ const styles = StyleSheet.create({
     stepNumber: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
     stepText: { flex: 1, fontSize: 16, color: '#444', lineHeight: 24 },
     emptyText: { color: '#999', fontStyle: 'italic' },
+
+    bottomBar: {
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        paddingHorizontal: 20,
+        paddingTop: 12,
+        paddingBottom: Platform.OS === 'ios' ? 34 : 20,
+        backgroundColor: 'rgba(255,255,255,0.95)',
+        borderTopWidth: 0.5,
+        borderTopColor: '#e5e5e5',
+    },
+    chimDooButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 10,
+        backgroundColor: '#E63946',
+        borderRadius: 16,
+        paddingVertical: 16,
+        shadowColor: '#E63946',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 6,
+    },
+    chimDooButtonDone: {
+        backgroundColor: '#e8e8e8',
+        shadowColor: '#000',
+        shadowOpacity: 0.05,
+    },
+    chimDooText: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: '800',
+    },
+    chimDooTextDone: {
+        color: '#1D3557',
+        fontSize: 18,
+        fontWeight: '700',
+    },
 });
