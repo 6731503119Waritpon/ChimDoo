@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
+import { View, StyleSheet } from 'react-native';
 import Toast, { ToastConfig } from './Toast';
-import { useToastController } from '@tamagui/toast';
 
 interface ToastContextType {
     showToast: (config: ToastConfig) => void;
@@ -17,8 +17,11 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const [visible, setVisible] = useState(false);
 
     const showToast = useCallback((config: ToastConfig) => {
-        setToast(config);
-        setVisible(true);
+        setVisible(false);
+        setTimeout(() => {
+            setToast(config);
+            setVisible(true);
+        }, 50);
     }, []);
 
     const hideToast = useCallback(() => {
@@ -52,14 +55,16 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     return (
         <ToastContext.Provider value={{ showToast, success, error, warning, info }}>
-            {children}
-            {toast && (
-                <Toast
-                    {...toast}
-                    visible={visible}
-                    onHide={hideToast}
-                />
-            )}
+            <View style={styles.wrapper}>
+                {children}
+                {toast && (
+                    <Toast
+                        {...toast}
+                        visible={visible}
+                        onHide={hideToast}
+                    />
+                )}
+            </View>
         </ToastContext.Provider>
     );
 };
@@ -71,3 +76,9 @@ export const useToast = (): ToastContextType => {
     }
     return context;
 };
+
+const styles = StyleSheet.create({
+    wrapper: {
+        flex: 1,
+    },
+});

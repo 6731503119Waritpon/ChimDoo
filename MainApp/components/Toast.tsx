@@ -1,13 +1,5 @@
-import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Platform } from 'react-native';
-import Animated, {
-    useSharedValue,
-    useAnimatedStyle,
-    withTiming,
-    withDelay,
-    runOnJS,
-    Easing,
-} from 'react-native-reanimated';
+import React, { useEffect, useRef } from 'react';
+import { View, Text, StyleSheet, Platform, Animated } from 'react-native';
 import {
     CheckCircle,
     XCircle,
@@ -72,52 +64,49 @@ const Toast: React.FC<ToastProps> = ({
     visible,
     onHide,
 }) => {
-    const translateY = useSharedValue(-120);
-    const opacity = useSharedValue(0);
-    const scale = useSharedValue(0.9);
+    const translateY = useRef(new Animated.Value(-120)).current;
+    const opacity = useRef(new Animated.Value(0)).current;
 
     const theme = toastThemes[type];
     const IconComponent = theme.icon;
 
     useEffect(() => {
         if (visible) {
-            translateY.value = withTiming(0, {
-                duration: 400,
-                easing: Easing.out(Easing.back(1.2)),
-            });
-            opacity.value = withTiming(1, { duration: 300 });
-            scale.value = withTiming(1, { duration: 400, easing: Easing.out(Easing.back(1.1)) });
+            Animated.parallel([
+                Animated.spring(translateY, {
+                    toValue: 0,
+                    useNativeDriver: true,
+                    tension: 80,
+                    friction: 10,
+                }),
+                Animated.timing(opacity, {
+                    toValue: 1,
+                    duration: 250,
+                    useNativeDriver: true,
+                }),
+            ]).start();
 
-            translateY.value = withDelay(
-                duration,
-                withTiming(-120, { duration: 350, easing: Easing.in(Easing.ease) })
-            );
-            opacity.value = withDelay(
-                duration,
-                withTiming(0, { duration: 300 }, (finished) => {
-                    if (finished) {
-                        runOnJS(onHide)();
-                    }
-                })
-            );
-            scale.value = withDelay(
-                duration,
-                withTiming(0.9, { duration: 300 })
-            );
+            const timer = setTimeout(() => {
+                Animated.parallel([
+                    Animated.timing(translateY, {
+                        toValue: -120,
+                        duration: 300,
+                        useNativeDriver: true,
+                    }),
+                    Animated.timing(opacity, {
+                        toValue: 0,
+                        duration: 250,
+                        useNativeDriver: true,
+                    }),
+                ]).start(() => onHide());
+            }, duration);
+
+            return () => clearTimeout(timer);
         } else {
-            translateY.value = -120;
-            opacity.value = 0;
-            scale.value = 0.9;
+            translateY.setValue(-120);
+            opacity.setValue(0);
         }
     }, [visible]);
-
-    const animatedStyle = useAnimatedStyle(() => ({
-        transform: [
-            { translateY: translateY.value },
-            { scale: scale.value },
-        ],
-        opacity: opacity.value,
-    }));
 
     if (!visible) return null;
 
@@ -128,8 +117,9 @@ const Toast: React.FC<ToastProps> = ({
                 {
                     backgroundColor: theme.bg,
                     borderColor: theme.border,
+                    transform: [{ translateY }],
+                    opacity,
                 },
-                animatedStyle,
             ]}
         >
             <View style={styles.iconWrapper}>
