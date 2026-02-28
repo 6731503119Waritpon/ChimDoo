@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native
 import { router, Stack } from 'expo-router';
 import { ChevronLeft, Heart } from 'lucide-react-native';
 
-import ComingSoonModal from '@/components/error/commingsoonModal';
 
 const Favorites = () => {
     const [isModalVisible, setModalVisible] = useState(false);
@@ -38,13 +37,6 @@ const Favorites = () => {
                     <Text style={styles.buttonText}>Manage Favorites</Text>
                 </TouchableOpacity>
             </View>
-
-            <ComingSoonModal
-                visible={isModalVisible}
-                onClose={() => setModalVisible(false)}
-                title="Cooking in Progress!"
-                message="The Favorites feature is currently cooking in our kitchen. We'll serve it to you soon!"
-            />
         </View>
     );
 };
