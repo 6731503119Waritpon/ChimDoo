@@ -19,10 +19,12 @@ import {
 } from 'lucide-react-native';
 import { ProfileMenuItem } from '@/types/menuProfile';
 import { profileMenuConfig } from '@/config/menuProfile';
+import { useToast } from '@/components/ToastProvider';
 
 const Page = () => {
     const router = useRouter();
     const { user, loading, logOut } = useAuth();
+    const toast = useToast();
 
     const handleLogout = async () => {
         Alert.alert('Log Out', 'Are you sure you want to log out?', [
@@ -34,7 +36,7 @@ const Page = () => {
                     try {
                         await logOut();
                     } catch (err: any) {
-                        Alert.alert('Error', err.message || 'Failed to log out');
+                        toast.error('Error', err.message || 'Failed to log out');
                     }
                 },
             },
@@ -44,24 +46,6 @@ const Page = () => {
     const handleMenuPress = (item: ProfileMenuItem) => {
         if (item.href) {
             router.push(item.href as any);
-        } else if (item.action) {
-            switch (item.action) {
-                case 'coming_soon':
-                    Alert.alert('Coming Soon', 'This feature will be available soon!');
-                    break;
-                case 'contact':
-                    Alert.alert('Contact', 'Email us at support@chimdoo.com');
-                    break;
-                case 'about':
-                    Alert.alert(
-                        'About',
-                        'ChimDoo — your ultimate cooking companion 🍳\nDiscover, save, and share amazing recipes with a vibrant community.'
-                    );
-                    break;
-                case 'version':
-                    Alert.alert('Version', 'ChimDoo v1.0.0');
-                    break;
-            }
         }
     };
 
@@ -405,7 +389,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#F8F9FA',
         alignItems: 'center',
         justifyContent: 'center',
-         shadowColor: '#000',
+        shadowColor: '#000',
         shadowOffset: {
             width: 0,
             height: 4,

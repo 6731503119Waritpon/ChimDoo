@@ -8,21 +8,22 @@ import {
     KeyboardAvoidingView,
     Platform,
     ActivityIndicator,
-    Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '@/components/ToastProvider';
 
 export default function ForgotPasswordScreen() {
     const router = useRouter();
     const { resetPassword, loading } = useAuth();
+    const toast = useToast();
 
     const [email, setEmail] = useState('');
     const [emailSent, setEmailSent] = useState(false);
 
     const handleResetPassword = async () => {
         if (!email) {
-            Alert.alert('Error', 'Please enter your email address');
+            toast.warning('Missing Email', 'Please enter your email address');
             return;
         }
 
@@ -30,7 +31,7 @@ export default function ForgotPasswordScreen() {
             await resetPassword(email);
             setEmailSent(true);
         } catch (err: any) {
-            Alert.alert('Error', err.message || 'Failed to send reset email');
+            toast.error('Error', err.message || 'Failed to send reset email');
         }
     };
 

@@ -8,11 +8,11 @@ import {
     KeyboardAvoidingView,
     Platform,
     ActivityIndicator,
-    Alert,
     ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '@/components/ToastProvider';
 import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
@@ -24,6 +24,7 @@ WebBrowser.maybeCompleteAuthSession();
 export default function SignupScreen() {
     const router = useRouter();
     const { signUp, loading } = useAuth();
+    const toast = useToast();
     const [googleLoading, setGoogleLoading] = useState(false);
 
     const [displayName, setDisplayName] = useState('');
@@ -52,7 +53,7 @@ export default function SignupScreen() {
             await signInWithCredential(auth, credential);
             router.replace('/(tabs)');
         } catch (error: any) {
-            Alert.alert('Google Login Error', error.message);
+            toast.error('Google Login Error', error.message);
         } finally {
             setGoogleLoading(false);
         }
@@ -60,17 +61,17 @@ export default function SignupScreen() {
 
     const handleSignup = async () => {
         if (!displayName || !email || !password || !confirmPassword) {
-            Alert.alert('Error', 'Please fill in all fields');
+            toast.warning('Missing Fields', 'Please fill in all fields');
             return;
         }
 
         if (password !== confirmPassword) {
-            Alert.alert('Error', 'Passwords do not match');
+            toast.error('Error', 'Passwords do not match');
             return;
         }
 
         if (password.length < 6) {
-            Alert.alert('Error', 'Password must be at least 6 characters');
+            toast.warning('Weak Password', 'Password must be at least 6 characters');
             return;
         }
 
@@ -78,7 +79,7 @@ export default function SignupScreen() {
             await signUp(email, password, displayName);
             router.replace('/(tabs)');
         } catch (err: any) {
-            Alert.alert('Signup Failed', err.message || 'Please try again');
+            toast.error('Signup Failed', err.message || 'Please try again');
         }
     };
 
