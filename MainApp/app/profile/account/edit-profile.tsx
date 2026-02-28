@@ -5,7 +5,6 @@ import {
     TextInput,
     TouchableOpacity,
     StyleSheet,
-    Alert,
     ActivityIndicator,
     Image,
     KeyboardAvoidingView,
@@ -16,10 +15,12 @@ import { useRouter } from 'expo-router';
 import { ChevronLeft, Camera } from 'lucide-react-native';
 import { updateProfile } from 'firebase/auth';
 import { useAuth } from '../../../hooks/useAuth';
+import { useToast } from '@/components/ToastProvider';
 
 export default function EditProfileScreen() {
     const router = useRouter();
     const { user } = useAuth();
+    const toast = useToast();
 
     const [displayName, setDisplayName] = useState(user?.displayName || '');
     const [saving, setSaving] = useState(false);
@@ -28,18 +29,17 @@ export default function EditProfileScreen() {
         if (!user) return;
 
         if (!displayName.trim()) {
-            Alert.alert('Error', 'Display name cannot be empty');
+            toast.warning('Error', 'Display name cannot be empty');
             return;
         }
 
         setSaving(true);
         try {
             await updateProfile(user, { displayName: displayName.trim() });
-            Alert.alert('Success', 'Profile updated successfully!', [
-                { text: 'OK', onPress: () => router.back() },
-            ]);
+            toast.success('Success', 'Profile updated successfully!');
+            setTimeout(() => router.back(), 1000);
         } catch (error: any) {
-            Alert.alert('Error', error.message || 'Failed to update profile');
+            toast.error('Error', error.message || 'Failed to update profile');
         } finally {
             setSaving(false);
         }
@@ -88,7 +88,7 @@ export default function EditProfileScreen() {
                         <TouchableOpacity
                             style={styles.cameraButton}
                             onPress={() =>
-                                Alert.alert(
+                                toast.info(
                                     'Coming Soon',
                                     'Photo upload will be available in a future update!'
                                 )
