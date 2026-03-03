@@ -16,7 +16,7 @@ import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
-import * as AuthSession from 'expo-auth-session'
+import { useGoogleAuth } from '../../hooks/useGoogleAuth';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -25,6 +25,7 @@ export default function LoginScreen() {
     const { signIn, loading, error } = useAuth();
     const toast = useToast();
     const [googleLoading, setGoogleLoading] = useState(false);
+    const { signInWithGoogle, loading: nativeGoogleLoading, isNativeAvailable } = useGoogleAuth();
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -46,21 +47,20 @@ export default function LoginScreen() {
     const [request, response, promptAsync] = Google.useAuthRequest({
         webClientId: process.env.EXPO_PUBLIC_WEBCLIENT_ID,
         iosClientId: process.env.EXPO_PUBLIC_IOSCLIENT_ID,
-        androidClientId: process.env.EXPO_PUBLIC_ANDROIDCLIENT_ID,
-        redirectUri: AuthSession.makeRedirectUri(),
+        androidClientId: process.env.EXPO_PUBLIC_WEBCLIENT_ID,
     });
 
     useEffect(() => {
         if (response?.type === 'success') {
-            const { id_token } = response.params;
-            handleGoogleSignIn(id_token);
+            const { id_token, access_token } = response.params;
+            handleWebGoogleSignIn(id_token, access_token);
         }
     }, [response]);
 
-    const handleGoogleSignIn = async (idToken: string) => {
+    const handleWebGoogleSignIn = async (idToken?: string, accessToken?: string) => {
         setGoogleLoading(true);
         try {
-            const credential = GoogleAuthProvider.credential(idToken);
+            const credential = GoogleAuthProvider.credential(idToken || null, accessToken || null);
             await signInWithCredential(auth, credential);
             router.replace('/(tabs)');
         } catch (error: any) {
@@ -69,6 +69,28 @@ export default function LoginScreen() {
             setGoogleLoading(false);
         }
     };
+
+    const handleNativeGoogleSignIn = async () => {
+        try {
+            const success = await signInWithGoogle();
+            if (success) {
+                router.replace('/(tabs)');
+            }
+        } catch (error: any) {
+            toast.error('Google Login Error', error.message);
+        }
+    };
+
+    const handleGooglePress = () => {
+        if (Platform.OS === 'web') {
+            promptAsync();
+        } else {
+            handleNativeGoogleSignIn();
+        }
+    };
+
+    const isGoogleLoading = googleLoading || nativeGoogleLoading;
+    const isGoogleDisabled = Platform.OS === 'web' ? (!request || isGoogleLoading) : isGoogleLoading;
 
     return (
         <KeyboardAvoidingView
@@ -139,12 +161,10 @@ export default function LoginScreen() {
 
                     <TouchableOpacity
                         style={styles.googleButton}
-                        disabled={!request || googleLoading}
-                        onPress={() => {
-                            promptAsync();
-                        }}
+                        disabled={isGoogleDisabled}
+                        onPress={handleGooglePress}
                     >
-                        {googleLoading ? (
+                        {isGoogleLoading ? (
                             <ActivityIndicator color="#000" />
                         ) : (
                             <Text style={styles.googleButtonText}>Sign in with Google</Text>
@@ -180,7 +200,6 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 32,
         fontWeight: 'bold',
-        // color: '#fff',
         marginBottom: 8,
     },
     subtitle: {
@@ -196,15 +215,12 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 14,
         fontWeight: '600',
-        // color: '#fff',
         marginBottom: 8,
     },
     input: {
-        // backgroundColor: '#1a1a1a',
         borderRadius: 12,
         padding: 16,
         fontSize: 16,
-        // color: '#fff',
         borderWidth: 1,
         borderColor: '#333',
     },
@@ -254,7 +270,6 @@ const styles = StyleSheet.create({
     },
     backButtonText: {
         fontSize: 16,
-        // color: '#fff',
     },
     dividerContainer: {
         flexDirection: 'row',

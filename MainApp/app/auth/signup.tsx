@@ -17,7 +17,7 @@ import * as WebBrowser from 'expo-web-browser';
 import * as Google from 'expo-auth-session/providers/google';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
-import * as AuthSession from 'expo-auth-session'
+import { useGoogleAuth } from '../../hooks/useGoogleAuth';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -26,6 +26,7 @@ export default function SignupScreen() {
     const { signUp, loading } = useAuth();
     const toast = useToast();
     const [googleLoading, setGoogleLoading] = useState(false);
+    const { signInWithGoogle, loading: nativeGoogleLoading, isNativeAvailable } = useGoogleAuth();
 
     const [displayName, setDisplayName] = useState('');
     const [email, setEmail] = useState('');
@@ -35,21 +36,20 @@ export default function SignupScreen() {
     const [request, response, promptAsync] = Google.useAuthRequest({
         webClientId: process.env.EXPO_PUBLIC_WEBCLIENT_ID,
         iosClientId: process.env.EXPO_PUBLIC_IOSCLIENT_ID,
-        androidClientId: process.env.EXPO_PUBLIC_ANDROIDCLIENT_ID,
-        redirectUri: AuthSession.makeRedirectUri(),
+        androidClientId: process.env.EXPO_PUBLIC_WEBCLIENT_ID,
     });
 
     useEffect(() => {
         if (response?.type === 'success') {
-            const { id_token } = response.params;
-            handleGoogleSignIn(id_token);
+            const { id_token, access_token } = response.params;
+            handleWebGoogleSignIn(id_token, access_token);
         }
     }, [response]);
 
-    const handleGoogleSignIn = async (idToken: string) => {
+    const handleWebGoogleSignIn = async (idToken?: string, accessToken?: string) => {
         setGoogleLoading(true);
         try {
-            const credential = GoogleAuthProvider.credential(idToken);
+            const credential = GoogleAuthProvider.credential(idToken || null, accessToken || null);
             await signInWithCredential(auth, credential);
             router.replace('/(tabs)');
         } catch (error: any) {
@@ -58,6 +58,28 @@ export default function SignupScreen() {
             setGoogleLoading(false);
         }
     };
+
+    const handleNativeGoogleSignIn = async () => {
+        try {
+            const success = await signInWithGoogle();
+            if (success) {
+                router.replace('/(tabs)');
+            }
+        } catch (error: any) {
+            toast.error('Google Login Error', error.message);
+        }
+    };
+
+    const handleGooglePress = () => {
+        if (Platform.OS === 'web') {
+            promptAsync();
+        } else {
+            handleNativeGoogleSignIn();
+        }
+    };
+
+    const isGoogleLoading = googleLoading || nativeGoogleLoading;
+    const isGoogleDisabled = Platform.OS === 'web' ? (!request || isGoogleLoading) : isGoogleLoading;
 
     const handleSignup = async () => {
         if (!displayName || !email || !password || !confirmPassword) {
@@ -173,12 +195,10 @@ export default function SignupScreen() {
 
                         <TouchableOpacity
                             style={styles.googleButton}
-                            disabled={!request || googleLoading}
-                            onPress={() => {
-                                promptAsync();
-                            }}
+                            disabled={isGoogleDisabled}
+                            onPress={handleGooglePress}
                         >
-                            {googleLoading ? (
+                            {isGoogleLoading ? (
                                 <ActivityIndicator color="#000" />
                             ) : (
                                 <Text style={styles.googleButtonText}>Sign in with Google</Text>
