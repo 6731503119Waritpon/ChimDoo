@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     View,
     Text,
@@ -6,7 +6,6 @@ import {
     StyleSheet,
     Image,
     ActivityIndicator,
-    Alert,
     ScrollView,
     Platform,
 } from 'react-native';
@@ -20,27 +19,25 @@ import {
 import { ProfileMenuItem } from '@/types/menuProfile';
 import { profileMenuConfig } from '@/config/menuProfile';
 import { useToast } from '@/components/ToastProvider';
+import LogoutModal from '@/components/LogoutModal';
 
 const Page = () => {
     const router = useRouter();
     const { user, loading, logOut } = useAuth();
     const toast = useToast();
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const [loggingOut, setLoggingOut] = useState(false);
 
     const handleLogout = async () => {
-        Alert.alert('Log Out', 'Are you sure you want to log out?', [
-            { text: 'Cancel', style: 'cancel' },
-            {
-                text: 'Log Out',
-                style: 'destructive',
-                onPress: async () => {
-                    try {
-                        await logOut();
-                    } catch (err: any) {
-                        toast.error('Error', err.message || 'Failed to log out');
-                    }
-                },
-            },
-        ]);
+        setLoggingOut(true);
+        try {
+            await logOut();
+            setShowLogoutModal(false);
+        } catch (err: any) {
+            toast.error('Error', err.message || 'Failed to log out');
+        } finally {
+            setLoggingOut(false);
+        }
     };
 
     const handleMenuPress = (item: ProfileMenuItem) => {
@@ -62,7 +59,7 @@ const Page = () => {
             <View style={styles.guestContainer}>
                 <View style={styles.guestContent}>
                     <View style={styles.guestIconWrapper}>
-                        <UserPen size={48} color="#ff6b35" />
+                        <UserPen size={48} color="#E63946" />
                     </View>
                     <Text style={styles.guestTitle}>Welcome to ChimDoo</Text>
                     <Text style={styles.guestSubtitle}>
@@ -128,7 +125,6 @@ const Page = () => {
             contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
         >
-            {/* Profile Header Card */}
             <View style={styles.profileCard}>
                 <View style={styles.avatarRing}>
                     {user.photoURL ? (
@@ -163,15 +159,13 @@ const Page = () => {
                 </View>
             </View>
 
-            {/* Menu Sections */}
             {profileMenuConfig.map((section) =>
                 renderMenuSection(section.section, section.items)
             )}
 
-            {/* Logout */}
             <TouchableOpacity
                 style={styles.logoutButton}
-                onPress={handleLogout}
+                onPress={() => setShowLogoutModal(true)}
                 activeOpacity={0.7}
             >
                 <LogOut size={20} color="#ef4444" />
@@ -179,6 +173,13 @@ const Page = () => {
             </TouchableOpacity>
 
             <Text style={styles.versionFooter}>ChimDoo v1.0.0</Text>
+
+            <LogoutModal
+                visible={showLogoutModal}
+                onClose={() => setShowLogoutModal(false)}
+                onConfirm={handleLogout}
+                loading={loggingOut}
+            />
         </ScrollView>
     );
 };
@@ -186,7 +187,6 @@ const Page = () => {
 export default Page;
 
 const styles = StyleSheet.create({
-    // Loading
     loadingContainer: {
         flex: 1,
         backgroundColor: '#0a0a0a',
@@ -194,7 +194,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
 
-    // Guest (not logged in)
     guestContainer: {
         flex: 1,
         backgroundColor: '#fff',
@@ -208,7 +207,7 @@ const styles = StyleSheet.create({
         width: 88,
         height: 88,
         borderRadius: 44,
-        backgroundColor: 'rgba(255, 107, 53, 0.1)',
+        backgroundColor: 'rgba(230, 57, 70, 0.1)',
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 24,
@@ -254,7 +253,6 @@ const styles = StyleSheet.create({
         fontWeight: '700',
     },
 
-    // Logged-in Container
     container: {
         flex: 1,
         backgroundColor: '#F8F9FA',
@@ -264,7 +262,6 @@ const styles = StyleSheet.create({
         paddingBottom: 160,
     },
 
-    // Profile Card
     profileCard: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -341,7 +338,6 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
 
-    // Menu
     menuSection: {
         marginTop: 20,
         paddingHorizontal: 20,
@@ -407,7 +403,6 @@ const styles = StyleSheet.create({
         backgroundColor: '#919497ff',
     },
 
-    // Logout
     logoutButton: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -427,7 +422,6 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
 
-    // Footer
     versionFooter: {
         textAlign: 'center',
         color: '#444',
