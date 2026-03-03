@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import {
     View,
     Text,
@@ -7,64 +7,233 @@ import {
     FlatList,
     Image,
     Platform,
+    ActivityIndicator,
 } from 'react-native';
-import { Heart, MessageCircle, PlusCircle, Share2 } from 'lucide-react-native';
+import { Heart, MessageCircle, Share2, UsersRound, UserPlus, UserCheck, Clock, Globe, Users, Info } from 'lucide-react-native';
 import { CommunityPost } from '@/types/community';
-import { mockPosts } from '@/config/community';
+import { useCommunity } from '@/hooks/useCommunity';
+import { useFriends } from '@/hooks/useFriends';
 import { useToast } from '@/components/ToastProvider';
+import CommentModal from '@/components/CommentModal';
+import { sharePost } from '@/components/ShareUtil';
 
-const PostCard = ({ item, comingSoon }: { item: CommunityPost; comingSoon: () => void }) => (
-    <View style={styles.postCard}>
-        <View style={styles.postHeader}>
-            <Image source={{ uri: item.userAvatar }} style={styles.postAvatar} />
-            <View style={styles.postUserInfo}>
-                <Text style={styles.postUserName}>{item.userName}</Text>
-                <View style={styles.postMeta}>
-                    <Text style={styles.postCountry}>{item.country}</Text>
-                    <Text style={styles.postDot}>·</Text>
-                    <Text style={styles.postTime}>{item.timeAgo}</Text>
+const formatTime = (timestamp: any): string => {
+    if (!timestamp?.toDate) return 'just now';
+    const now = new Date();
+    const date = timestamp.toDate();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    if (diffMins < 1) return 'just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours}h ago`;
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays}d ago`;
+};
+
+type FeedTab = 'global' | 'friends';
+
+const PostCard = ({
+    item,
+    onLike,
+    onComment,
+    onShare,
+    isLiked,
+    onAddFriend,
+    friendStatus,
+    isOwnPost,
+}: {
+    item: CommunityPost;
+    onLike: () => void;
+    onComment: () => void;
+    onShare: () => void;
+    isLiked: boolean;
+    onAddFriend: () => void;
+    friendStatus: 'none' | 'pending_sent' | 'pending_received' | 'accepted';
+    isOwnPost: boolean;
+}) => {
+    const avatarLetter = (item.userName || '?').charAt(0).toUpperCase();
+
+    const renderFriendButton = () => {
+        if (isOwnPost) return null;
+
+        switch (friendStatus) {
+            case 'accepted':
+                return (
+                    <View style={styles.friendBadge}>
+                        <UserCheck size={14} color="#22c55e" />
+                    </View>
+                );
+            case 'pending_sent':
+                return (
+                    <View style={styles.friendBadgePending}>
+                        <Clock size={12} color="#f59e0b" />
+                        <Text style={styles.friendBadgePendingText}>Pending</Text>
+                    </View>
+                );
+            case 'pending_received':
+                return (
+                    <View style={styles.friendBadgePending}>
+                        <Clock size={12} color="#3b82f6" />
+                        <Text style={[styles.friendBadgePendingText, { color: '#3b82f6' }]}>Respond</Text>
+                    </View>
+                );
+            default:
+                return (
+                    <TouchableOpacity
+                        style={styles.addFriendButton}
+                        onPress={onAddFriend}
+                        activeOpacity={0.6}
+                    >
+                        <UserPlus size={14} color="#1D3557" />
+                        <Text style={styles.addFriendText}>Add</Text>
+                    </TouchableOpacity>
+                );
+        }
+    };
+
+    return (
+        <View style={styles.postCard}>
+            <View style={styles.postHeader}>
+                {item.userAvatar ? (
+                    <Image source={{ uri: item.userAvatar }} style={styles.postAvatar} />
+                ) : (
+                    <View style={[styles.postAvatar, styles.postAvatarPlaceholder]}>
+                        <Text style={styles.postAvatarText}>{avatarLetter}</Text>
+                    </View>
+                )}
+                <View style={styles.postUserInfo}>
+                    <Text style={styles.postUserName}>{item.userName}</Text>
+                    <View style={styles.postMeta}>
+                        <Text style={styles.postFoodName}>{item.foodName}</Text>
+                        <Text style={styles.postDot}>·</Text>
+                        <Text style={styles.postTime}>{formatTime(item.createdAt)}</Text>
+                    </View>
                 </View>
+                {renderFriendButton()}
+            </View>
+
+            <Image source={{ uri: item.image }} style={styles.postImage} />
+
+            <View style={styles.postActions}>
+                <TouchableOpacity
+                    style={styles.actionButton}
+                    onPress={onLike}
+                    activeOpacity={0.6}
+                >
+                    <Heart
+                        size={22}
+                        color="#E63946"
+                        fill={isLiked ? '#E63946' : 'none'}
+                    />
+                    <Text style={styles.actionText}>{item.likes || 0}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.actionButton}
+                    onPress={onComment}
+                    activeOpacity={0.6}
+                >
+                    <MessageCircle size={22} color="#1D3557" />
+                    <Text style={styles.actionText}>{item.commentsCount || 0}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles.actionButton}
+                    onPress={onShare}
+                    activeOpacity={0.6}
+                >
+                    <Share2 size={20} color="#777" />
+                </TouchableOpacity>
+            </View>
+
+            <View style={styles.captionContainer}>
+                <Text style={styles.captionUser}>{item.userName}</Text>
+                <Text style={styles.captionText}>{item.description}</Text>
             </View>
         </View>
-
-        <Image source={{ uri: item.image }} style={styles.postImage} />
-
-        <View style={styles.postActions}>
-            <TouchableOpacity
-                style={styles.actionButton}
-                onPress={comingSoon}
-                activeOpacity={0.6}
-            >
-                <Heart size={22} color="#E63946" />
-                <Text style={styles.actionText}>{item.likes}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                style={styles.actionButton}
-                onPress={comingSoon}
-                activeOpacity={0.6}
-            >
-                <MessageCircle size={22} color="#1D3557" />
-                <Text style={styles.actionText}>{item.comments}</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                style={styles.actionButton}
-                onPress={comingSoon}
-                activeOpacity={0.6}
-            >
-                <Share2 size={20} color="#777" />
-            </TouchableOpacity>
-        </View>
-
-        <View style={styles.captionContainer}>
-            <Text style={styles.captionUser}>{item.userName}</Text>
-            <Text style={styles.captionText}>{item.caption}</Text>
-        </View>
-    </View>
-);
+    );
+};
 
 const Page = () => {
     const toast = useToast();
-    const comingSoon = () => toast.info('Coming Soon', 'This feature will be available soon!');
+    const { posts, loading, toggleLike, isLoggedIn, currentUserId } = useCommunity();
+    const { friendUserIds, getFriendStatus, sendFriendRequest } = useFriends();
+    const [commentReviewId, setCommentReviewId] = useState<string | null>(null);
+    const [feedTab, setFeedTab] = useState<FeedTab>('global');
+
+    const displayPosts = useMemo(() => {
+        if (feedTab === 'friends') {
+            return posts.filter((p) => friendUserIds.includes(p.userId));
+        }
+        return posts;
+    }, [posts, feedTab, friendUserIds]);
+
+    const handleLike = async (reviewId: string) => {
+        if (!isLoggedIn) {
+            toast.info('Login Required', 'Please log in to like posts!');
+            return;
+        }
+        try {
+            await toggleLike(reviewId);
+        } catch (err) {
+            toast.error('Error', 'Failed to update like.');
+        }
+    };
+
+    const handleComment = (reviewId: string) => {
+        if (!isLoggedIn) {
+            toast.info('Login Required', 'Please log in to comment!');
+            return;
+        }
+        setCommentReviewId(reviewId);
+    };
+
+    const handleShare = (item: CommunityPost) => {
+        sharePost(item.foodName, item.description);
+    };
+
+    const handleAddFriend = async (post: CommunityPost) => {
+        if (!isLoggedIn) {
+            toast.info('Login Required', 'Please log in to add friends!');
+            return;
+        }
+        try {
+            await sendFriendRequest(post.userId, post.userName, post.userAvatar);
+            toast.success('Request Sent!', `Friend request sent to ${post.userName}`);
+        } catch (err: any) {
+            if (err.message === 'Friend request already exists') {
+                toast.info('Already Sent', 'You already sent a request to this person');
+            } else {
+                console.error('[Community] Add friend error:', err);
+                toast.error('Error', err?.message || 'Failed to send friend request');
+            }
+        }
+    };
+
+    if (!isLoggedIn) {
+        return (
+            <View style={styles.guestContainer}>
+                <View style={styles.guestContent}>
+                    <View style={styles.guestIconWrapper}>
+                        <UsersRound size={48} color="#E63946" />
+                    </View>
+                    <Text style={styles.guestTitle}>Community</Text>
+                    <Text style={styles.guestSubtitle}>
+                        Sign in to see reviews, share your food experiences, and connect with other food lovers!
+                    </Text>
+                </View>
+            </View>
+        );
+    }
+
+    if (loading) {
+        return (
+            <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#E63946" />
+                <Text style={styles.loadingText}>Loading community...</Text>
+            </View>
+        );
+    }
+
     return (
         <View style={styles.container}>
             <View style={styles.header}>
@@ -74,23 +243,94 @@ const Page = () => {
                         See what others are cooking
                     </Text>
                 </View>
+            </View>
+
+            {/* Feed Toggle Tabs */}
+            <View style={styles.feedTabsContainer}>
                 <TouchableOpacity
-                    style={styles.newPostButton}
-                    onPress={comingSoon}
+                    style={[styles.feedTab, feedTab === 'global' && styles.feedTabActive]}
+                    onPress={() => setFeedTab('global')}
                     activeOpacity={0.7}
                 >
-                    <PlusCircle size={20} color="#fff" />
-                    <Text style={styles.newPostText}>Post</Text>
+                    <Globe
+                        size={16}
+                        color={feedTab === 'global' ? '#fff' : '#1D3557'}
+                    />
+                    <Text
+                        style={[
+                            styles.feedTabText,
+                            feedTab === 'global' && styles.feedTabTextActive,
+                        ]}
+                    >
+                        Global
+                    </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={[styles.feedTab, feedTab === 'friends' && styles.feedTabActive]}
+                    onPress={() => setFeedTab('friends')}
+                    activeOpacity={0.7}
+                >
+                    <Users
+                        size={16}
+                        color={feedTab === 'friends' ? '#fff' : '#1D3557'}
+                    />
+                    <Text
+                        style={[
+                            styles.feedTabText,
+                            feedTab === 'friends' && styles.feedTabTextActive,
+                        ]}
+                    >
+                        My Friends
+                    </Text>
                 </TouchableOpacity>
             </View>
 
-            <FlatList
-                data={mockPosts}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => <PostCard item={item} comingSoon={comingSoon} />}
-                contentContainerStyle={styles.feedContent}
-                showsVerticalScrollIndicator={false}
-                ItemSeparatorComponent={() => <View style={styles.separator} />}
+            {displayPosts.length === 0 ? (
+                <View style={styles.emptyContainer}>
+                    {feedTab === 'friends' ? (
+                        <>
+                            <Users size={48} color='#1D3557' />
+                            <Text style={styles.emptyTitle}>No Friend Posts</Text>
+                            <Text style={styles.emptySubtitle}>
+                                Add friends from the Global feed to see their posts here!
+                            </Text>
+                        </>
+                    ) : (
+                        <>
+                            <Info size={48} color='#1D3557' />
+                            <Text style={styles.emptyTitle}>No Reviews Yet</Text>
+                            <Text style={styles.emptySubtitle}>
+                                Be the first to share your food experience! Go to a recipe, tap "Chim Doo", then write a review.
+                            </Text>
+                        </>
+                    )}
+                </View>
+            ) : (
+                <FlatList
+                    data={displayPosts}
+                    keyExtractor={(item) => item.id}
+                    renderItem={({ item }) => (
+                        <PostCard
+                            item={item}
+                            onLike={() => handleLike(item.id)}
+                            onComment={() => handleComment(item.id)}
+                            onShare={() => handleShare(item)}
+                            isLiked={!!(currentUserId && item.likedBy?.includes(currentUserId))}
+                            onAddFriend={() => handleAddFriend(item)}
+                            friendStatus={getFriendStatus(item.userId)}
+                            isOwnPost={item.userId === currentUserId}
+                        />
+                    )}
+                    contentContainerStyle={styles.feedContent}
+                    showsVerticalScrollIndicator={false}
+                    ItemSeparatorComponent={() => <View style={styles.separator} />}
+                />
+            )}
+
+            <CommentModal
+                visible={!!commentReviewId}
+                reviewId={commentReviewId || ''}
+                onClose={() => setCommentReviewId(null)}
             />
         </View>
     );
@@ -102,6 +342,17 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#F8F9FA',
+    },
+    loadingContainer: {
+        flex: 1,
+        backgroundColor: '#F8F9FA',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 12,
+    },
+    loadingText: {
+        fontSize: 15,
+        color: '#888',
     },
 
     header: {
@@ -123,24 +374,58 @@ const styles = StyleSheet.create({
         color: '#888',
         marginTop: 2,
     },
-    newPostButton: {
+
+    feedTabsContainer: {
+        flexDirection: 'row',
+        marginHorizontal: 24,
+        backgroundColor: '#fff',
+        borderRadius: 14,
+        padding: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.06,
+        shadowRadius: 8,
+        elevation: 3,
+        marginBottom: 8,
+    },
+    feedTab: {
+        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 6,
-        backgroundColor: '#E63946',
-        borderRadius: 20,
-        paddingHorizontal: 16,
+        justifyContent: 'center',
         paddingVertical: 10,
-        shadowColor: '#E63946',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 4,
+        borderRadius: 12,
+        gap: 6,
     },
-    newPostText: {
-        color: '#fff',
+    feedTabActive: {
+        backgroundColor: '#1D3557',
+    },
+    feedTabText: {
         fontSize: 14,
+        fontWeight: '600',
+        color: '#1D3557',
+    },
+    feedTabTextActive: {
+        color: '#fff',
+    },
+
+    emptyContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 40,
+    },
+    emptyTitle: {
+        fontSize: 22,
         fontWeight: '700',
+        color: '#1D3557',
+        marginBottom: 8,
+    },
+    emptySubtitle: {
+        fontSize: 15,
+        color: '#888',
+        textAlign: 'center',
+        lineHeight: 22,
     },
 
     feedContent: {
@@ -177,6 +462,16 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: '#E63946',
     },
+    postAvatarPlaceholder: {
+        backgroundColor: '#1D3557',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    postAvatarText: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: '700',
+    },
     postUserInfo: {
         flex: 1,
     },
@@ -191,10 +486,10 @@ const styles = StyleSheet.create({
         gap: 6,
         marginTop: 2,
     },
-    postCountry: {
+    postFoodName: {
         fontSize: 12,
-        color: '#888',
-        fontWeight: '500',
+        color: '#E63946',
+        fontWeight: '600',
     },
     postDot: {
         fontSize: 12,
@@ -244,5 +539,104 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#555',
         lineHeight: 20,
+    },
+
+    addFriendButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+        backgroundColor: 'rgba(29, 53, 87, 0.08)',
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 20,
+    },
+    addFriendText: {
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#1D3557',
+    },
+    friendBadge: {
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    friendBadgePending: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
+        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+        paddingHorizontal: 8,
+        paddingVertical: 5,
+        borderRadius: 20,
+    },
+    friendBadgePendingText: {
+        fontSize: 11,
+        fontWeight: '600',
+        color: '#f59e0b',
+    },
+
+    guestContainer: {
+        flex: 1,
+        backgroundColor: '#F8F9FA',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 32,
+    },
+    guestContent: {
+        alignItems: 'center',
+        width: '100%',
+    },
+    guestIconWrapper: {
+        width: 96,
+        height: 96,
+        borderRadius: 48,
+        backgroundColor: 'rgba(230, 57, 70, 0.1)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 24,
+    },
+    guestTitle: {
+        fontSize: 28,
+        fontWeight: '800',
+        color: '#1D3557',
+        marginBottom: 12,
+    },
+    guestSubtitle: {
+        fontSize: 15,
+        color: '#666',
+        textAlign: 'center',
+        lineHeight: 22,
+        marginBottom: 32,
+        paddingHorizontal: 10,
+    },
+    guestButtons: {
+        width: '100%',
+        gap: 12,
+    },
+    primaryButton: {
+        backgroundColor: '#E63946',
+        paddingVertical: 16,
+        borderRadius: 16,
+        alignItems: 'center',
+    },
+    primaryButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: '700',
+    },
+    outlineButton: {
+        borderWidth: 2,
+        borderColor: '#E63946',
+        paddingVertical: 14,
+        borderRadius: 16,
+        alignItems: 'center',
+    },
+    outlineButtonText: {
+        color: '#E63946',
+        fontSize: 16,
+        fontWeight: '700',
     },
 });
