@@ -12,6 +12,7 @@ import {
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '@/components/ToastProvider';
+import { ArrowLeft } from 'lucide-react-native';
 
 export default function ForgotPasswordScreen() {
     const router = useRouter();
@@ -40,7 +41,6 @@ export default function ForgotPasswordScreen() {
             <View style={styles.container}>
                 <View style={styles.content}>
                     <View style={styles.successContainer}>
-                        <Text style={styles.successIcon}>✉️</Text>
                         <Text style={styles.successTitle}>Check Your Email</Text>
                         <Text style={styles.successText}>
                             We've sent a password reset link to {email}
@@ -63,15 +63,14 @@ export default function ForgotPasswordScreen() {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <View style={styles.content}>
-                <TouchableOpacity
+                 <TouchableOpacity
                     style={styles.backButton}
                     onPress={() => router.back()}
                 >
-                    <Text style={styles.backButtonText}>← Back</Text>
+                    <ArrowLeft size={22} color="#1D3557" />
                 </TouchableOpacity>
 
                 <View style={styles.header}>
-                    <Text style={styles.logo}>🔐</Text>
                     <Text style={styles.title}>Forgot Password?</Text>
                     <Text style={styles.subtitle}>
                         Enter your email and we'll send you a reset link
@@ -121,9 +120,12 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     backButton: {
-        position: 'absolute',
-        top: 60,
-        left: 24,
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: '#F0F2F5',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     backButtonText: {
         fontSize: 16,
@@ -132,14 +134,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 48,
     },
-    logo: {
-        fontSize: 64,
-        marginBottom: 16,
-    },
     title: {
         fontSize: 28,
         fontWeight: 'bold',
-        // color: '#fff',
         marginBottom: 8,
     },
     subtitle: {
@@ -157,11 +154,9 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 14,
         fontWeight: '600',
-        // color: '#fff',
         marginBottom: 8,
     },
     input: {
-        backgroundColor: '#1a1a1a',
         borderRadius: 12,
         padding: 16,
         fontSize: 16,
