@@ -18,6 +18,7 @@ import * as Google from 'expo-auth-session/providers/google';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
 import { useGoogleAuth } from '../../hooks/useGoogleAuth';
+import { ArrowLeft } from 'lucide-react-native';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -115,12 +116,13 @@ export default function SignupScreen() {
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.content}>
+                    <TouchableOpacity
+                        style={styles.backButton}
+                        onPress={() => router.back()}
+                    >
+                        <ArrowLeft size={22} color="#1D3557" />
+                    </TouchableOpacity>
                     <View style={styles.header}>
-                        <TouchableOpacity onPress={() => router.back()}>
-                            <View>
-                                <Text style={styles.backButtonText}>Back</Text>
-                            </View>
-                        </TouchableOpacity>
                         <Text style={styles.title}>Create Account</Text>
                         <Text style={styles.subtitle}>Join us today</Text>
                     </View>
@@ -296,16 +298,15 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     backButton: {
-        marginTop: Platform.OS === 'android' ? -10 : 30,
-        alignSelf: 'flex-start',
-        paddingVertical: Platform.OS === 'android' ? 0 : 16,
-        paddingHorizontal: 20,
-        borderRadius: 12,
-        marginBottom: Platform.OS === 'android' ? 10 : 0,
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: '#F0F2F5',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     backButtonText: {
         fontSize: 16,
-        // color: '#fff',
     },
     dividerContainer: {
         flexDirection: 'row',
