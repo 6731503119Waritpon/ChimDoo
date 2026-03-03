@@ -244,7 +244,6 @@ const Page = () => {
                 </View>
             </View>
 
-            {/* Feed Toggle Tabs */}
             <View style={styles.feedTabsContainer}>
                 <TouchableOpacity
                     style={[styles.feedTab, feedTab === 'global' && styles.feedTabActive]}
