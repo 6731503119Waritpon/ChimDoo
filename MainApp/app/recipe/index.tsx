@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Platform, Alert, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ArrowLeft, Clock, Flame, Utensils, UtensilsCrossed, Check } from 'lucide-react-native';
+import { ArrowLeft, Clock, Flame, Utensils, UtensilsCrossed, Check, Star } from 'lucide-react-native';
 import { FoodItem, Taste } from '@/types/recipe';
 import { useChimDoo } from '@/hooks/useChimDoo';
+import { useCommunity } from '@/hooks/useCommunity';
 import { useToast } from '@/components/ToastProvider';
+import ChimDooRequiredModal from '@/components/ChimDooRequiredModal';
+import ReviewModal from '@/components/ReviewModal';
 
 export default function RecipePage() {
     const router = useRouter();
@@ -15,6 +18,10 @@ export default function RecipePage() {
     const category = (params.category as string) || '';
 
     const { isChimDoo, loading, toggleChimDoo, isLoggedIn } = useChimDoo(food?.name);
+    const { addReview, hasReviewed } = useCommunity();
+
+    const [showChimDooRequired, setShowChimDooRequired] = useState(false);
+    const [showReviewModal, setShowReviewModal] = useState(false);
 
     const handleChimDoo = async () => {
         if (!isLoggedIn) {
@@ -39,6 +46,45 @@ export default function RecipePage() {
         } catch (err: any) {
             console.error('ChimDoo Error:', err);
             toast.error('Error', 'Something went wrong. Please try again.');
+        }
+    };
+
+    const handleReviewPress = () => {
+        if (!isLoggedIn) {
+            Alert.alert(
+                'Login Required',
+                'Please log in to write a review!',
+                [
+                    { text: 'Cancel', style: 'cancel' },
+                    { text: 'Log In', onPress: () => router.push('/auth/login') },
+                ]
+            );
+            return;
+        }
+
+        if (!isChimDoo) {
+            setShowChimDooRequired(true);
+            return;
+        }
+
+        if (food && hasReviewed(food.name)) {
+            toast.info('Already Reviewed', 'You already reviewed this dish!');
+            router.push('/(tabs)/community');
+            return;
+        }
+
+        setShowReviewModal(true);
+    };
+
+    const handleSubmitReview = async (imageUri: string, description: string) => {
+        if (!food) return;
+        try {
+            await addReview(food.name, imageUri, description);
+            toast.success('Review Posted!', 'Your review has been shared with the community!');
+        } catch (err: any) {
+            console.error('Review Error:', err);
+            toast.error('Error', 'Failed to post review. Please try again.');
+            throw err;
         }
     };
 
@@ -102,30 +148,53 @@ export default function RecipePage() {
             </ScrollView>
 
             <View style={styles.bottomBar}>
-                <TouchableOpacity
-                    style={[
-                        styles.chimDooButton,
-                        isChimDoo && styles.chimDooButtonDone,
-                    ]}
-                    onPress={handleChimDoo}
-                    activeOpacity={0.7}
-                    disabled={loading}
-                >
-                    {loading ? (
-                        <ActivityIndicator size="small" color="#fff" />
-                    ) : isChimDoo ? (
-                        <>
-                            <Check size={22} color="#1D3557" />
-                            <Text style={styles.chimDooTextDone}>Tasted!</Text>
-                        </>
-                    ) : (
-                        <>
-                            <UtensilsCrossed size={22} color="#fff" />
-                            <Text style={styles.chimDooText}>Chim Doo</Text>
-                        </>
-                    )}
-                </TouchableOpacity>
+                <View style={styles.bottomBarRow}>
+                    <TouchableOpacity
+                        style={[
+                            styles.chimDooButton,
+                            isChimDoo && styles.chimDooButtonDone,
+                        ]}
+                        onPress={handleChimDoo}
+                        activeOpacity={0.7}
+                        disabled={loading}
+                    >
+                        {loading ? (
+                            <ActivityIndicator size="small" color="#fff" />
+                        ) : isChimDoo ? (
+                            <>
+                                <Check size={22} color="#1D3557" />
+                                <Text style={styles.chimDooTextDone}>Tasted!</Text>
+                            </>
+                        ) : (
+                            <>
+                                <UtensilsCrossed size={22} color="#fff" />
+                                <Text style={styles.chimDooText}>Chim Doo</Text>
+                            </>
+                        )}
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        style={styles.reviewButton}
+                        onPress={handleReviewPress}
+                        activeOpacity={0.7}
+                    >
+                        <Star size={18} color="#fff" />
+                        <Text style={styles.reviewButtonText}>Review</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
+
+            <ChimDooRequiredModal
+                visible={showChimDooRequired}
+                onClose={() => setShowChimDooRequired(false)}
+            />
+
+            <ReviewModal
+                visible={showReviewModal}
+                foodName={food.name}
+                onClose={() => setShowReviewModal(false)}
+                onSubmit={handleSubmitReview}
+            />
         </View>
     );
 }
@@ -204,7 +273,13 @@ const styles = StyleSheet.create({
         borderTopWidth: 0.5,
         borderTopColor: '#e5e5e5',
     },
+    bottomBarRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 10,
+    },
     chimDooButton: {
+        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
@@ -231,6 +306,26 @@ const styles = StyleSheet.create({
     chimDooTextDone: {
         color: '#1D3557',
         fontSize: 18,
+        fontWeight: '700',
+    },
+    reviewButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 6,
+        backgroundColor: '#1D3557',
+        borderRadius: 16,
+        paddingVertical: 16,
+        paddingHorizontal: 20,
+        shadowColor: '#1D3557',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 6,
+    },
+    reviewButtonText: {
+        color: '#fff',
+        fontSize: 16,
         fontWeight: '700',
     },
 });
