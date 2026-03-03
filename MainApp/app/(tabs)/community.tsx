@@ -229,7 +229,6 @@ const Page = () => {
         return (
             <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#E63946" />
-                <Text style={styles.loadingText}>Loading community...</Text>
             </View>
         );
     }
