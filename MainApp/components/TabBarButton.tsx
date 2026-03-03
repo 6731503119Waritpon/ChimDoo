@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native"
+import { Pressable, StyleSheet, Text } from "react-native"
 import React, { useEffect } from "react"
 import { icon } from "@/constants/icon"
 import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated"
@@ -14,25 +14,28 @@ interface TabBarButtonProps {
 
 const TabBarButton = ({ onPress, onLongPress, isFocused, label, routeName, color }: TabBarButtonProps) => {
     const scale = useSharedValue(0);
+
     useEffect(() => {
-        scale.value = withSpring(typeof isFocused === 'boolean' ? (isFocused ? 1 : 0) : isFocused),
-            { duration: 350 }
+        scale.value = withSpring(isFocused ? 1 : 0, {
+            damping: 14,
+            stiffness: 160,
+        });
     }, [scale, isFocused]);
 
     const animatedIconStyle = useAnimatedStyle(() => {
-        const scaleValue = interpolate(scale.value, [0, 1], [1, 1.2])
-        const top = interpolate(scale.value, [0, 1], [0, 9])
+        const scaleValue = interpolate(scale.value, [0, 1], [1, 1.15]);
+        const top = interpolate(scale.value, [0, 1], [0, 7]);
         return {
             transform: [{ scale: scaleValue }],
-            top
-        }
+            top,
+        };
     });
 
     const animatedTextStyle = useAnimatedStyle(() => {
-        const opacity = interpolate(scale.value, [0, 1], [1, 1])
+        const opacity = interpolate(scale.value, [0, 1], [1, 0]);
         return {
-            opacity
-        }
+            opacity,
+        };
     });
 
     const IconComponent = (icon as any)[routeName];
@@ -45,10 +48,15 @@ const TabBarButton = ({ onPress, onLongPress, isFocused, label, routeName, color
         >
             <Animated.View style={animatedIconStyle}>
                 {IconComponent ? IconComponent({
-                    color: isFocused ? "#FFF" : "#222",
+                    color: isFocused ? "#FFF" : "#555",
+                    size: 22,
                 }) : null}
-            </Animated.View >
-            <Animated.Text style={[{ color: isFocused ? "#FFF" : "#222" }, animatedTextStyle]}>
+            </Animated.View>
+            <Animated.Text style={[
+                styles.label,
+                { color: isFocused ? "#FFF" : "#555" },
+                animatedTextStyle,
+            ]}>
                 {label}
             </Animated.Text>
         </Pressable>
@@ -62,6 +70,11 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 5
+        gap: 3,
+        paddingVertical: 2,
+    },
+    label: {
+        fontSize: 11,
+        fontWeight: '600',
     },
 })
