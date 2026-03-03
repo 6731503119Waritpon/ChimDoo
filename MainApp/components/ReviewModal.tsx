@@ -1,0 +1,306 @@
+import React, { useState } from 'react';
+import {
+    View,
+    Text,
+    Modal,
+    TouchableOpacity,
+    StyleSheet,
+    TextInput,
+    Image,
+    ActivityIndicator,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+} from 'react-native';
+import { Camera, ImageIcon, X, Send } from 'lucide-react-native';
+import * as ImagePicker from 'expo-image-picker';
+
+interface Props {
+    visible: boolean;
+    foodName: string;
+    onClose: () => void;
+    onSubmit: (imageUri: string, description: string) => Promise<void>;
+}
+
+const ReviewModal: React.FC<Props> = ({ visible, foodName, onClose, onSubmit }) => {
+    const [imageUri, setImageUri] = useState<string | null>(null);
+    const [imageBase64, setImageBase64] = useState<string | null>(null);
+    const [description, setDescription] = useState('');
+    const [submitting, setSubmitting] = useState(false);
+
+    const pickImage = async (useCamera: boolean) => {
+        const permissionResult = useCamera
+            ? await ImagePicker.requestCameraPermissionsAsync()
+            : await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (!permissionResult.granted) return;
+
+        const result = useCamera
+            ? await ImagePicker.launchCameraAsync({
+                mediaTypes: ['images'],
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 0.4,
+                base64: true,
+            })
+            : await ImagePicker.launchImageLibraryAsync({
+                mediaTypes: ['images'],
+                allowsEditing: true,
+                aspect: [4, 3],
+                quality: 0.4,
+                base64: true,
+            });
+
+        if (!result.canceled && result.assets[0]) {
+            setImageUri(result.assets[0].uri);
+            setImageBase64(result.assets[0].base64 || null);
+        }
+    };
+
+    const handleSubmit = async () => {
+        if (!imageBase64 || !description.trim()) return;
+
+        setSubmitting(true);
+        try {
+            const dataUri = `data:image/jpeg;base64,${imageBase64}`;
+            await onSubmit(dataUri, description.trim());
+            setImageUri(null);
+            setImageBase64(null);
+            setDescription('');
+            onClose();
+        } catch (err) {
+            console.error('Submit review error:', err);
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const handleClose = () => {
+        if (submitting) return;
+        setImageUri(null);
+        setImageBase64(null);
+        setDescription('');
+        onClose();
+    };
+
+    return (
+        <Modal
+            visible={visible}
+            transparent
+            animationType="slide"
+            onRequestClose={handleClose}
+        >
+            <KeyboardAvoidingView
+                style={styles.overlay}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            >
+                <View style={styles.modal}>
+                    <View style={styles.header}>
+                        <Text style={styles.headerTitle}>Write a Review</Text>
+                        <TouchableOpacity onPress={handleClose} disabled={submitting}>
+                            <X size={24} color="#999" />
+                        </TouchableOpacity>
+                    </View>
+
+                    <ScrollView showsVerticalScrollIndicator={false}>
+                        <View style={styles.foodBadge}>
+                            <Text style={styles.foodBadgeText}>{foodName}</Text>
+                        </View>
+
+                        {imageUri ? (
+                            <View style={styles.imagePreviewContainer}>
+                                <Image source={{ uri: imageUri }} style={styles.imagePreview} />
+                                <TouchableOpacity
+                                    style={styles.removeImageBtn}
+                                    onPress={() => { setImageUri(null); setImageBase64(null); }}
+                                >
+                                    <X size={16} color="#fff" />
+                                </TouchableOpacity>
+                            </View>
+                        ) : (
+                            <View style={styles.imagePickerRow}>
+                                <TouchableOpacity
+                                    style={styles.imagePickerBtn}
+                                    onPress={() => pickImage(true)}
+                                >
+                                    <Camera size={28} color="#E63946" />
+                                    <Text style={styles.imagePickerText}>Camera</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style={styles.imagePickerBtn}
+                                    onPress={() => pickImage(false)}
+                                >
+                                    <ImageIcon size={28} color="#1D3557" />
+                                    <Text style={styles.imagePickerText}>Gallery</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+
+                        {/* Description */}
+                        <Text style={styles.label}>Your Review</Text>
+                        <TextInput
+                            style={styles.textInput}
+                            placeholder="Share your experience with this dish..."
+                            placeholderTextColor="#aaa"
+                            multiline
+                            textAlignVertical="top"
+                            value={description}
+                            onChangeText={setDescription}
+                            maxLength={500}
+                        />
+                        <Text style={styles.charCount}>
+                            {description.length}/500
+                        </Text>
+                    </ScrollView>
+
+                    <TouchableOpacity
+                        style={[
+                            styles.submitButton,
+                            (!imageUri || !description.trim()) && styles.submitButtonDisabled,
+                        ]}
+                        onPress={handleSubmit}
+                        disabled={!imageUri || !description.trim() || submitting}
+                        activeOpacity={0.7}
+                    >
+                        {submitting ? (
+                            <ActivityIndicator size="small" color="#fff" />
+                        ) : (
+                            <>
+                                <Send size={18} color="#fff" />
+                                <Text style={styles.submitText}>Post Review</Text>
+                            </>
+                        )}
+                    </TouchableOpacity>
+                </View>
+            </KeyboardAvoidingView>
+        </Modal>
+    );
+};
+
+export default ReviewModal;
+
+const styles = StyleSheet.create({
+    overlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'flex-end',
+    },
+    modal: {
+        backgroundColor: '#fff',
+        borderTopLeftRadius: 28,
+        borderTopRightRadius: 28,
+        paddingHorizontal: 24,
+        paddingTop: 20,
+        paddingBottom: Platform.OS === 'ios' ? 40 : 24,
+        maxHeight: '90%',
+    },
+    header: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+    headerTitle: {
+        fontSize: 22,
+        fontWeight: '800',
+        color: '#1D3557',
+    },
+    foodBadge: {
+        backgroundColor: '#F0F4F8',
+        borderRadius: 12,
+        paddingVertical: 10,
+        paddingHorizontal: 16,
+        alignSelf: 'flex-start',
+        marginBottom: 20,
+    },
+    foodBadgeText: {
+        fontSize: 15,
+        fontWeight: '600',
+        color: '#1D3557',
+    },
+    imagePickerRow: {
+        flexDirection: 'row',
+        gap: 12,
+        marginBottom: 20,
+    },
+    imagePickerBtn: {
+        flex: 1,
+        height: 120,
+        backgroundColor: '#F8F9FA',
+        borderRadius: 16,
+        borderWidth: 2,
+        borderColor: '#E8E8E8',
+        borderStyle: 'dashed',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+    },
+    imagePickerText: {
+        fontSize: 13,
+        fontWeight: '600',
+        color: '#666',
+    },
+    imagePreviewContainer: {
+        position: 'relative',
+        marginBottom: 20,
+        borderRadius: 16,
+        overflow: 'hidden',
+    },
+    imagePreview: {
+        width: '100%',
+        height: 200,
+        borderRadius: 16,
+    },
+    removeImageBtn: {
+        position: 'absolute',
+        top: 8,
+        right: 8,
+        width: 28,
+        height: 28,
+        borderRadius: 14,
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    label: {
+        fontSize: 15,
+        fontWeight: '700',
+        color: '#1D3557',
+        marginBottom: 8,
+    },
+    textInput: {
+        backgroundColor: '#F8F9FA',
+        borderRadius: 14,
+        padding: 16,
+        fontSize: 15,
+        color: '#333',
+        minHeight: 100,
+        borderWidth: 1,
+        borderColor: '#E8E8E8',
+    },
+    charCount: {
+        fontSize: 12,
+        color: '#aaa',
+        textAlign: 'right',
+        marginTop: 6,
+        marginBottom: 16,
+    },
+    submitButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 8,
+        backgroundColor: '#E63946',
+        borderRadius: 16,
+        paddingVertical: 16,
+        marginTop: 8,
+    },
+    submitButtonDisabled: {
+        backgroundColor: '#ccc',
+    },
+    submitText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: '700',
+    },
+});
