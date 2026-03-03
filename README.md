@@ -2,7 +2,7 @@
 
 ChimDoo is a comprehensive mobile application that allows users to explore, review, and share their experiences with various food items from different countries. With features like community reviews, user profiles, recipe management, and a full-fledged friend system, ChimDoo connects food lovers worldwide.
 
-## í³¦ Project Structure
+## ðŸ“¦ Project Structure
 
 ```text
 ChimDoo/
@@ -27,7 +27,7 @@ ChimDoo/
 â””â”€â”€ README.md               # You are reading this right now
 ```
 
-## í»  Features
+## ðŸ›  Features
 
 - **Authentication:** Secure sign-up and sign-in functionality utilizing Firebase Auth, including Google Sign-In and persistent login.
 - **Community Feed:** Browse posts, reviews, and food experiences shared by others. Toggle between a global feed and a personalized 'My Friends' feed.
@@ -36,7 +36,7 @@ ChimDoo/
 - **Profile Management:** Keep your user profile up to date, review your activity, and enjoy an intuitive, modern interface customized to your needs.
 - **Multi-Platform Support:** Works efficiently across both Android and iOS environments with responsive web support built in via Expo.
 
-## í²» Technology Stack
+## ðŸ’» Technology Stack
 
 - **Framework:** React Native and Expo Router.
 - **Backend/Database:** Firebase Authentication and Firestore Database.
@@ -44,7 +44,7 @@ ChimDoo/
 - **Animations:** React Native Reanimated.
 - **Icons:** Lucide React Native.
 
-## íº€ Setup Instructions
+## ðŸš€ Setup Instructions
 
 1. Ensure you have Node.js and npm installed.
 2. Clone the repository and navigate to the project directory:
