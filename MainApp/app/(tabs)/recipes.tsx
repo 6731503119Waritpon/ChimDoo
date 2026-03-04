@@ -86,6 +86,20 @@ const Page = () => {
         </TouchableOpacity>
     );
 
+    if (!isLoggedIn) {
+        return (
+            <View style={styles.guestContainer}>
+                <View style={styles.guestIconWrapper}>
+                    <UtensilsCrossed size={48} color="#E63946" />
+                </View>
+                <Text style={styles.guestTitle}>Recipes</Text>
+                <Text style={styles.guestSubtitle}>
+                    Sign in to track menus you've tried and discover your favorite dishes!
+                </Text>
+            </View>
+        );
+    }
+
     if (loading) {
         return (
             <View style={[styles.container, styles.centerContent]}>
@@ -170,9 +184,7 @@ const Page = () => {
                 ListEmptyComponent={
                     <View style={styles.emptyState}>
                         <UtensilsCrossed size={56} color="#1D3557" style={styles.emptyEmoji} />
-                        <Text style={styles.emptyTitle}>{isLoggedIn
-                            ? 'Let\'s start Chim'
-                            : 'Login to start Chim'}</Text>
+                        <Text style={styles.emptyTitle}>Let's start Chim</Text>
                         <Text style={styles.emptySubtitle}>Explore ChimDoo and discover your favorite dish</Text>
                     </View>
                 }
@@ -215,7 +227,6 @@ const styles = StyleSheet.create({
         marginTop: 4,
         marginLeft: 2,
     },
-
     searchWrapper: {
         paddingHorizontal: 20,
         marginTop: 16,
@@ -241,8 +252,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#333',
     },
-
-    // Categories
     categoryContainer: {
         marginTop: 16,
         marginBottom: 4,
@@ -272,14 +281,11 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
     },
 
-    // Recipe List
     listContent: {
         paddingHorizontal: 20,
         paddingTop: 12,
         paddingBottom: 120,
     },
-
-    // Recipe Card
     recipeCard: {
         borderRadius: 22,
         overflow: 'hidden',
@@ -352,8 +358,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '600',
     },
-
-    // Empty State
     emptyState: {
         alignItems: 'center',
         justifyContent: 'center',
@@ -374,5 +378,41 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         paddingHorizontal: 40,
         lineHeight: 22,
+    },
+    guestContainer: {
+        flex: 1,
+        backgroundColor: '#F8F9FA',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 32,
+    },
+    guestIconWrapper: {
+        width: 96,
+        height: 96,
+        borderRadius: 48,
+        backgroundColor: 'rgba(230, 57, 70, 0.1)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 24,
+    },
+    guestTitle: {
+        fontSize: 28,
+        fontWeight: '800',
+        color: '#1D3557',
+        marginBottom: 12,
+    },
+    guestSubtitle: {
+        fontSize: 15,
+        color: '#666',
+        textAlign: 'center',
+        lineHeight: 22,
+        paddingHorizontal: 10,
+    },
+    guestState: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingTop: 80,
+        paddingHorizontal: 32,
     },
 });
