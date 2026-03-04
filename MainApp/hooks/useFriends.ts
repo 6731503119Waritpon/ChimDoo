@@ -15,6 +15,7 @@ import {
 import { db } from '@/firebaseConfig';
 import { useAuth } from './useAuth';
 import { Friendship, FriendInfo } from '@/types/friends';
+import { createNotification } from '@/utils/notificationHelpers';
 
 const FRIENDSHIPS_COLLECTION = 'friendships';
 const USERS_COLLECTION = 'users';
@@ -190,11 +191,20 @@ export const useFriends = () => {
                 createdAt: serverTimestamp(),
                 updatedAt: serverTimestamp(),
             });
+
+            createNotification({
+                targetUserId,
+                type: 'friend_request',
+                title: 'New Friend Request',
+                body: `${user.displayName ?? 'Someone'} sent you a friend request`,
+                fromUserId: user.uid,
+                fromUserName: user.displayName ?? 'Someone',
+                fromAvatar: user.photoURL ?? '',
+            });
         },
         [user, friendships]
     );
 
-    // Send friend request by email — looks up user in 'users' collection
     const sendFriendRequestByEmail = useCallback(
         async (email: string) => {
             if (!user) throw new Error('Not logged in');
@@ -203,7 +213,6 @@ export const useFriends = () => {
                 throw new Error('SELF');
             }
 
-            // Look up user by email
             const q = query(
                 collection(db, USERS_COLLECTION),
                 where('email', '==', email.toLowerCase())
@@ -217,7 +226,6 @@ export const useFriends = () => {
             const targetDoc = snapshot.docs[0];
             const targetData = targetDoc.data();
 
-            // Check if already friends or pending
             const existing = friendships.find(
                 (f) =>
                     ((f.requesterId === user.uid && f.requesteeId === targetData.uid) ||

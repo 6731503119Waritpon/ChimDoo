@@ -14,6 +14,8 @@ import {
 import { useRouter } from 'expo-router';
 import { Search, Clock, Flame, X, UtensilsCrossed, CookingPot } from 'lucide-react-native';
 import { useChimDoo, ChimDooItem } from '@/hooks/useChimDoo';
+import NotificationBell from '@/components/NotificationBell';
+import NotificationModal from '@/components/NotificationModal';
 
 const Page = () => {
     const router = useRouter();
@@ -21,6 +23,7 @@ const Page = () => {
     const [activeCategory, setActiveCategory] = useState('All');
 
     const { chimDooList, loading, isLoggedIn } = useChimDoo();
+    const [showNotif, setShowNotif] = useState(false);
 
     const categories = useMemo(() => {
         const cats = new Set(chimDooList.map((r) => r.category).filter(Boolean));
@@ -109,87 +112,93 @@ const Page = () => {
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <View style={styles.headerRow}>
-                    <CookingPot size={28} color="#E63946" />
-                    <Text style={styles.headerTitle}>Recipes</Text>
+        <>
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <View style={styles.headerRow}>
+                        <CookingPot size={28} color="#E63946" />
+                        <Text style={styles.headerTitle}>Recipes</Text>
+                    </View>
+                    <View style={styles.headerRight}>
+                        <Text style={styles.headerSubtitle}>Menus you've tried!</Text>
+                        <NotificationBell onPress={() => setShowNotif(true)} />
+                    </View>
                 </View>
-                <Text style={styles.headerSubtitle}>
-                    Menus you've tried!
-                </Text>
-            </View>
 
-            {chimDooList.length > 0 && (
-                <>
-                    <View style={styles.searchWrapper}>
-                        <View style={styles.searchBar}>
-                            <Search size={20} color="#999" />
-                            <TextInput
-                                style={styles.searchInput}
-                                placeholder="Search your ChimDoo recipes..."
-                                placeholderTextColor="#aaa"
-                                value={search}
-                                onChangeText={setSearch}
-                            />
-                            {search.length > 0 && (
-                                <TouchableOpacity onPress={() => setSearch('')}>
-                                    <X size={18} color="#999" />
-                                </TouchableOpacity>
-                            )}
-                        </View>
-                    </View>
+                {
+                    chimDooList.length > 0 && (
+                        <>
+                            <View style={styles.searchWrapper}>
+                                <View style={styles.searchBar}>
+                                    <Search size={20} color="#999" />
+                                    <TextInput
+                                        style={styles.searchInput}
+                                        placeholder="Search your ChimDoo recipes..."
+                                        placeholderTextColor="#aaa"
+                                        value={search}
+                                        onChangeText={setSearch}
+                                    />
+                                    {search.length > 0 && (
+                                        <TouchableOpacity onPress={() => setSearch('')}>
+                                            <X size={18} color="#999" />
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
+                            </View>
 
-                    {categories.length > 1 && (
-                        <View style={styles.categoryContainer}>
-                            <ScrollView
-                                horizontal
-                                showsHorizontalScrollIndicator={false}
-                                contentContainerStyle={styles.categoryScroll}
-                            >
-                                {categories.map((cat) => (
-                                    <TouchableOpacity
-                                        key={cat}
-                                        style={[
-                                            styles.categoryPill,
-                                            activeCategory === cat &&
-                                            styles.categoryPillActive,
-                                        ]}
-                                        onPress={() => setActiveCategory(cat)}
-                                        activeOpacity={0.7}
+                            {categories.length > 1 && (
+                                <View style={styles.categoryContainer}>
+                                    <ScrollView
+                                        horizontal
+                                        showsHorizontalScrollIndicator={false}
+                                        contentContainerStyle={styles.categoryScroll}
                                     >
-                                        <Text
-                                            style={[
-                                                styles.categoryText,
-                                                activeCategory === cat &&
-                                                styles.categoryTextActive,
-                                            ]}
-                                        >
-                                            {cat}
-                                        </Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </ScrollView>
-                        </View>
-                    )}
-                </>
-            )}
-
-            <FlatList
-                data={filteredRecipes}
-                keyExtractor={(item) => item.id}
-                renderItem={renderRecipeCard}
-                contentContainerStyle={styles.listContent}
-                showsVerticalScrollIndicator={false}
-                ListEmptyComponent={
-                    <View style={styles.emptyState}>
-                        <UtensilsCrossed size={56} color="#1D3557" style={styles.emptyEmoji} />
-                        <Text style={styles.emptyTitle}>Let's start Chim</Text>
-                        <Text style={styles.emptySubtitle}>Explore ChimDoo and discover your favorite dish</Text>
-                    </View>
+                                        {categories.map((cat) => (
+                                            <TouchableOpacity
+                                                key={cat}
+                                                style={[
+                                                    styles.categoryPill,
+                                                    activeCategory === cat &&
+                                                    styles.categoryPillActive,
+                                                ]}
+                                                onPress={() => setActiveCategory(cat)}
+                                                activeOpacity={0.7}
+                                            >
+                                                <Text
+                                                    style={[
+                                                        styles.categoryText,
+                                                        activeCategory === cat &&
+                                                        styles.categoryTextActive,
+                                                    ]}
+                                                >
+                                                    {cat}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        ))}
+                                    </ScrollView>
+                                </View>
+                            )}
+                        </>
+                    )
                 }
-            />
-        </View>
+
+                <FlatList
+                    data={filteredRecipes}
+                    keyExtractor={(item) => item.id}
+                    renderItem={renderRecipeCard}
+                    contentContainerStyle={styles.listContent}
+                    showsVerticalScrollIndicator={false}
+                    ListEmptyComponent={
+                        <View style={styles.emptyState}>
+                            <UtensilsCrossed size={56} color="#1D3557" style={styles.emptyEmoji} />
+                            <Text style={styles.emptyTitle}>Let's start Chim</Text>
+                            <Text style={styles.emptySubtitle}>Explore ChimDoo and discover your favorite dish</Text>
+                        </View>
+                    }
+                />
+            </View>
+            <NotificationModal visible={showNotif} onClose={() => setShowNotif(false)} />
+        </>
     );
 };
 
@@ -214,6 +223,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 10,
+    },
+    headerRight: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
     },
     headerTitle: {
         fontSize: 32,
