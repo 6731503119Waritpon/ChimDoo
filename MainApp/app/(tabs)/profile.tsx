@@ -20,6 +20,7 @@ import { ProfileMenuItem } from '@/types/menuProfile';
 import { profileMenuConfig } from '@/config/menuProfile';
 import { useToast } from '@/components/ToastProvider';
 import LogoutModal from '@/components/LogoutModal';
+import AppVersionModal from '@/components/AppVersionModal';
 
 const Page = () => {
     const router = useRouter();
@@ -27,6 +28,7 @@ const Page = () => {
     const toast = useToast();
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [loggingOut, setLoggingOut] = useState(false);
+    const [showVersionModal, setShowVersionModal] = useState(false);
 
     const handleLogout = async () => {
         setLoggingOut(true);
@@ -41,6 +43,10 @@ const Page = () => {
     };
 
     const handleMenuPress = (item: ProfileMenuItem) => {
+        if (item.label === 'App Version') {
+            setShowVersionModal(true);
+            return;
+        }
         if (item.href) {
             router.push(item.href as any);
         }
@@ -48,8 +54,8 @@ const Page = () => {
 
     if (loading) {
         return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#ff6b35" />
+            <View style={[styles.container, styles.centerContent]}>
+                <ActivityIndicator size="large" color="#E63946" />
             </View>
         );
     }
@@ -180,6 +186,10 @@ const Page = () => {
                 onConfirm={handleLogout}
                 loading={loggingOut}
             />
+            <AppVersionModal
+                visible={showVersionModal}
+                onClose={() => setShowVersionModal(false)}
+            />
         </ScrollView>
     );
 };
@@ -187,9 +197,7 @@ const Page = () => {
 export default Page;
 
 const styles = StyleSheet.create({
-    loadingContainer: {
-        flex: 1,
-        backgroundColor: '#0a0a0a',
+    centerContent: {
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -271,14 +279,16 @@ const styles = StyleSheet.create({
         marginBottom: 8,
         backgroundColor: '#FFFFFF',
         borderRadius: 24,
-        shadowColor: '#000',
+        borderWidth: 1,
+        borderColor: 'rgba(29, 53, 87, 0.08)',
+        shadowColor: '#1D3557',
         shadowOffset: {
             width: 0,
-            height: 4,
+            height: 8,
         },
-        shadowOpacity: 0.08,
-        shadowRadius: 12,
-        elevation: 5,
+        shadowOpacity: 0.18,
+        shadowRadius: 20,
+        elevation: 12,
     },
     avatarRing: {
         width: 96,
@@ -290,6 +300,14 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 3,
         marginRight: 16,
+        shadowColor: '#1D3557',
+        shadowOffset: {
+            width: 0,
+            height: 4,
+        },
+        shadowOpacity: 0.35,
+        shadowRadius: 10,
+        elevation: 8,
     },
     profileInfo: {
         flex: 1,
@@ -354,17 +372,17 @@ const styles = StyleSheet.create({
     menuCard: {
         backgroundColor: '#FFFFFF',
         borderRadius: 18,
-        borderWidth: 0.2,
-        borderColor: '#a7a6a6ff',
+        borderWidth: 1,
+        borderColor: 'rgba(29, 53, 87, 0.07)',
         overflow: 'hidden',
-        shadowColor: '#000',
+        shadowColor: '#1D3557',
         shadowOffset: {
             width: 0,
-            height: 4,
+            height: 6,
         },
-        shadowOpacity: 0.08,
-        shadowRadius: 12,
-        elevation: 5,
+        shadowOpacity: 0.12,
+        shadowRadius: 16,
+        elevation: 8,
     },
     menuItem: {
         flexDirection: 'row',
@@ -383,16 +401,18 @@ const styles = StyleSheet.create({
         height: 36,
         borderRadius: 10,
         backgroundColor: '#F8F9FA',
+        borderWidth: 1,
+        borderColor: 'rgba(0,0,0,0.05)',
         alignItems: 'center',
         justifyContent: 'center',
         shadowColor: '#000',
         shadowOffset: {
             width: 0,
-            height: 4,
+            height: 2,
         },
-        shadowOpacity: 0.28,
-        shadowRadius: 12,
-        elevation: 5,
+        shadowOpacity: 0.12,
+        shadowRadius: 6,
+        elevation: 4,
     },
     menuItemLabel: {
         fontSize: 16,
