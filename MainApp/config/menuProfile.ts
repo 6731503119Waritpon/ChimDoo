@@ -27,8 +27,8 @@ export const profileMenuConfig: ProfileMenuSection[] = [
     section: 'Account',
     items: [
       { label: 'Edit Profile', icon: UserPen, iconColor: '#1D3557', href: '/profile/account/edit-profile' },
-      { label: 'Change Password', icon: KeyRound, iconColor: '#1D3557'},
-      { label: 'Notifications', icon: Bell, iconColor: '#1D3557'},
+      { label: 'Change Password', icon: KeyRound, iconColor: '#1D3557', href: '/profile/account/change-password' },
+      { label: 'Notifications', icon: Bell, iconColor: '#1D3557', href: '/profile/account/notifications' },
       { label: 'Language', icon: Globe, iconColor: '#1D3557', href: '/profile/account/language-settings' },
     ],
   },
@@ -36,15 +36,15 @@ export const profileMenuConfig: ProfileMenuSection[] = [
     section: 'Support',
     items: [
       { label: 'FAQ', icon: HelpCircle, iconColor: '#3b82f6', href: '/profile/support/faq' },
-      { label: 'Contact Us', icon: Mail, iconColor: '#3b82f6'},
+      { label: 'Contact Us', icon: Mail, iconColor: '#3b82f6', href: '/profile/support/contact-us' },
     ],
   },
   {
     section: 'General',
     items: [
-      { label: 'Privacy Policy & Terms of Service', icon: FileText, iconColor: '#8b5cf6'},
-      { label: 'About ChimDoo', icon: Info, iconColor: '#8b5cf6'},
-      { label: 'App Version', icon: Smartphone, iconColor: '#8b5cf6'},
+      { label: 'Privacy Policy & Terms of Service', icon: FileText, iconColor: '#8b5cf6', href: '/profile/general/privacy-policy' },
+      { label: 'About ChimDoo', icon: Info, iconColor: '#8b5cf6', href: '/profile/general/about' },
+      { label: 'App Version', icon: Smartphone, iconColor: '#8b5cf6' },
     ],
   },
 ];

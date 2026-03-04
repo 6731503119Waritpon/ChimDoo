@@ -63,7 +63,7 @@ export default function ForgotPasswordScreen() {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
             <View style={styles.content}>
-                 <TouchableOpacity
+                <TouchableOpacity
                     style={styles.backButton}
                     onPress={() => router.back()}
                 >
@@ -103,6 +103,9 @@ export default function ForgotPasswordScreen() {
                             <Text style={styles.buttonText}>Send Reset Link</Text>
                         )}
                     </TouchableOpacity>
+                    <View>
+                        <Text style={styles.warningText}>Warning: This system is still under development, so a password recovery feature is not yet available.</Text>
+                    </View>
                 </View>
             </View>
         </KeyboardAvoidingView>
@@ -160,7 +163,6 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         padding: 16,
         fontSize: 16,
-        color: '#fff',
         borderWidth: 1,
         borderColor: '#333',
     },
@@ -188,7 +190,6 @@ const styles = StyleSheet.create({
     successTitle: {
         fontSize: 28,
         fontWeight: 'bold',
-        color: '#fff',
         marginBottom: 16,
     },
     successText: {
@@ -196,6 +197,13 @@ const styles = StyleSheet.create({
         color: '#666',
         textAlign: 'center',
         marginBottom: 32,
+        paddingHorizontal: 20,
+    },
+    warningText: {
+        fontSize: 12,
+        color: '#ff0000ff',
+        textAlign: 'center',
+        marginTop: 32,
         paddingHorizontal: 20,
     },
 });

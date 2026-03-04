@@ -16,6 +16,8 @@ import { useFriends } from '@/hooks/useFriends';
 import { useToast } from '@/components/ToastProvider';
 import CommentModal from '@/components/CommentModal';
 import { sharePost } from '@/components/ShareUtil';
+import NotificationBell from '@/components/NotificationBell';
+import NotificationModal from '@/components/NotificationModal';
 
 const formatTime = (timestamp: any): string => {
     if (!timestamp?.toDate) return 'just now';
@@ -156,6 +158,7 @@ const PostCard = ({
 const Page = () => {
     const toast = useToast();
     const { posts, loading, toggleLike, isLoggedIn, currentUserId } = useCommunity();
+    const [showNotif, setShowNotif] = useState(false);
     const { friendUserIds, getFriendStatus, sendFriendRequest } = useFriends();
     const [commentReviewId, setCommentReviewId] = useState<string | null>(null);
     const [feedTab, setFeedTab] = useState<FeedTab>('global');
@@ -234,103 +237,107 @@ const Page = () => {
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <View>
-                    <Text style={styles.headerTitle}>Community</Text>
-                    <Text style={styles.headerSubtitle}>
-                        See what others are cooking
-                    </Text>
+        <>
+            <View style={styles.container}>
+                <View style={[styles.header, { justifyContent: 'space-between' }]}>
+                    <View>
+                        <Text style={styles.headerTitle}>Community</Text>
+                        <Text style={styles.headerSubtitle}>
+                            See what others are cooking
+                        </Text>
+                    </View>
+                    <NotificationBell onPress={() => setShowNotif(true)} />
                 </View>
-            </View>
 
-            <View style={styles.feedTabsContainer}>
-                <TouchableOpacity
-                    style={[styles.feedTab, feedTab === 'global' && styles.feedTabActive]}
-                    onPress={() => setFeedTab('global')}
-                    activeOpacity={0.7}
-                >
-                    <Globe
-                        size={16}
-                        color={feedTab === 'global' ? '#fff' : '#1D3557'}
-                    />
-                    <Text
-                        style={[
-                            styles.feedTabText,
-                            feedTab === 'global' && styles.feedTabTextActive,
-                        ]}
+                <View style={styles.feedTabsContainer}>
+                    <TouchableOpacity
+                        style={[styles.feedTab, feedTab === 'global' && styles.feedTabActive]}
+                        onPress={() => setFeedTab('global')}
+                        activeOpacity={0.7}
                     >
-                        Global
-                    </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[styles.feedTab, feedTab === 'friends' && styles.feedTabActive]}
-                    onPress={() => setFeedTab('friends')}
-                    activeOpacity={0.7}
-                >
-                    <Users
-                        size={16}
-                        color={feedTab === 'friends' ? '#fff' : '#1D3557'}
-                    />
-                    <Text
-                        style={[
-                            styles.feedTabText,
-                            feedTab === 'friends' && styles.feedTabTextActive,
-                        ]}
-                    >
-                        My Friends
-                    </Text>
-                </TouchableOpacity>
-            </View>
-
-            {displayPosts.length === 0 ? (
-                <View style={styles.emptyContainer}>
-                    {feedTab === 'friends' ? (
-                        <>
-                            <Users size={48} color='#1D3557' />
-                            <Text style={styles.emptyTitle}>No Friend Posts</Text>
-                            <Text style={styles.emptySubtitle}>
-                                Add friends from the Global feed to see their posts here!
-                            </Text>
-                        </>
-                    ) : (
-                        <>
-                            <Info size={48} color='#1D3557' />
-                            <Text style={styles.emptyTitle}>No Reviews Yet</Text>
-                            <Text style={styles.emptySubtitle}>
-                                Be the first to share your food experience! Go to a recipe, tap "Chim Doo", then write a review.
-                            </Text>
-                        </>
-                    )}
-                </View>
-            ) : (
-                <FlatList
-                    data={displayPosts}
-                    keyExtractor={(item) => item.id}
-                    renderItem={({ item }) => (
-                        <PostCard
-                            item={item}
-                            onLike={() => handleLike(item.id)}
-                            onComment={() => handleComment(item.id)}
-                            onShare={() => handleShare(item)}
-                            isLiked={!!(currentUserId && item.likedBy?.includes(currentUserId))}
-                            onAddFriend={() => handleAddFriend(item)}
-                            friendStatus={getFriendStatus(item.userId)}
-                            isOwnPost={item.userId === currentUserId}
+                        <Globe
+                            size={16}
+                            color={feedTab === 'global' ? '#fff' : '#1D3557'}
                         />
-                    )}
-                    contentContainerStyle={styles.feedContent}
-                    showsVerticalScrollIndicator={false}
-                    ItemSeparatorComponent={() => <View style={styles.separator} />}
-                />
-            )}
+                        <Text
+                            style={[
+                                styles.feedTabText,
+                                feedTab === 'global' && styles.feedTabTextActive,
+                            ]}
+                        >
+                            Global
+                        </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.feedTab, feedTab === 'friends' && styles.feedTabActive]}
+                        onPress={() => setFeedTab('friends')}
+                        activeOpacity={0.7}
+                    >
+                        <Users
+                            size={16}
+                            color={feedTab === 'friends' ? '#fff' : '#1D3557'}
+                        />
+                        <Text
+                            style={[
+                                styles.feedTabText,
+                                feedTab === 'friends' && styles.feedTabTextActive,
+                            ]}
+                        >
+                            My Friends
+                        </Text>
+                    </TouchableOpacity>
+                </View>
 
-            <CommentModal
-                visible={!!commentReviewId}
-                reviewId={commentReviewId || ''}
-                onClose={() => setCommentReviewId(null)}
-            />
-        </View>
+                {displayPosts.length === 0 ? (
+                    <View style={styles.emptyContainer}>
+                        {feedTab === 'friends' ? (
+                            <>
+                                <Users size={48} color='#1D3557' />
+                                <Text style={styles.emptyTitle}>No Friend Posts</Text>
+                                <Text style={styles.emptySubtitle}>
+                                    Add friends from the Global feed to see their posts here!
+                                </Text>
+                            </>
+                        ) : (
+                            <>
+                                <Info size={48} color='#1D3557' />
+                                <Text style={styles.emptyTitle}>No Reviews Yet</Text>
+                                <Text style={styles.emptySubtitle}>
+                                    Be the first to share your food experience! Go to a recipe, tap "Chim Doo", then write a review.
+                                </Text>
+                            </>
+                        )}
+                    </View>
+                ) : (
+                    <FlatList
+                        data={displayPosts}
+                        keyExtractor={(item) => item.id}
+                        renderItem={({ item }) => (
+                            <PostCard
+                                item={item}
+                                onLike={() => handleLike(item.id)}
+                                onComment={() => handleComment(item.id)}
+                                onShare={() => handleShare(item)}
+                                isLiked={!!(currentUserId && item.likedBy?.includes(currentUserId))}
+                                onAddFriend={() => handleAddFriend(item)}
+                                friendStatus={getFriendStatus(item.userId)}
+                                isOwnPost={item.userId === currentUserId}
+                            />
+                        )}
+                        contentContainerStyle={styles.feedContent}
+                        showsVerticalScrollIndicator={false}
+                        ItemSeparatorComponent={() => <View style={styles.separator} />}
+                    />
+                )}
+
+                <CommentModal
+                    visible={!!commentReviewId}
+                    reviewId={commentReviewId || ''}
+                    onClose={() => setCommentReviewId(null)}
+                />
+            </View>
+            <NotificationModal visible={showNotif} onClose={() => setShowNotif(false)} />
+        </>
     );
 };
 

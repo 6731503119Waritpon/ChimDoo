@@ -14,6 +14,8 @@ import {
 import { useRouter } from 'expo-router';
 import { Search, Clock, Flame, X, UtensilsCrossed, CookingPot } from 'lucide-react-native';
 import { useChimDoo, ChimDooItem } from '@/hooks/useChimDoo';
+import NotificationBell from '@/components/NotificationBell';
+import NotificationModal from '@/components/NotificationModal';
 
 const Page = () => {
     const router = useRouter();
@@ -21,6 +23,7 @@ const Page = () => {
     const [activeCategory, setActiveCategory] = useState('All');
 
     const { chimDooList, loading, isLoggedIn } = useChimDoo();
+    const [showNotif, setShowNotif] = useState(false);
 
     const categories = useMemo(() => {
         const cats = new Set(chimDooList.map((r) => r.category).filter(Boolean));
@@ -86,6 +89,20 @@ const Page = () => {
         </TouchableOpacity>
     );
 
+    if (!isLoggedIn) {
+        return (
+            <View style={styles.guestContainer}>
+                <View style={styles.guestIconWrapper}>
+                    <UtensilsCrossed size={48} color="#E63946" />
+                </View>
+                <Text style={styles.guestTitle}>Recipes</Text>
+                <Text style={styles.guestSubtitle}>
+                    Sign in to track menus you've tried and discover your favorite dishes!
+                </Text>
+            </View>
+        );
+    }
+
     if (loading) {
         return (
             <View style={[styles.container, styles.centerContent]}>
@@ -95,89 +112,93 @@ const Page = () => {
     }
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <View style={styles.headerRow}>
-                    <CookingPot size={28} color="#E63946" />
-                    <Text style={styles.headerTitle}>Recipes</Text>
+        <>
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <View style={styles.headerRow}>
+                        <CookingPot size={28} color="#E63946" />
+                        <Text style={styles.headerTitle}>Recipes</Text>
+                    </View>
+                    <View style={styles.headerRight}>
+                        <Text style={styles.headerSubtitle}>Menus you've tried!</Text>
+                        <NotificationBell onPress={() => setShowNotif(true)} />
+                    </View>
                 </View>
-                <Text style={styles.headerSubtitle}>
-                    Menus you've tried!
-                </Text>
-            </View>
 
-            {chimDooList.length > 0 && (
-                <>
-                    <View style={styles.searchWrapper}>
-                        <View style={styles.searchBar}>
-                            <Search size={20} color="#999" />
-                            <TextInput
-                                style={styles.searchInput}
-                                placeholder="Search your ChimDoo recipes..."
-                                placeholderTextColor="#aaa"
-                                value={search}
-                                onChangeText={setSearch}
-                            />
-                            {search.length > 0 && (
-                                <TouchableOpacity onPress={() => setSearch('')}>
-                                    <X size={18} color="#999" />
-                                </TouchableOpacity>
-                            )}
-                        </View>
-                    </View>
+                {
+                    chimDooList.length > 0 && (
+                        <>
+                            <View style={styles.searchWrapper}>
+                                <View style={styles.searchBar}>
+                                    <Search size={20} color="#999" />
+                                    <TextInput
+                                        style={styles.searchInput}
+                                        placeholder="Search your ChimDoo recipes..."
+                                        placeholderTextColor="#aaa"
+                                        value={search}
+                                        onChangeText={setSearch}
+                                    />
+                                    {search.length > 0 && (
+                                        <TouchableOpacity onPress={() => setSearch('')}>
+                                            <X size={18} color="#999" />
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
+                            </View>
 
-                    {categories.length > 1 && (
-                        <View style={styles.categoryContainer}>
-                            <ScrollView
-                                horizontal
-                                showsHorizontalScrollIndicator={false}
-                                contentContainerStyle={styles.categoryScroll}
-                            >
-                                {categories.map((cat) => (
-                                    <TouchableOpacity
-                                        key={cat}
-                                        style={[
-                                            styles.categoryPill,
-                                            activeCategory === cat &&
-                                            styles.categoryPillActive,
-                                        ]}
-                                        onPress={() => setActiveCategory(cat)}
-                                        activeOpacity={0.7}
+                            {categories.length > 1 && (
+                                <View style={styles.categoryContainer}>
+                                    <ScrollView
+                                        horizontal
+                                        showsHorizontalScrollIndicator={false}
+                                        contentContainerStyle={styles.categoryScroll}
                                     >
-                                        <Text
-                                            style={[
-                                                styles.categoryText,
-                                                activeCategory === cat &&
-                                                styles.categoryTextActive,
-                                            ]}
-                                        >
-                                            {cat}
-                                        </Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </ScrollView>
-                        </View>
-                    )}
-                </>
-            )}
-
-            <FlatList
-                data={filteredRecipes}
-                keyExtractor={(item) => item.id}
-                renderItem={renderRecipeCard}
-                contentContainerStyle={styles.listContent}
-                showsVerticalScrollIndicator={false}
-                ListEmptyComponent={
-                    <View style={styles.emptyState}>
-                        <UtensilsCrossed size={56} color="#1D3557" style={styles.emptyEmoji} />
-                        <Text style={styles.emptyTitle}>{isLoggedIn
-                            ? 'Let\'s start Chim'
-                            : 'Login to start Chim'}</Text>
-                        <Text style={styles.emptySubtitle}>Explore ChimDoo and discover your favorite dish</Text>
-                    </View>
+                                        {categories.map((cat) => (
+                                            <TouchableOpacity
+                                                key={cat}
+                                                style={[
+                                                    styles.categoryPill,
+                                                    activeCategory === cat &&
+                                                    styles.categoryPillActive,
+                                                ]}
+                                                onPress={() => setActiveCategory(cat)}
+                                                activeOpacity={0.7}
+                                            >
+                                                <Text
+                                                    style={[
+                                                        styles.categoryText,
+                                                        activeCategory === cat &&
+                                                        styles.categoryTextActive,
+                                                    ]}
+                                                >
+                                                    {cat}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        ))}
+                                    </ScrollView>
+                                </View>
+                            )}
+                        </>
+                    )
                 }
-            />
-        </View>
+
+                <FlatList
+                    data={filteredRecipes}
+                    keyExtractor={(item) => item.id}
+                    renderItem={renderRecipeCard}
+                    contentContainerStyle={styles.listContent}
+                    showsVerticalScrollIndicator={false}
+                    ListEmptyComponent={
+                        <View style={styles.emptyState}>
+                            <UtensilsCrossed size={56} color="#1D3557" style={styles.emptyEmoji} />
+                            <Text style={styles.emptyTitle}>Let's start Chim</Text>
+                            <Text style={styles.emptySubtitle}>Explore ChimDoo and discover your favorite dish</Text>
+                        </View>
+                    }
+                />
+            </View>
+            <NotificationModal visible={showNotif} onClose={() => setShowNotif(false)} />
+        </>
     );
 };
 
@@ -203,6 +224,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         gap: 10,
     },
+    headerRight: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
     headerTitle: {
         fontSize: 32,
         fontWeight: '800',
@@ -215,7 +241,6 @@ const styles = StyleSheet.create({
         marginTop: 4,
         marginLeft: 2,
     },
-
     searchWrapper: {
         paddingHorizontal: 20,
         marginTop: 16,
@@ -241,8 +266,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#333',
     },
-
-    // Categories
     categoryContainer: {
         marginTop: 16,
         marginBottom: 4,
@@ -272,14 +295,11 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
     },
 
-    // Recipe List
     listContent: {
         paddingHorizontal: 20,
         paddingTop: 12,
         paddingBottom: 120,
     },
-
-    // Recipe Card
     recipeCard: {
         borderRadius: 22,
         overflow: 'hidden',
@@ -352,8 +372,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '600',
     },
-
-    // Empty State
     emptyState: {
         alignItems: 'center',
         justifyContent: 'center',
@@ -374,5 +392,41 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         paddingHorizontal: 40,
         lineHeight: 22,
+    },
+    guestContainer: {
+        flex: 1,
+        backgroundColor: '#F8F9FA',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 32,
+    },
+    guestIconWrapper: {
+        width: 96,
+        height: 96,
+        borderRadius: 48,
+        backgroundColor: 'rgba(230, 57, 70, 0.1)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 24,
+    },
+    guestTitle: {
+        fontSize: 28,
+        fontWeight: '800',
+        color: '#1D3557',
+        marginBottom: 12,
+    },
+    guestSubtitle: {
+        fontSize: 15,
+        color: '#666',
+        textAlign: 'center',
+        lineHeight: 22,
+        paddingHorizontal: 10,
+    },
+    guestState: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingTop: 80,
+        paddingHorizontal: 32,
     },
 });
