@@ -19,6 +19,7 @@ import {
 import { db } from '@/firebaseConfig';
 import { useAuth } from './useAuth';
 import { CommunityPost, Comment } from '@/types/community';
+import { createNotification } from '@/utils/notificationHelpers';
 
 const REVIEWS_COLLECTION = 'reviews';
 
@@ -62,6 +63,17 @@ export const useCommunity = () => {
                 createdAt: serverTimestamp(),
                 country: '',
             });
+
+            createNotification({
+                targetUserId: user.uid,
+                type: 'review',
+                title: 'New Review Posted',
+                body: `You reviewed "${foodName}" — nice one!`,
+                fromUserId: user.uid,
+                fromUserName: user.displayName ?? 'You',
+                fromAvatar: user.photoURL ?? '',
+                metadata: { foodName },
+            });
         },
         [user]
     );
@@ -80,6 +92,19 @@ export const useCommunity = () => {
                 likedBy: isLiked ? arrayRemove(user.uid) : arrayUnion(user.uid),
                 likes: increment(isLiked ? -1 : 1),
             });
+
+            if (!isLiked && post.userId !== user.uid) {
+                createNotification({
+                    targetUserId: post.userId,
+                    type: 'like',
+                    title: 'Someone liked your review!',
+                    body: `${user.displayName ?? 'Someone'} liked your review of "${post.foodName}"`,
+                    fromUserId: user.uid,
+                    fromUserName: user.displayName ?? 'Someone',
+                    fromAvatar: user.photoURL ?? '',
+                    metadata: { reviewId, foodName: post.foodName },
+                });
+            }
         },
         [user, posts]
     );
@@ -87,7 +112,7 @@ export const useCommunity = () => {
     const addComment = useCallback(
         async (reviewId: string, text: string) => {
             if (!user) return;
-
+            const post = posts.find((p) => p.id === reviewId);
             const commentsRef = collection(
                 db,
                 REVIEWS_COLLECTION,
@@ -106,8 +131,21 @@ export const useCommunity = () => {
             await updateDoc(docRef, {
                 commentsCount: increment(1),
             });
+
+            if (post && post.userId !== user.uid) {
+                createNotification({
+                    targetUserId: post.userId,
+                    type: 'comment',
+                    title: 'New comment on your review!',
+                    body: `${user.displayName ?? 'Someone'} commented: "${text.slice(0, 60)}${text.length > 60 ? '...' : ''}"`,
+                    fromUserId: user.uid,
+                    fromUserName: user.displayName ?? 'Someone',
+                    fromAvatar: user.photoURL ?? '',
+                    metadata: { reviewId, foodName: post.foodName },
+                });
+            }
         },
-        [user]
+        [user, posts]
     );
 
     const subscribeToComments = useCallback(

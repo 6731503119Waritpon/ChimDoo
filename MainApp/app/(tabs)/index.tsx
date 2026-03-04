@@ -15,6 +15,8 @@ import { ChevronRight, X } from 'lucide-react-native';
 import { globeCountries } from '@/config/home';
 import { useGlobe } from '@/hooks/useGlobe';
 import modelPath from '@/assets/models/earth.glb';
+import NotificationBell from '@/components/NotificationBell';
+import NotificationModal from '@/components/NotificationModal';
 
 function EarthModel(props: any) {
   const gltf = useGLTF(modelPath);
@@ -98,88 +100,97 @@ export default function HomeScreen() {
     handleSelectCountry,
     handleAnimationDone
   } = useGlobe();
+  const [showNotif, setShowNotif] = React.useState(false);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.appName}>ChimDoo</Text>
-        <Text style={styles.subtitle}>Choose your place to Chim</Text>
-      </View>
-
-      <View style={styles.pillWrapper}>
-        <TouchableOpacity
-          style={styles.pillButton}
-          activeOpacity={0.7}
-          onPress={() => setModalVisible(true)}
-        >
-          <Text style={styles.pillText} numberOfLines={1}>
-            {selected ? `${selected.flag}  ${selected.name}` : 'Select a country...'}
-          </Text>
-          <ChevronRight size={18} color="#1D3557" />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.canvasContainer}>
-        <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
-          <Suspense fallback={null}>
-            <Stage environment="city" intensity={0.6} castShadow={false}>
-              <EarthModel />
-            </Stage>
-          </Suspense>
-          <AnimatedControls
-            target={rotationTarget}
-            onAnimationDone={handleAnimationDone}
-          />
-        </Canvas>
-      </View>
-
-      <Modal
-        visible={modalVisible}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <View style={styles.modalBackdrop}>
-          <View style={styles.modalSheet}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Select Country</Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <X size={22} color="#666" />
-              </TouchableOpacity>
-            </View>
-
-            <FlatList
-              data={globeCountries}
-              keyExtractor={(item) => item.id}
-              showsVerticalScrollIndicator={false}
-              renderItem={({ item }) => (
-                <TouchableOpacity
-                  style={[
-                    styles.countryItem,
-                    selected?.id === item.id && styles.countryItemActive,
-                  ]}
-                  activeOpacity={0.6}
-                  onPress={() => handleSelectCountry(item)}
-                >
-                  <Text style={styles.countryFlag}>{item.flag}</Text>
-                  <Text
-                    style={[
-                      styles.countryName,
-                      selected?.id === item.id && styles.countryNameActive,
-                    ]}
-                  >
-                    {item.name}
-                  </Text>
-                  {selected?.id === item.id && (
-                    <View style={styles.activeDot} />
-                  )}
-                </TouchableOpacity>
-              )}
-            />
+    <>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity style={styles.headerCenter} onPress={() => setShowNotif(true)} activeOpacity={0.75}>
+            <Text style={styles.appName}>ChimDoo</Text>
+            <Text style={styles.subtitle}>Choose your place to Chim</Text>
+          </TouchableOpacity>
+          <View style={styles.headerBell}>
+            <NotificationBell onPress={() => setShowNotif(true)} />
           </View>
         </View>
-      </Modal>
-    </View>
+
+        <View style={styles.pillWrapper}>
+          <TouchableOpacity
+            style={styles.pillButton}
+            activeOpacity={0.7}
+            onPress={() => setModalVisible(true)}
+          >
+            <Text style={styles.pillText} numberOfLines={1}>
+              {selected ? `${selected.flag}  ${selected.name}` : 'Select a country...'}
+            </Text>
+            <ChevronRight size={18} color="#1D3557" />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.canvasContainer}>
+          <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
+            <Suspense fallback={null}>
+              <Stage environment="city" intensity={0.6} castShadow={false}>
+                <EarthModel />
+              </Stage>
+            </Suspense>
+            <AnimatedControls
+              target={rotationTarget}
+              onAnimationDone={handleAnimationDone}
+            />
+          </Canvas>
+        </View>
+
+        <Modal
+          visible={modalVisible}
+          transparent
+          animationType="slide"
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={styles.modalBackdrop}>
+            <View style={styles.modalSheet}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>Select Country</Text>
+                <TouchableOpacity onPress={() => setModalVisible(false)}>
+                  <X size={22} color="#666" />
+                </TouchableOpacity>
+              </View>
+
+              <FlatList
+                data={globeCountries}
+                keyExtractor={(item) => item.id}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item }) => (
+                  <TouchableOpacity
+                    style={[
+                      styles.countryItem,
+                      selected?.id === item.id && styles.countryItemActive,
+                    ]}
+                    activeOpacity={0.6}
+                    onPress={() => handleSelectCountry(item)}
+                  >
+                    <Text style={styles.countryFlag}>{item.flag}</Text>
+                    <Text
+                      style={[
+                        styles.countryName,
+                        selected?.id === item.id && styles.countryNameActive,
+                      ]}
+                    >
+                      {item.name}
+                    </Text>
+                    {selected?.id === item.id && (
+                      <View style={styles.activeDot} />
+                    )}
+                  </TouchableOpacity>
+                )}
+              />
+            </View>
+          </View>
+        </Modal>
+      </View>
+      <NotificationModal visible={showNotif} onClose={() => setShowNotif(false)} />
+    </>
   );
 }
 
@@ -192,8 +203,18 @@ const styles = StyleSheet.create({
   header: {
     paddingTop: Platform.OS === 'ios' ? 64 : 48,
     paddingHorizontal: 24,
-    alignItems: 'center',
     marginBottom: 4,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  headerCenter: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  headerBell: {
+    position: 'absolute',
+    right: 20,
+    top: Platform.OS === 'ios' ? 64 : 48,
   },
   appName: {
     fontSize: 32,
@@ -206,7 +227,6 @@ const styles = StyleSheet.create({
     color: '#777',
     marginTop: 4,
   },
-
   pillWrapper: {
     paddingHorizontal: 40,
     marginTop: 18,
@@ -239,7 +259,6 @@ const styles = StyleSheet.create({
     flex: 1,
     marginVertical: 8,
   },
-
   modalBackdrop: {
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.45)',
@@ -266,7 +285,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#1D3557',
   },
-
   countryItem: {
     flexDirection: 'row',
     alignItems: 'center',
