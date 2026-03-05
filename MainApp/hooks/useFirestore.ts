@@ -17,7 +17,6 @@ interface UseFirestoreState<T> {
     error: string | null;
 }
 
-// Hook for fetching a single document
 export const useDocument = <T extends FirestoreDocument>(
     collectionName: string,
     docId: string | null,
@@ -65,7 +64,6 @@ export const useDocument = <T extends FirestoreDocument>(
     return state;
 };
 
-// Hook for fetching a collection
 export const useCollection = <T extends FirestoreDocument>(
     collectionName: string,
     queryConstraints: QueryConstraint[] = [],
@@ -108,7 +106,6 @@ export const useCollection = <T extends FirestoreDocument>(
     return state;
 };
 
-// Hook for CRUD mutations
 export const useFirestoreMutation = (collectionName: string) => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
