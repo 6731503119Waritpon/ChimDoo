@@ -1,6 +1,3 @@
-/**
- * Returns a human-readable relative time string, e.g. "2 minutes ago", "3 days ago"
- */
 export function formatRelativeTime(date: Date): string {
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();

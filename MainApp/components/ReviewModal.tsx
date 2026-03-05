@@ -136,7 +136,6 @@ const ReviewModal: React.FC<Props> = ({ visible, foodName, onClose, onSubmit }) 
                             </View>
                         )}
 
-                        {/* Description */}
                         <Text style={styles.label}>Your Review</Text>
                         <TextInput
                             style={styles.textInput}
