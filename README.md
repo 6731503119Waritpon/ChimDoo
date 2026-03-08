@@ -50,19 +50,19 @@ ChimDoo/
 
 ## 🚀 Setup Instructions
 
-1. Ensure you have Node.js and npm installed.
+1. Ensure you have Node.js and pnpm installed.
 2. Clone the repository and navigate to the project directory:
    ```bash
    cd MainApp
    ```
 3. Install dependencies:
    ```bash
-   npm install
+   pnpm install
    ```
 4. Configure Firebase: Set up your Firebase configuration values in your `.env` file based on your project settings.
 5. Start the application:
    ```bash
-   npm start
+   pnpm start
    ```
 
 Enjoy connecting and Chim-ming with the community!

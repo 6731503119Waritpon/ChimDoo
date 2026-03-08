@@ -108,6 +108,11 @@ const PostCard = ({
                     <Text style={styles.postUserName}>{item.userName}</Text>
                     <View style={styles.postMeta}>
                         <Text style={styles.postFoodName}>{item.foodName}</Text>
+                        {!!item.country && (
+                            <View style={styles.countryChip}>
+                                <Text style={styles.countryChipText}>{item.country}</Text>
+                            </View>
+                        )}
                         <Text style={styles.postDot}>·</Text>
                         <Text style={styles.postTime}>{formatTime(item.createdAt)}</Text>
                     </View>
@@ -493,6 +498,17 @@ const styles = StyleSheet.create({
     },
     postFoodName: {
         fontSize: 12,
+        color: '#E63946',
+        fontWeight: '600',
+    },
+    countryChip: {
+        backgroundColor: 'rgba(230, 57, 70, 0.1)',
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 8,
+    },
+    countryChipText: {
+        fontSize: 10,
         color: '#E63946',
         fontWeight: '600',
     },
