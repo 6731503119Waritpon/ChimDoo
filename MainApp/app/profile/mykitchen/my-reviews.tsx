@@ -41,7 +41,16 @@ const ReviewCard = ({
         <Image source={{ uri: item.image }} style={styles.cardImage} />
         <View style={styles.cardContent}>
             <View style={styles.cardTop}>
-                <Text style={styles.cardFoodName} numberOfLines={1}>{item.foodName}</Text>
+                <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6, marginRight: 8 }}>
+                    <Text style={styles.cardFoodName} numberOfLines={1}>
+                        {item.foodName}
+                    </Text>
+                    {!!item.country && (
+                        <View style={styles.countryChip}>
+                            <Text style={styles.countryChipText}>{item.country}</Text>
+                        </View>
+                    )}
+                </View>
                 <TouchableOpacity
                     onPress={() => onDelete(item.id)}
                     hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
@@ -249,11 +258,21 @@ const styles = StyleSheet.create({
         marginBottom: 4,
     },
     cardFoodName: {
-        flex: 1,
         fontSize: 16,
         fontWeight: '700',
         color: '#1D3557',
-        marginRight: 8,
+        flexShrink: 1,
+    },
+    countryChip: {
+        backgroundColor: 'rgba(29, 53, 87, 0.1)',
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 8,
+    },
+    countryChipText: {
+        fontSize: 10,
+        color: '#1D3557',
+        fontWeight: '600',
     },
     cardDescription: {
         fontSize: 13,

@@ -32,7 +32,16 @@ const FavoriteCard = ({ item }: { item: CommunityPost }) => (
     <View style={styles.card}>
         <Image source={{ uri: item.image }} style={styles.cardImage} />
         <View style={styles.cardContent}>
-            <Text style={styles.cardFoodName} numberOfLines={1}>{item.foodName}</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6, marginBottom: 4 }}>
+                <Text style={styles.cardFoodName} numberOfLines={1}>
+                    {item.foodName}
+                </Text>
+                {!!item.country && (
+                    <View style={styles.countryChip}>
+                        <Text style={styles.countryChipText}>{item.country}</Text>
+                    </View>
+                )}
+            </View>
             <Text style={styles.cardDescription} numberOfLines={2}>{item.description}</Text>
             <View style={styles.cardMeta}>
                 <Text style={styles.cardBy}>by {item.userName}</Text>
@@ -173,7 +182,18 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '700',
         color: '#1D3557',
-        marginBottom: 4,
+        flexShrink: 1,
+    },
+    countryChip: {
+        backgroundColor: 'rgba(29, 53, 87, 0.1)',
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 8,
+    },
+    countryChipText: {
+        fontSize: 10,
+        color: '#1D3557',
+        fontWeight: '600',
     },
     cardDescription: {
         fontSize: 13,
