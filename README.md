@@ -6,26 +6,13 @@ ChimDoo is a comprehensive mobile application that allows users to explore, revi
 
 ```text
 ChimDoo/
-├── MainApp/                # React Native Expo project
-│   ├── app/                # Application routes and screens
-│   │   ├── (tabs)/         # Bottom navigation tabs (Home, Recipes, Community, Profile)
-│   │   ├── auth/           # Authentication screens (Login, Signup, Forgot Password)
-│   │   ├── profile/        # Sub-screens for Profile (Account, Settings, Support, General)
-│   │   ├── recipe/         # Screen specific to recipe details
-│   │   ├── country/        # Screen for country-specific content
-│   │   ├── _layout.tsx     # Root layout setup
-│   │   └── +not-found.tsx  # Unhandled route fallback
-│   ├── assets/             # Images, 3D models (GLTF), fonts, and static assets
-│   ├── components/         # Reusable UI components (Modals, NotificationBell, etc.)
-│   ├── constants/          # Application theme, fonts, icons, etc.
-│   ├── hooks/              # Custom React Hooks (Auth, Notifications, Globe, Firestore data)
-│   ├── config/             # Configuration objects and data options
-│   ├── types/              # TypeScript interface definitions
-│   ├── services/           # External API interactions and backend logic
-│   ├── .env                # Environment variable setup
-│   ├── firebaseConfig.ts   # Configuration for Firebase connection
-│   └── package.json        # Dependencies and build settings
-└── README.md               # You are reading this right now
+  ├── MainApp/                # React Native Expo Project
+  │   ├── app/                # Application Routes and Screens
+  │   ├── assets/             # Static Assets (Images, 3D Models)
+  │   ├── components/         # Reusable UI Components
+  │   ├── hooks/              # Custom React Hooks
+  │   ├── services/           # External API & Firebase Services
+  │   └── firebaseConfig.ts   # Firebase Configuration
 ```
 
 ## 🛠 Features
