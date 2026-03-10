@@ -202,7 +202,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -252,7 +251,6 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         marginLeft: 20,
     },
-
     largeCard: {
         width: width * 0.8,
         height: 220,
@@ -324,7 +322,6 @@ const styles = StyleSheet.create({
         fontSize: 11,
         fontWeight: '600',
     },
-
     smallCard: {
         flexDirection: 'row',
         alignItems: 'center',

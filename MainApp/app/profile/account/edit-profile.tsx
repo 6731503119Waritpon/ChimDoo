@@ -56,7 +56,6 @@ export default function EditProfileScreen() {
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
             >
-                {/* Header */}
                 <View style={styles.header}>
                     <TouchableOpacity
                         style={styles.backButton}
@@ -68,7 +67,6 @@ export default function EditProfileScreen() {
                     <View style={{ width: 28 }} />
                 </View>
 
-                {/* Avatar Section */}
                 <View style={styles.avatarSection}>
                     <View style={styles.avatarWrapper}>
                         <View style={styles.avatarGradientRing}>
@@ -100,7 +98,6 @@ export default function EditProfileScreen() {
                     <Text style={styles.changePhotoText}>Change Photo</Text>
                 </View>
 
-                {/* Form */}
                 <View style={styles.form}>
                     <View style={styles.inputGroup}>
                         <Text style={styles.label}>Display Name</Text>
@@ -127,7 +124,6 @@ export default function EditProfileScreen() {
                     </View>
                 </View>
 
-                {/* Save Button */}
                 <TouchableOpacity
                     style={[styles.saveButton, saving && styles.saveButtonDisabled]}
                     onPress={handleSave}
@@ -174,8 +170,6 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: '#fff',
     },
-
-    // Avatar
     avatarSection: {
         alignItems: 'center',
         marginTop: 10,
@@ -231,8 +225,6 @@ const styles = StyleSheet.create({
         color: '#1D3557',
         fontWeight: '600',
     },
-
-    // Form
     form: {
         paddingHorizontal: 24,
         gap: 24,
@@ -269,8 +261,6 @@ const styles = StyleSheet.create({
         color: '#444',
         marginTop: 2,
     },
-
-    // Save
     saveButton: {
         marginHorizontal: 24,
         marginTop: 40,

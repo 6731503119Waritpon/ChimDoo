@@ -79,7 +79,7 @@ export default function RecipePage() {
     const handleSubmitReview = async (imageUri: string, description: string) => {
         if (!food) return;
         try {
-            await addReview(food.name, imageUri, description);
+            await addReview(food.name, imageUri, description, category);
             toast.success('Review Posted!', 'Your review has been shared with the community!');
         } catch (err: any) {
             console.error('Review Error:', err);

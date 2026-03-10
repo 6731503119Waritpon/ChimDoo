@@ -47,7 +47,7 @@ export const useCommunity = () => {
     }, []);
 
     const addReview = useCallback(
-        async (foodName: string, imageDataUri: string, description: string) => {
+        async (foodName: string, imageDataUri: string, description: string, country: string = '') => {
             if (!user) return;
 
             await addDoc(collection(db, REVIEWS_COLLECTION), {
@@ -61,7 +61,7 @@ export const useCommunity = () => {
                 likedBy: [],
                 commentsCount: 0,
                 createdAt: serverTimestamp(),
-                country: '',
+                country,
             });
 
             createNotification({

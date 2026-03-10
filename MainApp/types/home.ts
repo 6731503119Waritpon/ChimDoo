@@ -1,4 +1,3 @@
-// types/home.ts
 export interface GlobeCountry {
   id: string;
   name: string;
