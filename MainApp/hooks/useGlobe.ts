@@ -1,4 +1,3 @@
-// hooks/useGlobe.ts
 import { useState, useCallback } from 'react';
 import { useRouter } from 'expo-router';
 import * as THREE from 'three';

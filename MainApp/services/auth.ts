@@ -24,28 +24,23 @@ export const signUp = async (
     return userCredential.user;
 };
 
-// Sign in with email and password
 export const signIn = async (email: string, password: string): Promise<User> => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     return userCredential.user;
 };
 
-// Sign out
 export const logOut = async (): Promise<void> => {
     await signOut(auth);
 };
 
-// Send password reset email
 export const resetPassword = async (email: string): Promise<void> => {
     await sendPasswordResetEmail(auth, email);
 };
 
-// Subscribe to auth state changes
 export const subscribeToAuthChanges = (callback: (user: User | null) => void) => {
     return onAuthStateChanged(auth, callback);
 };
 
-// Get current user
 export const getCurrentUser = (): User | null => {
     return auth.currentUser;
 };

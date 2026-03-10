@@ -455,7 +455,6 @@ const styles = StyleSheet.create({
         paddingBottom: 100,
         gap: 10,
     },
-
     card: {
         backgroundColor: '#fff',
         borderRadius: 16,
@@ -499,7 +498,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: '700',
     },
-
     requestActions: {
         flexDirection: 'row',
         gap: 8,
@@ -528,8 +526,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-
-    // Modal
     modalOverlay: {
         flex: 1,
         backgroundColor: 'rgba(0,0,0,0.5)',
