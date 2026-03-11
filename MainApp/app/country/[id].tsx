@@ -13,9 +13,11 @@ import {
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowLeft, Clock, Flame } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import CountryFlag from 'react-native-country-flag';
 
 import { useCountryData } from '@/hooks/useCountryData';
 import { FoodItem } from '@/types/recipe';
+import { globeCountries } from '@/config/home';
 
 const PopularFoodCard = ({ item, onPress, badgeLabel = 'Popular' }: { item: any; onPress: () => void; badgeLabel?: string }) => (
     <TouchableOpacity
@@ -78,6 +80,7 @@ export default function CountryPage() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const router = useRouter();
     const { data, loading, error } = useCountryData(id ?? '');
+    const isoCode = globeCountries.find((c) => c.id === id)?.isoCode ?? '';
 
     const { popularFoods, recommendFoods, normalFoods } = useMemo(() => {
         if (!data?.foods) return { popularFoods: [], recommendFoods: [], normalFoods: [] };
@@ -124,7 +127,11 @@ export default function CountryPage() {
                     <ArrowLeft size={22} color="#1D3557" />
                 </TouchableOpacity>
                 <View style={styles.headerCenter}>
-                    <Text style={styles.headerFlag}>{data.flag}</Text>
+                    {isoCode ? (
+                        <CountryFlag isoCode={isoCode} size={28} style={{ borderRadius: 6, marginRight: 4 }} />
+                    ) : (
+                        <Text style={styles.headerFlag}>{data.flag}</Text>
+                    )}
                     <Text style={styles.headerTitle}>{data.name}</Text>
                 </View>
                 <View style={{ width: 40 }} />
