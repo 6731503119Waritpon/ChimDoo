@@ -14,21 +14,25 @@ export const useGlobe = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selected, setSelected] = useState<GlobeCountry | null>(null);
   const [rotationTarget, setRotationTarget] = useState<SphericalTarget | null>(null);
+  const [zooming, setZooming] = useState(false);
 
   const handleSelectCountry = useCallback((country: GlobeCountry) => {
     setSelected(country);
     setModalVisible(false);
-    
+    setZooming(false);
     const spherical = lonLatToSpherical(country.lon, country.lat);
     setRotationTarget({ ...spherical });
   }, []);
 
-  const handleAnimationDone = useCallback(() => {
+  const handleRotationDone = useCallback(() => {
+    setRotationTarget(null);
+    setZooming(true);
+  }, []);
+
+  const handleZoomDone = useCallback(() => {
+    setZooming(false);
     if (selected) {
-      setTimeout(() => {
-        router.push(`/country/${selected.id}` as any);
-        setRotationTarget(null);
-      }, 400);
+      router.push(`/country/${selected.id}` as any);
     }
   }, [selected, router]);
 
@@ -37,7 +41,9 @@ export const useGlobe = () => {
     setModalVisible,
     selected,
     rotationTarget,
+    zooming,
     handleSelectCountry,
-    handleAnimationDone
+    handleRotationDone,
+    handleZoomDone,
   };
 };
