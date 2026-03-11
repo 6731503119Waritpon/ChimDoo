@@ -11,6 +11,7 @@ import {
 import { Canvas, useFrame } from '@react-three/fiber/native';
 import { useGLTF, OrbitControls, Stage } from '@react-three/drei/native';
 import { ChevronRight, X } from 'lucide-react-native';
+import CountryFlag from 'react-native-country-flag';
 
 import { globeCountries } from '@/config/home';
 import { useGlobe } from '@/hooks/useGlobe';
@@ -29,15 +30,23 @@ function easeInOutCubic(t: number) {
 
 interface AnimatedControlsProps {
   target: { phi: number; theta: number } | null;
-  onAnimationDone: () => void;
+  zooming: boolean;
+  onRotationDone: () => void;
+  onZoomDone: () => void;
 }
 
-function AnimatedControls({ target, onAnimationDone }: AnimatedControlsProps) {
+function AnimatedControls({ target, zooming, onRotationDone, onZoomDone }: AnimatedControlsProps) {
   const controlsRef = useRef<any>(null);
-  const animating = useRef(false);
-  const progress = useRef(0);
+
+  const rotating = useRef(false);
+  const rotProgress = useRef(0);
   const startAngles = useRef({ phi: 0, theta: 0 });
   const targetAngles = useRef({ phi: 0, theta: 0 });
+
+  const zoomProgress = useRef(0);
+  const zoomStartDistance = useRef(5);
+  const zoomFinished = useRef(false);
+  const ZOOM_TARGET = 10;
 
   React.useEffect(() => {
     if (target && controlsRef.current) {
@@ -47,37 +56,65 @@ function AnimatedControls({ target, onAnimationDone }: AnimatedControlsProps) {
         theta: controls.getAzimuthalAngle(),
       };
       targetAngles.current = { phi: target.phi, theta: target.theta };
-      progress.current = 0;
-      animating.current = true;
+      rotProgress.current = 0;
+      rotating.current = true;
     }
   }, [target]);
 
+  React.useEffect(() => {
+    if (zooming && controlsRef.current) {
+      zoomStartDistance.current = controlsRef.current.getDistance();
+      zoomProgress.current = 0;
+      zoomFinished.current = false;
+    }
+  }, [zooming]);
+
   useFrame((_, delta) => {
-    if (!animating.current || !controlsRef.current) return;
+    if (!controlsRef.current) return;
 
-    progress.current = Math.min(progress.current + delta * 0.8, 1);
-    const t = easeInOutCubic(progress.current);
+    if (rotating.current) {
+      rotProgress.current = Math.min(rotProgress.current + delta * 0.8, 1);
+      const t = easeInOutCubic(rotProgress.current);
 
-    const currentPhi =
-      startAngles.current.phi +
-      (targetAngles.current.phi - startAngles.current.phi) * t;
-    const currentTheta =
-      startAngles.current.theta +
-      (targetAngles.current.theta - startAngles.current.theta) * t;
+      const currentPhi = startAngles.current.phi + (targetAngles.current.phi - startAngles.current.phi) * t;
+      const currentTheta = startAngles.current.theta + (targetAngles.current.theta - startAngles.current.theta) * t;
 
-    controlsRef.current.minPolarAngle = currentPhi;
-    controlsRef.current.maxPolarAngle = currentPhi;
-    controlsRef.current.minAzimuthAngle = currentTheta;
-    controlsRef.current.maxAzimuthAngle = currentTheta;
-    controlsRef.current.update();
+      controlsRef.current.minPolarAngle = currentPhi;
+      controlsRef.current.maxPolarAngle = currentPhi;
+      controlsRef.current.minAzimuthAngle = currentTheta;
+      controlsRef.current.maxAzimuthAngle = currentTheta;
+      controlsRef.current.update();
 
-    if (progress.current >= 1) {
-      animating.current = false;
-      controlsRef.current.minPolarAngle = 0;
-      controlsRef.current.maxPolarAngle = Math.PI;
-      controlsRef.current.minAzimuthAngle = -Infinity;
-      controlsRef.current.maxAzimuthAngle = Infinity;
-      onAnimationDone();
+      if (rotProgress.current >= 1) {
+        rotating.current = false;
+        controlsRef.current.minPolarAngle = currentPhi;
+        controlsRef.current.maxPolarAngle = currentPhi;
+        controlsRef.current.minAzimuthAngle = currentTheta;
+        controlsRef.current.maxAzimuthAngle = currentTheta;
+        onRotationDone();
+      }
+      return;
+    }
+
+    if (zooming) {
+      zoomProgress.current = Math.min(zoomProgress.current + delta * 0.4, 1); //ปรับเลขน้อยลงยิ่งซูมช้า ค่อยแก้
+      const t = easeInOutCubic(zoomProgress.current);
+
+      const currentDistance = zoomStartDistance.current + (ZOOM_TARGET - zoomStartDistance.current) * t;
+      controlsRef.current.minDistance = currentDistance;
+      controlsRef.current.maxDistance = currentDistance;
+      controlsRef.current.update();
+
+      if (zoomProgress.current >= 1 && !zoomFinished.current) {
+        zoomFinished.current = true;
+        controlsRef.current.minPolarAngle = 0;
+        controlsRef.current.maxPolarAngle = Math.PI;
+        controlsRef.current.minAzimuthAngle = -Infinity;
+        controlsRef.current.maxAzimuthAngle = Infinity;
+        controlsRef.current.minDistance = 0;
+        controlsRef.current.maxDistance = Infinity;
+        onZoomDone();
+      }
     }
   });
 
@@ -85,7 +122,7 @@ function AnimatedControls({ target, onAnimationDone }: AnimatedControlsProps) {
     <OrbitControls
       ref={controlsRef}
       enablePan={false}
-      autoRotate={!target}
+      autoRotate={!target && !zooming}
       autoRotateSpeed={0.5}
     />
   );
@@ -97,8 +134,10 @@ export default function HomeScreen() {
     setModalVisible,
     selected,
     rotationTarget,
+    zooming,
     handleSelectCountry,
-    handleAnimationDone
+    handleRotationDone,
+    handleZoomDone,
   } = useGlobe();
   const [showNotif, setShowNotif] = React.useState(false);
 
@@ -121,9 +160,14 @@ export default function HomeScreen() {
             activeOpacity={0.7}
             onPress={() => setModalVisible(true)}
           >
-            <Text style={styles.pillText} numberOfLines={1}>
-              {selected ? `${selected.flag}  ${selected.name}` : 'Select a country...'}
-            </Text>
+            {selected ? (
+              <>
+                <CountryFlag isoCode={selected.isoCode} size={20} style={{ borderRadius: 4, marginRight: 8 }} />
+                <Text style={styles.pillText} numberOfLines={1}>{selected.name}</Text>
+              </>
+            ) : (
+              <Text style={styles.pillText} numberOfLines={1}>Select a country...</Text>
+            )}
             <ChevronRight size={18} color="#1D3557" />
           </TouchableOpacity>
         </View>
@@ -131,13 +175,15 @@ export default function HomeScreen() {
         <View style={styles.canvasContainer}>
           <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
             <Suspense fallback={null}>
-              <Stage environment="city" intensity={0.6} castShadow={false}>
+              <Stage environment="city" intensity={0.6} shadows={false}>
                 <EarthModel />
               </Stage>
             </Suspense>
             <AnimatedControls
               target={rotationTarget}
-              onAnimationDone={handleAnimationDone}
+              zooming={zooming}
+              onRotationDone={handleRotationDone}
+              onZoomDone={handleZoomDone}
             />
           </Canvas>
         </View>
@@ -170,7 +216,7 @@ export default function HomeScreen() {
                     activeOpacity={0.6}
                     onPress={() => handleSelectCountry(item)}
                   >
-                    <Text style={styles.countryFlag}>{item.flag}</Text>
+                    <CountryFlag isoCode={item.isoCode} size={28} style={{ borderRadius: 4 }} />
                     <Text
                       style={[
                         styles.countryName,

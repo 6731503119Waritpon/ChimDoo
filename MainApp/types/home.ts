@@ -2,6 +2,7 @@ export interface GlobeCountry {
   id: string;
   name: string;
   flag: string;
+  isoCode: string;
   lon: number;
   lat: number;
 }
