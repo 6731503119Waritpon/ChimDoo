@@ -12,6 +12,7 @@ import { Canvas, useFrame } from '@react-three/fiber/native';
 import { useGLTF, OrbitControls, Stage } from '@react-three/drei/native';
 import { ChevronRight, X } from 'lucide-react-native';
 import CountryFlag from 'react-native-country-flag';
+import { useFocusEffect } from 'expo-router';
 
 import { globeCountries } from '@/config/home';
 import { useGlobe } from '@/hooks/useGlobe';
@@ -140,6 +141,13 @@ export default function HomeScreen() {
     handleZoomDone,
   } = useGlobe();
   const [showNotif, setShowNotif] = React.useState(false);
+  const [canvasKey, setCanvasKey] = React.useState(0);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      setCanvasKey(k => k + 1);
+    }, [])
+  );
 
   return (
     <>
@@ -173,7 +181,7 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.canvasContainer}>
-          <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
+          <Canvas key={canvasKey} camera={{ position: [0, 0, 5], fov: 45 }}>
             <Suspense fallback={null}>
               <Stage environment="city" intensity={0.6} shadows={false}>
                 <EarthModel />
@@ -300,7 +308,6 @@ const styles = StyleSheet.create({
     color: '#1D3557',
     flex: 1,
   },
-
   canvasContainer: {
     flex: 1,
     marginVertical: 8,
