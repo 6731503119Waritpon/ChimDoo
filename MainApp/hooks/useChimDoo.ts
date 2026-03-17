@@ -13,6 +13,7 @@ import {
 import { db } from '@/services/firestore';
 import { useAuth } from './useAuth';
 import { FoodItem } from '@/types/recipe';
+import { createNotification } from '@/utils/notificationHelpers';
 
 export interface ChimDooItem extends FoodItem {
     id: string;
@@ -86,6 +87,14 @@ export const useChimDoo = (foodName?: string) => {
                     instructions: food.instructions || [],
                     chimDooAt: serverTimestamp(),
                 });
+                
+                await createNotification({
+                    targetUserId: user.uid,
+                    type: 'chimdoo',
+                    title: `Chim ${food.name} Successfully`,
+                    body: `You've tasted ${food.name}! Check back anytime to review it`,
+                });
+                
                 return true;
             }
         },
