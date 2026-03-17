@@ -97,7 +97,7 @@ export const useCommunity = () => {
                 createNotification({
                     targetUserId: post.userId,
                     type: 'like',
-                    title: 'Someone liked your review!',
+                    title: `${user.displayName ?? 'Someone'} liked your review!`,
                     body: `${user.displayName ?? 'Someone'} liked your review of "${post.foodName}"`,
                     fromUserId: user.uid,
                     fromUserName: user.displayName ?? 'Someone',
@@ -136,8 +136,8 @@ export const useCommunity = () => {
                 createNotification({
                     targetUserId: post.userId,
                     type: 'comment',
-                    title: 'New comment on your review!',
-                    body: `${user.displayName ?? 'Someone'} commented: "${text.slice(0, 60)}${text.length > 60 ? '...' : ''}"`,
+                    title: `${user.displayName ?? 'Someone'} comment on your review!`,
+                    body: `commented: "${text.slice(0, 60)}${text.length > 60 ? '...' : ''}"`,
                     fromUserId: user.uid,
                     fromUserName: user.displayName ?? 'Someone',
                     fromAvatar: user.photoURL ?? '',
