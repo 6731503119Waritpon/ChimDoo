@@ -7,6 +7,7 @@ import {
     StyleSheet,
 } from 'react-native';
 import { AlertTriangle, X } from 'lucide-react-native';
+import { AppColors } from '@/constants/colors';
 
 interface Props {
     visible: boolean;
@@ -85,7 +86,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 22,
         fontWeight: '800',
-        color: '#1D3557',
+        color: AppColors.navy,
         marginBottom: 12,
     },
     message: {

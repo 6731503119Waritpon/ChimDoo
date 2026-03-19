@@ -19,6 +19,7 @@ import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
 import { useGoogleAuth } from '../../hooks/useGoogleAuth';
 import { ArrowLeft, Eye, EyeOff } from 'lucide-react-native';
+import { AppColors } from '@/constants/colors';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -122,7 +123,7 @@ export default function SignupScreen() {
                         style={styles.backButton}
                         onPress={() => router.back()}
                     >
-                        <ArrowLeft size={22} color="#1D3557" />
+                        <ArrowLeft size={22} color={AppColors.navy} />
                     </TouchableOpacity>
                     <View style={styles.header}>
                         <Text style={styles.title}>Create Account</Text>
@@ -305,7 +306,7 @@ const styles = StyleSheet.create({
         padding: 4,
     },
     button: {
-        backgroundColor: '#E63946',
+        backgroundColor: AppColors.primary,
         borderRadius: 12,
         padding: 16,
         alignItems: 'center',
@@ -329,7 +330,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     loginLink: {
-        color: '#E63946',
+        color: AppColors.primary,
         fontSize: 14,
         fontWeight: '600',
     },

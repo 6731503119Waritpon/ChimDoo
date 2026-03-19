@@ -16,6 +16,8 @@ import { Comment } from '@/types/community';
 import { useCommunity } from '@/hooks/useCommunity';
 import { useAuth } from '@/hooks/useAuth';
 import { Unsubscribe } from 'firebase/firestore';
+import { formatTimestamp } from '@/utils/formatTime';
+import { AppColors } from '@/constants/colors';
 
 interface Props {
     visible: boolean;
@@ -23,19 +25,7 @@ interface Props {
     onClose: () => void;
 }
 
-const formatTime = (timestamp: any): string => {
-    if (!timestamp?.toDate) return 'just now';
-    const now = new Date();
-    const date = timestamp.toDate();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    if (diffMins < 1) return 'just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24) return `${diffHours}h ago`;
-    const diffDays = Math.floor(diffHours / 24);
-    return `${diffDays}d ago`;
-};
+
 
 const CommentModal: React.FC<Props> = ({ visible, reviewId, onClose }) => {
     const { addComment, subscribeToComments, isLoggedIn } = useCommunity();
@@ -80,7 +70,7 @@ const CommentModal: React.FC<Props> = ({ visible, reviewId, onClose }) => {
             <View style={styles.commentContent}>
                 <View style={styles.commentHeader}>
                     <Text style={styles.commentUserName}>{item.userName}</Text>
-                    <Text style={styles.commentTime}>{formatTime(item.createdAt)}</Text>
+                    <Text style={styles.commentTime}>{formatTimestamp(item.createdAt)}</Text>
                 </View>
                 <Text style={styles.commentText}>{item.text}</Text>
             </View>
@@ -108,7 +98,7 @@ const CommentModal: React.FC<Props> = ({ visible, reviewId, onClose }) => {
 
                     {loadingComments ? (
                         <View style={styles.loadingContainer}>
-                            <ActivityIndicator size="large" color="#E63946" />
+                            <ActivityIndicator size="large" color={AppColors.primary} />
                         </View>
                     ) : comments.length === 0 ? (
                         <View style={styles.emptyContainer}>
@@ -185,7 +175,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 20,
         fontWeight: '800',
-        color: '#1D3557',
+        color: AppColors.navy,
     },
     loadingContainer: {
         height: 150,
@@ -219,7 +209,7 @@ const styles = StyleSheet.create({
         width: 36,
         height: 36,
         borderRadius: 18,
-        backgroundColor: '#1D3557',
+        backgroundColor: AppColors.navy,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -240,7 +230,7 @@ const styles = StyleSheet.create({
     commentUserName: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#1D3557',
+        color: AppColors.navy,
     },
     commentTime: {
         fontSize: 12,
@@ -261,7 +251,7 @@ const styles = StyleSheet.create({
     },
     input: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: AppColors.backgroundLight,
         borderRadius: 20,
         paddingHorizontal: 16,
         paddingVertical: 10,
@@ -275,7 +265,7 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: '#E63946',
+        backgroundColor: AppColors.primary,
         alignItems: 'center',
         justifyContent: 'center',
     },

@@ -18,6 +18,7 @@ import CountryFlag from 'react-native-country-flag';
 import { useCountryData } from '@/hooks/useCountryData';
 import { FoodItem } from '@/types/recipe';
 import { globeCountries } from '@/config/home';
+import { AppColors } from '@/constants/colors';
 
 const PopularFoodCard = ({ item, onPress, badgeLabel = 'Popular' }: { item: any; onPress: () => void; badgeLabel?: string }) => (
     <TouchableOpacity
@@ -101,7 +102,7 @@ export default function CountryPage() {
     if (loading) {
         return (
             <View style={[styles.container, styles.centerContent]}>
-                <ActivityIndicator size="large" color="#E63946" />
+                <ActivityIndicator size="large" color={AppColors.primary} />
             </View>
         );
     }
@@ -124,7 +125,7 @@ export default function CountryPage() {
                     style={styles.headerBackBtn}
                     onPress={() => router.back()}
                 >
-                    <ArrowLeft size={22} color="#1D3557" />
+                    <ArrowLeft size={22} color={AppColors.navy} />
                 </TouchableOpacity>
                 <View style={styles.headerCenter}>
                     {isoCode ? (
@@ -202,7 +203,7 @@ const { width } = Dimensions.get('window');
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: AppColors.backgroundLight,
     },
     centerContent: {
         flex: 1,
@@ -239,7 +240,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 20,
         fontWeight: '700',
-        color: '#1D3557',
+        color: AppColors.navy,
     },
 
     scrollContent: {
@@ -286,7 +287,7 @@ const styles = StyleSheet.create({
     },
     largeCardBadge: {
         alignSelf: 'flex-start',
-        backgroundColor: '#E63946',
+        backgroundColor: AppColors.primary,
         borderRadius: 8,
         paddingHorizontal: 10,
         paddingVertical: 4,
@@ -355,7 +356,7 @@ const styles = StyleSheet.create({
     smallCardName: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#1D3557',
+        color: AppColors.navy,
         marginBottom: 4,
     },
     smallCardDesc: {
@@ -370,7 +371,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     backBtn: {
-        backgroundColor: '#E63946',
+        backgroundColor: AppColors.primary,
         borderRadius: 12,
         paddingHorizontal: 24,
         paddingVertical: 12,

@@ -1,6 +1,7 @@
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
-import { NotificationType } from '../hooks/useNotifications';
+import { db } from '@/firebaseConfig';
+import { NotificationType } from '@/types/notification';
+import { Collections } from '@/constants/collections';
 
 interface CreateNotifOptions {
     targetUserId: string;
@@ -15,7 +16,7 @@ interface CreateNotifOptions {
 
 export async function createNotification(opts: CreateNotifOptions): Promise<void> {
     try {
-        await addDoc(collection(db, 'notifications', opts.targetUserId, 'items'), {
+        await addDoc(collection(db, Collections.notifications, opts.targetUserId, 'items'), {
             type: opts.type,
             title: opts.title,
             body: opts.body,

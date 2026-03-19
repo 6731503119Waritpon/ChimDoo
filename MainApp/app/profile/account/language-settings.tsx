@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
 import { router, Stack } from 'expo-router';
 import { ChevronLeft, Globe } from 'lucide-react-native';
+import { AppColors } from '@/constants/colors';
 
 
 const LanguageSettings = () => {
@@ -21,7 +22,7 @@ const LanguageSettings = () => {
                 </View>
             <View style={styles.content}>
                 <View style={styles.iconWrapper}>
-                    <Globe size={48} color="#1D3557" />
+                    <Globe size={48} color={AppColors.navy} />
                 </View>
                 
                 <Text style={styles.title}>Language Settings</Text>
@@ -46,7 +47,7 @@ export default LanguageSettings;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: AppColors.backgroundLight,
     },
     content: {
         flex: 1,
@@ -66,7 +67,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: '#1D3557',
+        color: AppColors.navy,
         marginBottom: 12,
     },
     subtitle: {
@@ -78,7 +79,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     button: {
-        backgroundColor: '#1D3557',
+        backgroundColor: AppColors.navy,
         paddingVertical: 16,
         paddingHorizontal: 32,
         borderRadius: 14,

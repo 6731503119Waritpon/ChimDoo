@@ -4,6 +4,7 @@ import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import TabBarButton from './TabBarButton';
 import { useEffect, useState } from 'react';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import { AppColors } from '@/constants/colors';
 
 export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const { colors } = useTheme();
@@ -44,7 +45,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
             animatedStyle,
             {
               position: 'absolute',
-              backgroundColor: '#1D3557',
+              backgroundColor: AppColors.navy,
               borderRadius: 24,
               left: bubbleInset,
               top: 8,

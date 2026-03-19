@@ -15,10 +15,11 @@ import { ChevronLeft, Bell, UserPlus, Heart, MessageCircle, Star, Trash2 } from 
 import { useNotifications, AppNotification, NotificationType } from '../../../hooks/useNotifications';
 import { useNotificationSettings } from '../../../hooks/useNotificationSettings';
 import { formatRelativeTime } from '../../../utils/formatTime';
+import { AppColors } from '@/constants/colors';
 
 const TYPE_META: Record<NotificationType, { label: string; icon: any; color: string }> = {
     friend_request: { label: 'Friend Requests', icon: UserPlus, color: '#3b82f6' },
-    like: { label: 'Likes', icon: Heart, color: '#E63946' },
+    like: { label: 'Likes', icon: Heart, color: AppColors.primary },
     comment: { label: 'Comments', icon: MessageCircle, color: '#22c55e' },
     review: { label: 'Reviews', icon: Star, color: '#f59e0b' },
     chimdoo: { label: 'ChimDoo Updates', icon: Bell, color: '#8b5cf6' },
@@ -101,7 +102,7 @@ export default function NotificationsScreen() {
                                         value={settings[type]}
                                         onValueChange={(val) => updateSetting(type, val)}
                                         thumbColor={settings[type] ? '#fff' : '#eee'}
-                                        trackColor={{ false: '#ddd', true: '#E63946' }}
+                                        trackColor={{ false: '#ddd', true: AppColors.primary }}
                                     />
                                 </View>
                             );
@@ -138,7 +139,7 @@ export default function NotificationsScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#F8F9FA' },
+    container: { flex: 1, backgroundColor: AppColors.backgroundLight },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -146,7 +147,7 @@ const styles = StyleSheet.create({
         paddingTop: Platform.OS === 'ios' ? 60 : 48,
         paddingHorizontal: 20,
         paddingBottom: 20,
-        backgroundColor: '#1D3557',
+        backgroundColor: AppColors.navy,
     },
     backButton: {
         width: 40, height: 40, borderRadius: 20,
@@ -176,7 +177,7 @@ const styles = StyleSheet.create({
         width: 36, height: 36, borderRadius: 10,
         alignItems: 'center', justifyContent: 'center',
     },
-    settingLabel: { flex: 1, fontSize: 15, fontWeight: '500', color: '#1D3557' },
+    settingLabel: { flex: 1, fontSize: 15, fontWeight: '500', color: AppColors.navy },
     card: {
         flexDirection: 'row', alignItems: 'center',
         backgroundColor: '#fff', marginHorizontal: 20,
@@ -212,11 +213,11 @@ const styles = StyleSheet.create({
         shadowColor: '#000', shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.2, shadowRadius: 16, elevation: 10,
     },
-    detailTitle: { fontSize: 16, fontWeight: '700', color: '#1D3557' },
+    detailTitle: { fontSize: 16, fontWeight: '700', color: AppColors.navy },
     detailBody: { fontSize: 14, color: '#444', lineHeight: 22 },
     detailTime: { fontSize: 12, color: '#aaa' },
     detailClose: {
-        alignSelf: 'flex-end', backgroundColor: '#1D3557',
+        alignSelf: 'flex-end', backgroundColor: AppColors.navy,
         borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10,
     },
     detailCloseText: { color: '#fff', fontWeight: '700', fontSize: 14 },

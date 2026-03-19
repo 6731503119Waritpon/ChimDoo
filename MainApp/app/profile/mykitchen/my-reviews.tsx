@@ -15,6 +15,7 @@ import { ChevronLeft, MessageSquareText, Heart, MessageCircle, Trash2 } from 'lu
 import { useCommunity } from '@/hooks/useCommunity';
 import { CommunityPost } from '@/types/community';
 import { useToast } from '@/components/ToastProvider';
+import { AppColors } from '@/constants/colors';
 
 const formatTime = (timestamp: any): string => {
     if (!timestamp?.toDate) return '';
@@ -55,17 +56,17 @@ const ReviewCard = ({
                     onPress={() => onDelete(item.id)}
                     hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
                 >
-                    <Trash2 size={16} color="#E63946" />
+                    <Trash2 size={16} color={AppColors.primary} />
                 </TouchableOpacity>
             </View>
             <Text style={styles.cardDescription} numberOfLines={2}>{item.description}</Text>
             <View style={styles.cardMeta}>
                 <View style={styles.statBadge}>
-                    <Heart size={12} color="#E63946" />
+                    <Heart size={12} color={AppColors.primary} />
                     <Text style={styles.statText}>{item.likes || 0}</Text>
                 </View>
                 <View style={styles.statBadge}>
-                    <MessageCircle size={12} color="#1D3557" />
+                    <MessageCircle size={12} color={AppColors.navy} />
                     <Text style={styles.statText}>{item.commentsCount || 0}</Text>
                 </View>
                 <Text style={styles.cardTime}>{formatTime(item.createdAt)}</Text>
@@ -121,12 +122,12 @@ const MyReviews = () => {
 
             {loading ? (
                 <View style={styles.centerContent}>
-                    <ActivityIndicator size="large" color="#E63946" />
+                    <ActivityIndicator size="large" color={AppColors.primary} />
                 </View>
             ) : reviews.length === 0 ? (
                 <View style={styles.centerContent}>
                     <View style={styles.iconWrapper}>
-                        <MessageSquareText size={48} color="#E63946" />
+                        <MessageSquareText size={48} color={AppColors.primary} />
                     </View>
                     <Text style={styles.emptyTitle}>No Reviews Yet</Text>
                     <Text style={styles.emptySubtitle}>
@@ -160,7 +161,7 @@ export default MyReviews;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: AppColors.backgroundLight,
     },
     header: {
         flexDirection: 'row',
@@ -173,13 +174,13 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 20,
         fontWeight: '700',
-        color: '#1D3557',
+        color: AppColors.navy,
     },
     backButton: {
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: '#1D3557',
+        backgroundColor: AppColors.navy,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -201,7 +202,7 @@ const styles = StyleSheet.create({
     emptyTitle: {
         fontSize: 22,
         fontWeight: 'bold',
-        color: '#1D3557',
+        color: AppColors.navy,
         marginBottom: 12,
     },
     emptySubtitle: {
@@ -213,7 +214,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     exploreButton: {
-        backgroundColor: '#E63946',
+        backgroundColor: AppColors.primary,
         paddingVertical: 14,
         paddingHorizontal: 32,
         borderRadius: 14,
@@ -260,7 +261,7 @@ const styles = StyleSheet.create({
     cardFoodName: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#1D3557',
+        color: AppColors.navy,
         flexShrink: 1,
     },
     countryChip: {
@@ -271,7 +272,7 @@ const styles = StyleSheet.create({
     },
     countryChipText: {
         fontSize: 10,
-        color: '#1D3557',
+        color: AppColors.navy,
         fontWeight: '600',
     },
     cardDescription: {

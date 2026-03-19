@@ -13,6 +13,7 @@ import { useRouter } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '@/components/ToastProvider';
 import { ArrowLeft } from 'lucide-react-native';
+import { AppColors } from '@/constants/colors';
 
 export default function ForgotPasswordScreen() {
     const router = useRouter();
@@ -67,7 +68,7 @@ export default function ForgotPasswordScreen() {
                     style={styles.backButton}
                     onPress={() => router.back()}
                 >
-                    <ArrowLeft size={22} color="#1D3557" />
+                    <ArrowLeft size={22} color={AppColors.navy} />
                 </TouchableOpacity>
 
                 <View style={styles.header}>
@@ -115,7 +116,7 @@ export default function ForgotPasswordScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: AppColors.backgroundLight,
     },
     content: {
         flex: 1,
@@ -167,7 +168,7 @@ const styles = StyleSheet.create({
         borderColor: '#333',
     },
     button: {
-        backgroundColor: '#E63946',
+        backgroundColor: AppColors.primary,
         borderRadius: 12,
         padding: 16,
         alignItems: 'center',

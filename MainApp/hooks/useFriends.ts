@@ -16,9 +16,8 @@ import { db } from '@/firebaseConfig';
 import { useAuth } from './useAuth';
 import { Friendship, FriendInfo } from '@/types/friends';
 import { createNotification } from '@/utils/notificationHelpers';
-
-const FRIENDSHIPS_COLLECTION = 'friendships';
-const USERS_COLLECTION = 'users';
+import { Collections } from '@/constants/collections';
+import { AppStrings } from '@/constants/strings';
 
 export const useFriends = () => {
     const { user } = useAuth();
@@ -27,11 +26,11 @@ export const useFriends = () => {
 
     useEffect(() => {
         if (!user) return;
-        const userRef = doc(db, USERS_COLLECTION, user.uid);
+        const userRef = doc(db, Collections.users, user.uid);
         setDoc(userRef, {
             uid: user.uid,
             email: (user.email || '').toLowerCase(),
-            displayName: user.displayName || 'Anonymous',
+            displayName: user.displayName || AppStrings.anonymous,
             photoURL: user.photoURL || '',
             updatedAt: serverTimestamp(),
         }, { merge: true }).catch((err) => {
@@ -58,12 +57,12 @@ export const useFriends = () => {
         };
 
         const q1 = query(
-            collection(db, FRIENDSHIPS_COLLECTION),
+            collection(db, Collections.friendships),
             where('requesterId', '==', user.uid)
         );
 
         const q2 = query(
-            collection(db, FRIENDSHIPS_COLLECTION),
+            collection(db, Collections.friendships),
             where('requesteeId', '==', user.uid)
         );
 
@@ -180,10 +179,10 @@ export const useFriends = () => {
                 throw new Error('Friend request already exists');
             }
 
-            await addDoc(collection(db, FRIENDSHIPS_COLLECTION), {
+            await addDoc(collection(db, Collections.friendships), {
                 requesterId: user.uid,
                 requesteeId: targetUserId,
-                requesterName: user.displayName || 'Anonymous',
+                requesterName: user.displayName || AppStrings.anonymous,
                 requesterAvatar: user.photoURL || '',
                 requesteeName: targetName,
                 requesteeAvatar: targetAvatar,
@@ -196,9 +195,9 @@ export const useFriends = () => {
                 targetUserId,
                 type: 'friend_request',
                 title: 'New Friend Request',
-                body: `${user.displayName ?? 'Someone'} sent you a friend request`,
+                body: `${user.displayName ?? AppStrings.someone} sent you a friend request`,
                 fromUserId: user.uid,
-                fromUserName: user.displayName ?? 'Someone',
+                fromUserName: user.displayName ?? AppStrings.someone,
                 fromAvatar: user.photoURL ?? '',
             });
         },
@@ -214,7 +213,7 @@ export const useFriends = () => {
             }
 
             const q = query(
-                collection(db, USERS_COLLECTION),
+                collection(db, Collections.users),
                 where('email', '==', email.toLowerCase())
             );
             const snapshot = await getDocs(q);
@@ -237,12 +236,12 @@ export const useFriends = () => {
                 throw new Error('ALREADY_EXISTS');
             }
 
-            await addDoc(collection(db, FRIENDSHIPS_COLLECTION), {
+            await addDoc(collection(db, Collections.friendships), {
                 requesterId: user.uid,
                 requesteeId: targetData.uid,
-                requesterName: user.displayName || 'Anonymous',
+                requesterName: user.displayName || AppStrings.anonymous,
                 requesterAvatar: user.photoURL || '',
-                requesteeName: targetData.displayName || 'Anonymous',
+                requesteeName: targetData.displayName || AppStrings.anonymous,
                 requesteeAvatar: targetData.photoURL || '',
                 status: 'pending',
                 createdAt: serverTimestamp(),
@@ -257,7 +256,7 @@ export const useFriends = () => {
     const acceptFriendRequest = useCallback(
         async (friendshipId: string) => {
             if (!user) return;
-            const docRef = doc(db, FRIENDSHIPS_COLLECTION, friendshipId);
+            const docRef = doc(db, Collections.friendships, friendshipId);
             await updateDoc(docRef, {
                 status: 'accepted',
                 updatedAt: serverTimestamp(),
@@ -269,7 +268,7 @@ export const useFriends = () => {
     const rejectFriendRequest = useCallback(
         async (friendshipId: string) => {
             if (!user) return;
-            const docRef = doc(db, FRIENDSHIPS_COLLECTION, friendshipId);
+            const docRef = doc(db, Collections.friendships, friendshipId);
             await deleteDoc(docRef);
         },
         [user]
@@ -278,7 +277,7 @@ export const useFriends = () => {
     const removeFriend = useCallback(
         async (friendshipId: string) => {
             if (!user) return;
-            const docRef = doc(db, FRIENDSHIPS_COLLECTION, friendshipId);
+            const docRef = doc(db, Collections.friendships, friendshipId);
             await deleteDoc(docRef);
         },
         [user]

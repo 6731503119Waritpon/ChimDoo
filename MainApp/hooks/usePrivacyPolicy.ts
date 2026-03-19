@@ -1,16 +1,10 @@
 import { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
+import { db } from '@/firebaseConfig';
+import { PrivacyPolicyData } from '@/types/appContent';
+import { Collections } from '@/constants/collections';
 
-export interface PolicySection {
-    title: string;
-    content: string;
-}
-
-export interface PrivacyPolicyData {
-    lastUpdated: string;
-    sections: PolicySection[];
-}
+export type { PolicySection, PrivacyPolicyData } from '@/types/appContent';
 
 export function usePrivacyPolicy() {
     const [data, setData] = useState<PrivacyPolicyData | null>(null);
@@ -20,7 +14,7 @@ export function usePrivacyPolicy() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const snap = await getDoc(doc(db, 'appContent', 'privacyPolicy'));
+                const snap = await getDoc(doc(db, Collections.appContent, 'privacyPolicy'));
                 if (snap.exists()) {
                     setData(snap.data() as PrivacyPolicyData);
                 } else {

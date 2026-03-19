@@ -2,13 +2,14 @@ import React from 'react';
 import { View, TouchableOpacity, StyleSheet, Text } from 'react-native';
 import { Bell } from 'lucide-react-native';
 import { useNotifications } from '../hooks/useNotifications';
+import { AppColors } from '@/constants/colors';
 
 interface Props {
     onPress: () => void;
     color?: string;
 }
 
-export default function NotificationBell({ onPress, color = '#1D3557' }: Props) {
+export default function NotificationBell({ onPress, color = AppColors.navy }: Props) {
     const { unreadCount } = useNotifications();
 
     return (
@@ -36,7 +37,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 2,
         right: 2,
-        backgroundColor: '#E63946',
+        backgroundColor: AppColors.primary,
         borderRadius: 10,
         minWidth: 18,
         height: 18,

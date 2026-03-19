@@ -16,6 +16,7 @@ import { ChevronLeft, Camera } from 'lucide-react-native';
 import { updateProfile } from 'firebase/auth';
 import { useAuth } from '../../../hooks/useAuth';
 import { useToast } from '@/components/ToastProvider';
+import { AppColors } from '@/constants/colors';
 
 export default function EditProfileScreen() {
     const router = useRouter();
@@ -143,7 +144,7 @@ export default function EditProfileScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: AppColors.backgroundLight,
     },
     scrollContent: {
         flexGrow: 1,
@@ -183,7 +184,7 @@ const styles = StyleSheet.create({
         height: 110,
         borderRadius: 55,
         borderWidth: 3,
-        borderColor: '#1D3557',
+        borderColor: AppColors.navy,
         alignItems: 'center',
         justifyContent: 'center',
         padding: 3,
@@ -204,7 +205,7 @@ const styles = StyleSheet.create({
     avatarInitial: {
         fontSize: 40,
         fontWeight: 'bold',
-        color: '#1D3557',
+        color: AppColors.navy,
     },
     cameraButton: {
         position: 'absolute',
@@ -213,7 +214,7 @@ const styles = StyleSheet.create({
         width: 34,
         height: 34,
         borderRadius: 17,
-        backgroundColor: '#1D3557',
+        backgroundColor: AppColors.navy,
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 3,
@@ -222,7 +223,7 @@ const styles = StyleSheet.create({
     changePhotoText: {
         marginTop: 12,
         fontSize: 14,
-        color: '#1D3557',
+        color: AppColors.navy,
         fontWeight: '600',
     },
     form: {
@@ -264,7 +265,7 @@ const styles = StyleSheet.create({
     saveButton: {
         marginHorizontal: 24,
         marginTop: 40,
-        backgroundColor: '#E63946',
+        backgroundColor: AppColors.primary,
         borderRadius: 14,
         padding: 18,
         alignItems: 'center',

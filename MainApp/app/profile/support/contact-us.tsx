@@ -14,6 +14,7 @@ import { useRouter } from 'expo-router';
 import { ChevronLeft, Mail, MessageSquare, User, Send } from 'lucide-react-native';
 import { useAuth } from '../../../hooks/useAuth';
 import { useToast } from '@/components/ToastProvider';
+import { AppColors } from '@/constants/colors';
 
 const SCRIPT_URL = process.env.EXPO_PUBLIC_CONTACT_SCRIPT_URL ?? '';
 
@@ -85,7 +86,7 @@ export default function ContactUsScreen() {
 
                 <View style={styles.banner}>
                     <View style={styles.bannerIconCircle}>
-                        <Mail size={36} color="#1D3557" />
+                        <Mail size={36} color={AppColors.navy} />
                     </View>
                     <Text style={styles.bannerTitle}>Get in Touch</Text>
                     <Text style={styles.bannerSub}>
@@ -180,7 +181,7 @@ export default function ContactUsScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: AppColors.backgroundLight,
     },
     scrollContent: {
         flexGrow: 1,
@@ -193,7 +194,7 @@ const styles = StyleSheet.create({
         paddingTop: Platform.OS === 'ios' ? 60 : 48,
         paddingHorizontal: 20,
         paddingBottom: 20,
-        backgroundColor: '#1D3557',
+        backgroundColor: AppColors.navy,
     },
     backButton: {
         width: 40,
@@ -210,7 +211,7 @@ const styles = StyleSheet.create({
     },
     banner: {
         alignItems: 'center',
-        backgroundColor: '#1D3557',
+        backgroundColor: AppColors.navy,
         paddingBottom: 36,
         paddingHorizontal: 32,
     },
@@ -264,7 +265,7 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(29, 53, 87, 0.12)',
         paddingHorizontal: 14,
         paddingVertical: 4,
-        shadowColor: '#1D3557',
+        shadowColor: AppColors.navy,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.06,
         shadowRadius: 6,
@@ -300,10 +301,10 @@ const styles = StyleSheet.create({
         gap: 10,
         marginHorizontal: 24,
         marginTop: 36,
-        backgroundColor: '#E63946',
+        backgroundColor: AppColors.primary,
         borderRadius: 14,
         padding: 18,
-        shadowColor: '#E63946',
+        shadowColor: AppColors.primary,
         shadowOffset: { width: 0, height: 6 },
         shadowOpacity: 0.3,
         shadowRadius: 12,

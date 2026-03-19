@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { X, Smartphone, CheckCircle2, Clock } from 'lucide-react-native';
 import { useAppVersion } from '../hooks/useAppVersion';
+import { AppColors } from '@/constants/colors';
 
 interface Props {
     visible: boolean;
@@ -108,7 +109,7 @@ export default function AppVersionModal({ visible, onClose }: Props) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: AppColors.backgroundLight,
         paddingTop: Platform.OS === 'ios' ? 16 : 0,
     },
     header: {
@@ -129,7 +130,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: '#1D3557',
+        color: AppColors.navy,
     },
     closeButton: {
         width: 36,
@@ -161,7 +162,7 @@ const styles = StyleSheet.create({
     currentVersion: {
         fontSize: 24,
         fontWeight: '800',
-        color: '#1D3557',
+        color: AppColors.navy,
     },
     currentLabel: {
         fontSize: 13,
@@ -193,7 +194,7 @@ const styles = StyleSheet.create({
     },
     errorText: {
         fontSize: 14,
-        color: '#E63946',
+        color: AppColors.primary,
     },
     scrollContent: {
         paddingHorizontal: 20,
@@ -238,7 +239,7 @@ const styles = StyleSheet.create({
     versionNumber: {
         fontSize: 18,
         fontWeight: '800',
-        color: '#1D3557',
+        color: AppColors.navy,
     },
     latestTag: {
         backgroundColor: '#8b5cf6',

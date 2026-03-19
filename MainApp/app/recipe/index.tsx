@@ -8,6 +8,7 @@ import { useCommunity } from '@/hooks/useCommunity';
 import { useToast } from '@/components/ToastProvider';
 import ChimDooRequiredModal from '@/components/ChimDooRequiredModal';
 import ReviewModal from '@/components/ReviewModal';
+import { AppColors } from '@/constants/colors';
 
 export default function RecipePage() {
     const router = useRouter();
@@ -109,15 +110,15 @@ export default function RecipePage() {
 
                 <View style={styles.metaContainer}>
                     <View style={styles.metaItem}>
-                        <Clock size={20} color="#E63946" />
+                        <Clock size={20} color={AppColors.primary} />
                         <Text style={styles.metaText}>{food.prepTime}</Text>
                     </View>
                     <View style={styles.metaItem}>
-                        <Flame size={20} color="#E63946" />
+                        <Flame size={20} color={AppColors.primary} />
                         <Text style={styles.metaText}>{food.taste}</Text>
                     </View>
                     <View style={styles.metaItem}>
-                        <Utensils size={20} color="#E63946" />
+                        <Utensils size={20} color={AppColors.primary} />
                         <Text style={styles.metaText}>{food.servings}</Text>
                     </View>
                 </View>
@@ -162,7 +163,7 @@ export default function RecipePage() {
                             <ActivityIndicator size="small" color="#fff" />
                         ) : isChimDoo ? (
                             <>
-                                <Check size={22} color="#1D3557" />
+                                <Check size={22} color={AppColors.navy} />
                                 <Text style={styles.chimDooTextDone}>Tasted!</Text>
                             </>
                         ) : (
@@ -242,16 +243,16 @@ const styles = StyleSheet.create({
     metaItem: { flexDirection: 'row', alignItems: 'center', gap: 8 },
     metaText: { fontSize: 14, fontWeight: '600', color: '#333' },
     section: { marginBottom: 25 },
-    sectionTitle: { fontSize: 20, fontWeight: '700', color: '#1D3557', marginBottom: 15 },
+    sectionTitle: { fontSize: 20, fontWeight: '700', color: AppColors.navy, marginBottom: 15 },
     ingredientRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
-    bullet: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#E63946', marginRight: 12 },
+    bullet: { width: 6, height: 6, borderRadius: 3, backgroundColor: AppColors.primary, marginRight: 12 },
     ingredientText: { fontSize: 16, color: '#444' },
     stepContainer: { flexDirection: 'row', marginBottom: 20 },
     stepNumberBadge: {
         width: 28,
         height: 28,
         borderRadius: 14,
-        backgroundColor: '#1D3557',
+        backgroundColor: AppColors.navy,
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 12,
@@ -284,10 +285,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 10,
-        backgroundColor: '#E63946',
+        backgroundColor: AppColors.primary,
         borderRadius: 16,
         paddingVertical: 16,
-        shadowColor: '#E63946',
+        shadowColor: AppColors.primary,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 8,
@@ -304,7 +305,7 @@ const styles = StyleSheet.create({
         fontWeight: '800',
     },
     chimDooTextDone: {
-        color: '#1D3557',
+        color: AppColors.navy,
         fontSize: 18,
         fontWeight: '700',
     },
@@ -313,11 +314,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 6,
-        backgroundColor: '#1D3557',
+        backgroundColor: AppColors.navy,
         borderRadius: 16,
         paddingVertical: 16,
         paddingHorizontal: 20,
-        shadowColor: '#1D3557',
+        shadowColor: AppColors.navy,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 8,

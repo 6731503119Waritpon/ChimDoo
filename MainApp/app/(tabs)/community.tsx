@@ -15,23 +15,13 @@ import { useCommunity } from '@/hooks/useCommunity';
 import { useFriends } from '@/hooks/useFriends';
 import { useToast } from '@/components/ToastProvider';
 import CommentModal from '@/components/CommentModal';
-import { sharePost } from '@/components/ShareUtil';
 import NotificationBell from '@/components/NotificationBell';
 import NotificationModal from '@/components/NotificationModal';
+import { formatTimestamp } from '@/utils/formatTime';
+import { sharePost } from '@/utils/sharePost';
+import { AppColors } from '@/constants/colors';
 
-const formatTime = (timestamp: any): string => {
-    if (!timestamp?.toDate) return 'just now';
-    const now = new Date();
-    const date = timestamp.toDate();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    if (diffMins < 1) return 'just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24) return `${diffHours}h ago`;
-    const diffDays = Math.floor(diffHours / 24);
-    return `${diffDays}d ago`;
-};
+
 
 type FeedTab = 'global' | 'friends';
 
@@ -87,7 +77,7 @@ const PostCard = ({
                         onPress={onAddFriend}
                         activeOpacity={0.6}
                     >
-                        <UserPlus size={14} color="#1D3557" />
+                        <UserPlus size={14} color={AppColors.navy} />
                         <Text style={styles.addFriendText}>Add</Text>
                     </TouchableOpacity>
                 );
@@ -114,7 +104,7 @@ const PostCard = ({
                             </View>
                         )}
                         <Text style={styles.postDot}>·</Text>
-                        <Text style={styles.postTime}>{formatTime(item.createdAt)}</Text>
+                        <Text style={styles.postTime}>{formatTimestamp(item.createdAt)}</Text>
                     </View>
                 </View>
                 {renderFriendButton()}
@@ -130,8 +120,8 @@ const PostCard = ({
                 >
                     <Heart
                         size={22}
-                        color="#E63946"
-                        fill={isLiked ? '#E63946' : 'none'}
+                        color={AppColors.primary}
+                        fill={isLiked ? AppColors.primary : 'none'}
                     />
                     <Text style={styles.actionText}>{item.likes || 0}</Text>
                 </TouchableOpacity>
@@ -140,7 +130,7 @@ const PostCard = ({
                     onPress={onComment}
                     activeOpacity={0.6}
                 >
-                    <MessageCircle size={22} color="#1D3557" />
+                    <MessageCircle size={22} color={AppColors.navy} />
                     <Text style={styles.actionText}>{item.commentsCount || 0}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -222,7 +212,7 @@ const Page = () => {
             <View style={styles.guestContainer}>
                 <View style={styles.guestContent}>
                     <View style={styles.guestIconWrapper}>
-                        <UsersRound size={48} color="#E63946" />
+                        <UsersRound size={48} color={AppColors.primary} />
                     </View>
                     <Text style={styles.guestTitle}>Community</Text>
                     <Text style={styles.guestSubtitle}>
@@ -236,7 +226,7 @@ const Page = () => {
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#E63946" />
+                <ActivityIndicator size="large" color={AppColors.primary} />
             </View>
         );
     }
@@ -262,7 +252,7 @@ const Page = () => {
                     >
                         <Globe
                             size={16}
-                            color={feedTab === 'global' ? '#fff' : '#1D3557'}
+                            color={feedTab === 'global' ? '#fff' : AppColors.navy}
                         />
                         <Text
                             style={[
@@ -280,7 +270,7 @@ const Page = () => {
                     >
                         <Users
                             size={16}
-                            color={feedTab === 'friends' ? '#fff' : '#1D3557'}
+                            color={feedTab === 'friends' ? '#fff' : AppColors.navy}
                         />
                         <Text
                             style={[
@@ -297,7 +287,7 @@ const Page = () => {
                     <View style={styles.emptyContainer}>
                         {feedTab === 'friends' ? (
                             <>
-                                <Users size={48} color='#1D3557' />
+                                <Users size={48} color={AppColors.navy} />
                                 <Text style={styles.emptyTitle}>No Friend Posts</Text>
                                 <Text style={styles.emptySubtitle}>
                                     Add friends from the Global feed to see their posts here!
@@ -305,7 +295,7 @@ const Page = () => {
                             </>
                         ) : (
                             <>
-                                <Info size={48} color='#1D3557' />
+                                <Info size={48} color={AppColors.navy} />
                                 <Text style={styles.emptyTitle}>No Reviews Yet</Text>
                                 <Text style={styles.emptySubtitle}>
                                     Be the first to share your food experience! Go to a recipe, tap "Chim Doo", then write a review.
@@ -351,11 +341,11 @@ export default Page;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: AppColors.backgroundLight,
     },
     loadingContainer: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: AppColors.backgroundLight,
         justifyContent: 'center',
         alignItems: 'center',
         gap: 12,
@@ -376,7 +366,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 32,
         fontWeight: '800',
-        color: '#1D3557',
+        color: AppColors.navy,
         letterSpacing: -0.5,
     },
     headerSubtitle: {
@@ -408,12 +398,12 @@ const styles = StyleSheet.create({
         gap: 6,
     },
     feedTabActive: {
-        backgroundColor: '#1D3557',
+        backgroundColor: AppColors.navy,
     },
     feedTabText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#1D3557',
+        color: AppColors.navy,
     },
     feedTabTextActive: {
         color: '#fff',
@@ -428,7 +418,7 @@ const styles = StyleSheet.create({
     emptyTitle: {
         fontSize: 22,
         fontWeight: '700',
-        color: '#1D3557',
+        color: AppColors.navy,
         marginBottom: 8,
     },
     emptySubtitle: {
@@ -470,10 +460,10 @@ const styles = StyleSheet.create({
         borderRadius: 22,
         backgroundColor: '#f0f0f0',
         borderWidth: 2,
-        borderColor: '#E63946',
+        borderColor: AppColors.primary,
     },
     postAvatarPlaceholder: {
-        backgroundColor: '#1D3557',
+        backgroundColor: AppColors.navy,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -488,7 +478,7 @@ const styles = StyleSheet.create({
     postUserName: {
         fontSize: 15,
         fontWeight: '700',
-        color: '#1D3557',
+        color: AppColors.navy,
     },
     postMeta: {
         flexDirection: 'row',
@@ -498,7 +488,7 @@ const styles = StyleSheet.create({
     },
     postFoodName: {
         fontSize: 12,
-        color: '#E63946',
+        color: AppColors.primary,
         fontWeight: '600',
     },
     countryChip: {
@@ -509,7 +499,7 @@ const styles = StyleSheet.create({
     },
     countryChipText: {
         fontSize: 10,
-        color: '#E63946',
+        color: AppColors.primary,
         fontWeight: '600',
     },
     postDot: {
@@ -553,7 +543,7 @@ const styles = StyleSheet.create({
     captionUser: {
         fontSize: 14,
         fontWeight: '700',
-        color: '#1D3557',
+        color: AppColors.navy,
         marginBottom: 4,
     },
     captionText: {
@@ -574,7 +564,7 @@ const styles = StyleSheet.create({
     addFriendText: {
         fontSize: 12,
         fontWeight: '600',
-        color: '#1D3557',
+        color: AppColors.navy,
     },
     friendBadge: {
         width: 32,
@@ -601,7 +591,7 @@ const styles = StyleSheet.create({
 
     guestContainer: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: AppColors.backgroundLight,
         justifyContent: 'center',
         alignItems: 'center',
         padding: 32,
@@ -622,7 +612,7 @@ const styles = StyleSheet.create({
     guestTitle: {
         fontSize: 28,
         fontWeight: '800',
-        color: '#1D3557',
+        color: AppColors.navy,
         marginBottom: 12,
     },
     guestSubtitle: {
@@ -638,7 +628,7 @@ const styles = StyleSheet.create({
         gap: 12,
     },
     primaryButton: {
-        backgroundColor: '#E63946',
+        backgroundColor: AppColors.primary,
         paddingVertical: 16,
         borderRadius: 16,
         alignItems: 'center',
@@ -650,13 +640,13 @@ const styles = StyleSheet.create({
     },
     outlineButton: {
         borderWidth: 2,
-        borderColor: '#E63946',
+        borderColor: AppColors.primary,
         paddingVertical: 14,
         borderRadius: 16,
         alignItems: 'center',
     },
     outlineButtonText: {
-        color: '#E63946',
+        color: AppColors.primary,
         fontSize: 16,
         fontWeight: '700',
     },
