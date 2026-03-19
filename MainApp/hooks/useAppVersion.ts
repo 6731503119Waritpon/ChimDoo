@@ -1,15 +1,10 @@
 import { useEffect, useState } from 'react';
 import { collection, getDocs, orderBy, query } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
+import { db } from '@/firebaseConfig';
+import { AppVersion } from '@/types/appContent';
+import { Collections } from '@/constants/collections';
 
-export interface AppVersion {
-    id: string;
-    version: string;
-    releaseDate: string;
-    title: string;
-    changes: string[];
-    isLatest: boolean;
-}
+export type { AppVersion } from '@/types/appContent';
 
 export function useAppVersion() {
     const [versions, setVersions] = useState<AppVersion[]>([]);
@@ -20,7 +15,7 @@ export function useAppVersion() {
         const fetchVersions = async () => {
             try {
                 const q = query(
-                    collection(db, 'appVersions'),
+                    collection(db, Collections.appVersions),
                     orderBy('releaseDate', 'desc')
                 );
                 const snapshot = await getDocs(q);

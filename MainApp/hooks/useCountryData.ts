@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { doc, getDoc } from 'firebase/firestore'; 
-import { db } from '@/services/firestore'; 
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/firebaseConfig';
 import { CountryDetail } from '@/types/country';
+import { Collections } from '@/constants/collections';
 
 export const useCountryData = (countryId: string) => {
     const [data, setData] = useState<CountryDetail | null>(null);
@@ -14,7 +15,7 @@ export const useCountryData = (countryId: string) => {
             
             try {
                 setLoading(true);
-                const docRef = doc(db, 'countries', countryId);
+                const docRef = doc(db, Collections.countries, countryId);
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {

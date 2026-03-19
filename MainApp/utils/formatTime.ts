@@ -12,3 +12,13 @@ export function formatRelativeTime(date: Date): string {
     if (diffDays < 7) return `${diffDays}d ago`;
     return date.toLocaleDateString();
 }
+
+/**
+ * Format a Firestore Timestamp (or any object with `.toDate()`) into a
+ * relative time string.  Falls back to 'just now' when the timestamp is null
+ * or doesn't have a `.toDate()` method.
+ */
+export function formatTimestamp(timestamp: any): string {
+    if (!timestamp?.toDate) return 'just now';
+    return formatRelativeTime(timestamp.toDate());
+}

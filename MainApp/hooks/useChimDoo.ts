@@ -10,7 +10,7 @@ import {
     serverTimestamp,
     Timestamp,
 } from 'firebase/firestore';
-import { db } from '@/services/firestore';
+import { db } from '@/firebaseConfig';
 import { useAuth } from './useAuth';
 import { FoodItem } from '@/types/recipe';
 import { createNotification } from '@/utils/notificationHelpers';

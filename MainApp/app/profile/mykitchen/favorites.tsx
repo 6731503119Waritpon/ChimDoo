@@ -13,6 +13,7 @@ import { router, Stack } from 'expo-router';
 import { ChevronLeft, Heart } from 'lucide-react-native';
 import { useCommunity } from '@/hooks/useCommunity';
 import { CommunityPost } from '@/types/community';
+import { AppColors } from '@/constants/colors';
 
 const formatTime = (timestamp: any): string => {
     if (!timestamp?.toDate) return '';
@@ -71,12 +72,12 @@ const Favorites = () => {
 
             {loading ? (
                 <View style={styles.centerContent}>
-                    <ActivityIndicator size="large" color="#E63946" />
+                    <ActivityIndicator size="large" color={AppColors.primary} />
                 </View>
             ) : favorites.length === 0 ? (
                 <View style={styles.centerContent}>
                     <View style={styles.iconWrapper}>
-                        <Heart size={48} color="#E63946" />
+                        <Heart size={48} color={AppColors.primary} />
                     </View>
                     <Text style={styles.emptyTitle}>No Favorites Yet</Text>
                     <Text style={styles.emptySubtitle}>
@@ -101,7 +102,7 @@ export default Favorites;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: AppColors.backgroundLight,
     },
     header: {
         flexDirection: 'row',
@@ -114,13 +115,13 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 20,
         fontWeight: '700',
-        color: '#1D3557',
+        color: AppColors.navy,
     },
     backButton: {
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: '#1D3557',
+        backgroundColor: AppColors.navy,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -142,7 +143,7 @@ const styles = StyleSheet.create({
     emptyTitle: {
         fontSize: 22,
         fontWeight: 'bold',
-        color: '#1D3557',
+        color: AppColors.navy,
         marginBottom: 12,
     },
     emptySubtitle: {
@@ -181,7 +182,7 @@ const styles = StyleSheet.create({
     cardFoodName: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#1D3557',
+        color: AppColors.navy,
         flexShrink: 1,
     },
     countryChip: {
@@ -192,7 +193,7 @@ const styles = StyleSheet.create({
     },
     countryChipText: {
         fontSize: 10,
-        color: '#1D3557',
+        color: AppColors.navy,
         fontWeight: '600',
     },
     cardDescription: {

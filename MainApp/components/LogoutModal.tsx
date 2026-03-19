@@ -9,6 +9,7 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import { LogOut, X } from 'lucide-react-native';
+import { AppColors } from '@/constants/colors';
 
 interface Props {
     visible: boolean;
@@ -36,7 +37,7 @@ const LogoutModal: React.FC<Props> = ({ visible, onClose, onConfirm, loading }) 
                     onPress={() => { }}
                 >
                     <View style={styles.iconWrapper}>
-                        <LogOut size={32} color="#E63946" />
+                        <LogOut size={32} color={AppColors.primary} />
                     </View>
 
                     <Text style={styles.title}>Log Out</Text>
@@ -101,7 +102,7 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 22,
         fontWeight: '800',
-        color: '#1D3557',
+        color: AppColors.navy,
         marginBottom: 8,
     },
     subtitle: {
@@ -132,7 +133,7 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingVertical: 14,
         borderRadius: 14,
-        backgroundColor: '#E63946',
+        backgroundColor: AppColors.primary,
         alignItems: 'center',
     },
     logoutText: {

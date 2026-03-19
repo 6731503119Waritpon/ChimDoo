@@ -15,6 +15,7 @@ import { Bell, X, UserPlus, Heart, MessageCircle, Star, CheckCheck } from 'lucid
 import { BlurView } from 'expo-blur';
 import { useNotifications, AppNotification } from '../hooks/useNotifications';
 import { formatRelativeTime } from '@/utils/formatTime';
+import { AppColors } from '@/constants/colors';
 
 const { width, height } = Dimensions.get('window');
 
@@ -24,7 +25,7 @@ const MAX_VISIBLE = 4;
 
 const TYPE_ICON: Record<string, { icon: any; color: string }> = {
     friend_request: { icon: UserPlus, color: '#3b82f6' },
-    like: { icon: Heart, color: '#E63946' },
+    like: { icon: Heart, color: AppColors.primary },
     comment: { icon: MessageCircle, color: '#22c55e' },
     review: { icon: Star, color: '#f59e0b' },
     chimdoo: { icon: Bell, color: '#8b5cf6' },
@@ -106,7 +107,7 @@ export default function NotificationModal({ visible, onClose }: Props) {
                 style={[styles.panel, { transform: [{ translateY: slideAnim }] }]}
             >
                 <View style={styles.panelHeader}>
-                    <Bell size={18} color="#1D3557" />
+                    <Bell size={18} color={AppColors.navy} />
                     <Text style={styles.panelTitle}>Notifications</Text>
                     <TouchableOpacity style={styles.markAllBtn} onPress={markAllRead}>
                         <CheckCheck size={16} color="#888" />
@@ -192,7 +193,7 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 16,
         fontWeight: '700',
-        color: '#1D3557',
+        color: AppColors.navy,
     },
     markAllBtn: {
         padding: 4,
@@ -264,7 +265,7 @@ const styles = StyleSheet.create({
         width: 8,
         height: 8,
         borderRadius: 4,
-        backgroundColor: '#E63946',
+        backgroundColor: AppColors.primary,
     },
     empty: {
         alignItems: 'center',
@@ -303,7 +304,7 @@ const styles = StyleSheet.create({
     detailTitle: {
         fontSize: 16,
         fontWeight: '700',
-        color: '#1D3557',
+        color: AppColors.navy,
         flex: 1,
         marginRight: 12,
     },

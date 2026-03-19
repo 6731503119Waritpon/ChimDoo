@@ -20,8 +20,8 @@ import { db } from '@/firebaseConfig';
 import { useAuth } from './useAuth';
 import { CommunityPost, Comment } from '@/types/community';
 import { createNotification } from '@/utils/notificationHelpers';
-
-const REVIEWS_COLLECTION = 'reviews';
+import { Collections } from '@/constants/collections';
+import { AppStrings } from '@/constants/strings';
 
 export const useCommunity = () => {
     const { user } = useAuth();
@@ -30,7 +30,7 @@ export const useCommunity = () => {
 
     useEffect(() => {
         const q = query(
-            collection(db, REVIEWS_COLLECTION),
+            collection(db, Collections.reviews),
             orderBy('createdAt', 'desc')
         );
 
@@ -50,9 +50,9 @@ export const useCommunity = () => {
         async (foodName: string, imageDataUri: string, description: string, country: string = '') => {
             if (!user) return;
 
-            await addDoc(collection(db, REVIEWS_COLLECTION), {
+            await addDoc(collection(db, Collections.reviews), {
                 userId: user.uid,
-                userName: user.displayName || 'Anonymous',
+                userName: user.displayName || AppStrings.anonymous,
                 userAvatar: user.photoURL || '',
                 foodName,
                 image: imageDataUri,
@@ -82,7 +82,7 @@ export const useCommunity = () => {
         async (reviewId: string) => {
             if (!user) return;
 
-            const docRef = doc(db, REVIEWS_COLLECTION, reviewId);
+            const docRef = doc(db, Collections.reviews, reviewId);
             const post = posts.find((p) => p.id === reviewId);
             if (!post) return;
 
@@ -97,10 +97,10 @@ export const useCommunity = () => {
                 createNotification({
                     targetUserId: post.userId,
                     type: 'like',
-                    title: `${user.displayName ?? 'Someone'} liked your review!`,
-                    body: `${user.displayName ?? 'Someone'} liked your review of "${post.foodName}"`,
+                    title: `${user.displayName ?? AppStrings.someone} liked your review!`,
+                    body: `${user.displayName ?? AppStrings.someone} liked your review of "${post.foodName}"`,
                     fromUserId: user.uid,
-                    fromUserName: user.displayName ?? 'Someone',
+                    fromUserName: user.displayName ?? AppStrings.someone,
                     fromAvatar: user.photoURL ?? '',
                     metadata: { reviewId, foodName: post.foodName },
                 });
@@ -115,19 +115,19 @@ export const useCommunity = () => {
             const post = posts.find((p) => p.id === reviewId);
             const commentsRef = collection(
                 db,
-                REVIEWS_COLLECTION,
+                Collections.reviews,
                 reviewId,
                 'comments'
             );
             await addDoc(commentsRef, {
                 userId: user.uid,
-                userName: user.displayName || 'Anonymous',
+                userName: user.displayName || AppStrings.anonymous,
                 userAvatar: user.photoURL || '',
                 text,
                 createdAt: serverTimestamp(),
             });
 
-            const docRef = doc(db, REVIEWS_COLLECTION, reviewId);
+            const docRef = doc(db, Collections.reviews, reviewId);
             await updateDoc(docRef, {
                 commentsCount: increment(1),
             });
@@ -136,10 +136,10 @@ export const useCommunity = () => {
                 createNotification({
                     targetUserId: post.userId,
                     type: 'comment',
-                    title: `${user.displayName ?? 'Someone'} comment on your review!`,
+                    title: `${user.displayName ?? AppStrings.someone} comment on your review!`,
                     body: `commented: "${text.slice(0, 60)}${text.length > 60 ? '...' : ''}"`,
                     fromUserId: user.uid,
-                    fromUserName: user.displayName ?? 'Someone',
+                    fromUserName: user.displayName ?? AppStrings.someone,
                     fromAvatar: user.photoURL ?? '',
                     metadata: { reviewId, foodName: post.foodName },
                 });
@@ -151,7 +151,7 @@ export const useCommunity = () => {
     const subscribeToComments = useCallback(
         (reviewId: string, callback: (comments: Comment[]) => void) => {
             const q = query(
-                collection(db, REVIEWS_COLLECTION, reviewId, 'comments'),
+                collection(db, Collections.reviews, reviewId, 'comments'),
                 orderBy('createdAt', 'asc')
             );
 
@@ -184,14 +184,14 @@ export const useCommunity = () => {
     const deleteReview = useCallback(
         async (reviewId: string) => {
             if (!user) return;
-            const commentsRef = collection(db, REVIEWS_COLLECTION, reviewId, 'comments');
+            const commentsRef = collection(db, Collections.reviews, reviewId, 'comments');
             const commentsSnapshot = await getDocs(commentsRef);
             const deletePromises = commentsSnapshot.docs.map((commentDoc) =>
                 deleteDoc(commentDoc.ref)
             );
             await Promise.all(deletePromises);
 
-            await deleteDoc(doc(db, REVIEWS_COLLECTION, reviewId));
+            await deleteDoc(doc(db, Collections.reviews, reviewId));
         },
         [user]
     );

@@ -19,6 +19,7 @@ import { useGlobe } from '@/hooks/useGlobe';
 import modelPath from '@/assets/models/earth.glb';
 import NotificationBell from '@/components/NotificationBell';
 import NotificationModal from '@/components/NotificationModal';
+import { AppColors } from '@/constants/colors';
 
 function EarthModel(props: any) {
   const gltf = useGLTF(modelPath);
@@ -176,7 +177,7 @@ export default function HomeScreen() {
             ) : (
               <Text style={styles.pillText} numberOfLines={1}>Select a country...</Text>
             )}
-            <ChevronRight size={18} color="#1D3557" />
+            <ChevronRight size={18} color={AppColors.navy} />
           </TouchableOpacity>
         </View>
 
@@ -251,7 +252,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F9FA',
+    backgroundColor: AppColors.backgroundLight,
   },
 
   header: {
@@ -273,7 +274,7 @@ const styles = StyleSheet.create({
   appName: {
     fontSize: 32,
     fontWeight: '800',
-    color: '#1D3557',
+    color: AppColors.navy,
     letterSpacing: -0.5,
   },
   subtitle: {
@@ -305,7 +306,7 @@ const styles = StyleSheet.create({
   pillText: {
     fontSize: 16,
     fontWeight: '500',
-    color: '#1D3557',
+    color: AppColors.navy,
     flex: 1,
   },
   canvasContainer: {
@@ -336,7 +337,7 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1D3557',
+    color: AppColors.navy,
   },
   countryItem: {
     flexDirection: 'row',
@@ -358,13 +359,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   countryNameActive: {
-    color: '#E63946',
+    color: AppColors.primary,
     fontWeight: '700',
   },
   activeDot: {
     width: 10,
     height: 10,
     borderRadius: 5,
-    backgroundColor: '#E63946',
+    backgroundColor: AppColors.primary,
   },
 });

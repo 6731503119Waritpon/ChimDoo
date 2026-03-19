@@ -14,6 +14,7 @@ import { ChevronLeft, ChevronDown, ChevronUp, HelpCircle } from 'lucide-react-na
 import { collection, getDocs, orderBy, query } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { ActivityIndicator } from 'react-native';
+import { AppColors } from '@/constants/colors';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -146,7 +147,7 @@ export default function FAQScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: AppColors.backgroundLight,
     },
     header: {
         flexDirection: 'row',

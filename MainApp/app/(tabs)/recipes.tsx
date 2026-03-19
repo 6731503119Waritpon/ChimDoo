@@ -16,6 +16,7 @@ import { Search, Clock, Flame, X, UtensilsCrossed, CookingPot } from 'lucide-rea
 import { useChimDoo, ChimDooItem } from '@/hooks/useChimDoo';
 import NotificationBell from '@/components/NotificationBell';
 import NotificationModal from '@/components/NotificationModal';
+import { AppColors } from '@/constants/colors';
 
 const Page = () => {
     const router = useRouter();
@@ -93,7 +94,7 @@ const Page = () => {
         return (
             <View style={styles.guestContainer}>
                 <View style={styles.guestIconWrapper}>
-                    <UtensilsCrossed size={48} color="#E63946" />
+                    <UtensilsCrossed size={48} color={AppColors.primary} />
                 </View>
                 <Text style={styles.guestTitle}>Recipes</Text>
                 <Text style={styles.guestSubtitle}>
@@ -106,7 +107,7 @@ const Page = () => {
     if (loading) {
         return (
             <View style={[styles.container, styles.centerContent]}>
-                <ActivityIndicator size="large" color="#E63946" />
+                <ActivityIndicator size="large" color={AppColors.primary} />
             </View>
         );
     }
@@ -116,7 +117,7 @@ const Page = () => {
             <View style={styles.container}>
                 <View style={styles.header}>
                     <View style={styles.headerRow}>
-                        <CookingPot size={28} color="#E63946" />
+                        <CookingPot size={28} color={AppColors.primary} />
                         <Text style={styles.headerTitle}>Recipes</Text>
                     </View>
                     <View style={styles.headerRight}>
@@ -190,7 +191,7 @@ const Page = () => {
                     showsVerticalScrollIndicator={false}
                     ListEmptyComponent={
                         <View style={styles.emptyState}>
-                            <UtensilsCrossed size={56} color="#1D3557" style={styles.emptyEmoji} />
+                            <UtensilsCrossed size={56} color={AppColors.navy} style={styles.emptyEmoji} />
                             <Text style={styles.emptyTitle}>Let's start Chim</Text>
                             <Text style={styles.emptySubtitle}>Explore ChimDoo and discover your favorite dish</Text>
                         </View>
@@ -207,7 +208,7 @@ export default Page;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: AppColors.backgroundLight,
     },
     centerContent: {
         alignItems: 'center',
@@ -232,7 +233,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 32,
         fontWeight: '800',
-        color: '#1D3557',
+        color: AppColors.navy,
         letterSpacing: -0.5,
     },
     headerSubtitle: {
@@ -283,8 +284,8 @@ const styles = StyleSheet.create({
         borderColor: '#e0e0e0',
     },
     categoryPillActive: {
-        backgroundColor: '#E63946',
-        borderColor: '#E63946',
+        backgroundColor: AppColors.primary,
+        borderColor: AppColors.primary,
     },
     categoryText: {
         fontSize: 14,
@@ -383,7 +384,7 @@ const styles = StyleSheet.create({
     emptyTitle: {
         fontSize: 20,
         fontWeight: '700',
-        color: '#1D3557',
+        color: AppColors.navy,
         marginBottom: 8,
     },
     emptySubtitle: {
@@ -395,7 +396,7 @@ const styles = StyleSheet.create({
     },
     guestContainer: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: AppColors.backgroundLight,
         justifyContent: 'center',
         alignItems: 'center',
         padding: 32,
@@ -412,7 +413,7 @@ const styles = StyleSheet.create({
     guestTitle: {
         fontSize: 28,
         fontWeight: '800',
-        color: '#1D3557',
+        color: AppColors.navy,
         marginBottom: 12,
     },
     guestSubtitle: {

@@ -23,6 +23,7 @@ import {
   LucideProps,
 } from 'lucide-react-native';
 import { useAbout } from '../../../hooks/useAbout';
+import { AppColors } from '@/constants/colors';
 
 const ICON_MAP: Record<string, React.ComponentType<LucideProps>> = {
   Globe,
@@ -52,7 +53,7 @@ export default function AboutScreen() {
 
       {loading ? (
         <View style={styles.center}>
-          <ActivityIndicator size="large" color="#E63946" />
+          <ActivityIndicator size="large" color={AppColors.primary} />
         </View>
       ) : error ? (
         <View style={styles.center}>
@@ -103,7 +104,7 @@ export default function AboutScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F8F9FA' },
+  container: { flex: 1, backgroundColor: AppColors.backgroundLight },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -111,7 +112,7 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'ios' ? 60 : 48,
     paddingHorizontal: 20,
     paddingBottom: 20,
-    backgroundColor: '#1D3557',
+    backgroundColor: AppColors.navy,
   },
   backButton: {
     width: 40,
@@ -123,11 +124,11 @@ const styles = StyleSheet.create({
   },
   headerTitle: { fontSize: 20, fontWeight: '700', color: '#fff' },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  errorText: { fontSize: 14, color: '#E63946' },
+  errorText: { fontSize: 14, color: AppColors.primary },
   scrollContent: { paddingBottom: 60 },
   hero: {
     alignItems: 'center',
-    backgroundColor: '#1D3557',
+    backgroundColor: AppColors.navy,
     paddingTop: 8,
     paddingBottom: 40,
     paddingHorizontal: 32,
@@ -185,7 +186,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   featureText: { flex: 1 },
-  featureTitle: { fontSize: 15, fontWeight: '700', color: '#1D3557', marginBottom: 3 },
+  featureTitle: { fontSize: 15, fontWeight: '700', color: AppColors.navy, marginBottom: 3 },
   featureDesc: { fontSize: 13, color: '#777', lineHeight: 18 },
   creditsCard: {
     marginHorizontal: 20,
@@ -200,7 +201,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 2,
   },
-  creditsTitle: { fontSize: 18, fontWeight: '700', color: '#1D3557', marginBottom: 10 },
+  creditsTitle: { fontSize: 18, fontWeight: '700', color: AppColors.navy, marginBottom: 10 },
   creditsText: { fontSize: 14, color: '#666', textAlign: 'center', lineHeight: 22 },
   divider: { height: 1, backgroundColor: '#f0f0f0', width: '100%', marginVertical: 16 },
   creditsFooter: { fontSize: 13, color: '#aaa' },

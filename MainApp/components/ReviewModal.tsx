@@ -14,6 +14,7 @@ import {
 } from 'react-native';
 import { Camera, ImageIcon, X, Send } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { AppColors } from '@/constants/colors';
 
 interface Props {
     visible: boolean;
@@ -123,14 +124,14 @@ const ReviewModal: React.FC<Props> = ({ visible, foodName, onClose, onSubmit }) 
                                     style={styles.imagePickerBtn}
                                     onPress={() => pickImage(true)}
                                 >
-                                    <Camera size={28} color="#E63946" />
+                                    <Camera size={28} color={AppColors.primary} />
                                     <Text style={styles.imagePickerText}>Camera</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={styles.imagePickerBtn}
                                     onPress={() => pickImage(false)}
                                 >
-                                    <ImageIcon size={28} color="#1D3557" />
+                                    <ImageIcon size={28} color={AppColors.navy} />
                                     <Text style={styles.imagePickerText}>Gallery</Text>
                                 </TouchableOpacity>
                             </View>
@@ -202,7 +203,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 22,
         fontWeight: '800',
-        color: '#1D3557',
+        color: AppColors.navy,
     },
     foodBadge: {
         backgroundColor: '#F0F4F8',
@@ -215,7 +216,7 @@ const styles = StyleSheet.create({
     foodBadgeText: {
         fontSize: 15,
         fontWeight: '600',
-        color: '#1D3557',
+        color: AppColors.navy,
     },
     imagePickerRow: {
         flexDirection: 'row',
@@ -225,7 +226,7 @@ const styles = StyleSheet.create({
     imagePickerBtn: {
         flex: 1,
         height: 120,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: AppColors.backgroundLight,
         borderRadius: 16,
         borderWidth: 2,
         borderColor: '#E8E8E8',
@@ -264,11 +265,11 @@ const styles = StyleSheet.create({
     label: {
         fontSize: 15,
         fontWeight: '700',
-        color: '#1D3557',
+        color: AppColors.navy,
         marginBottom: 8,
     },
     textInput: {
-        backgroundColor: '#F8F9FA',
+        backgroundColor: AppColors.backgroundLight,
         borderRadius: 14,
         padding: 16,
         fontSize: 15,
@@ -289,7 +290,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         gap: 8,
-        backgroundColor: '#E63946',
+        backgroundColor: AppColors.primary,
         borderRadius: 16,
         paddingVertical: 16,
         marginTop: 8,

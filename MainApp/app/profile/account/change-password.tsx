@@ -19,6 +19,7 @@ import {
 } from 'firebase/auth';
 import { useAuth } from '../../../hooks/useAuth';
 import { useToast } from '@/components/ToastProvider';
+import { AppColors } from '@/constants/colors';
 
 export default function ChangePasswordScreen() {
     const router = useRouter();
@@ -67,7 +68,7 @@ export default function ChangePasswordScreen() {
                 </View>
                 <View style={styles.googleInfoContainer}>
                     <View style={styles.googleInfoIcon}>
-                        <AlertCircle size={40} color="#E63946" />
+                        <AlertCircle size={40} color={AppColors.primary} />
                     </View>
                     <Text style={styles.googleInfoTitle}>Not Available</Text>
                     <Text style={styles.googleInfoText}>
@@ -155,7 +156,7 @@ export default function ChangePasswordScreen() {
 
                 <View style={styles.iconBanner}>
                     <View style={styles.iconCircle}>
-                        <ShieldCheck size={36} color="#1D3557" />
+                        <ShieldCheck size={36} color={AppColors.navy} />
                     </View>
                     <Text style={styles.bannerText}>Keep your account secure</Text>
                     <Text style={styles.bannerSub}>
@@ -283,7 +284,7 @@ export default function ChangePasswordScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: AppColors.backgroundLight,
     },
     scrollContent: {
         flexGrow: 1,
@@ -296,7 +297,7 @@ const styles = StyleSheet.create({
         paddingTop: Platform.OS === 'ios' ? 60 : 48,
         paddingHorizontal: 20,
         paddingBottom: 20,
-        backgroundColor: '#1D3557',
+        backgroundColor: AppColors.navy,
     },
     backButton: {
         width: 40,
@@ -330,7 +331,7 @@ const styles = StyleSheet.create({
     googleInfoTitle: {
         fontSize: 22,
         fontWeight: '700',
-        color: '#1D3557',
+        color: AppColors.navy,
         marginBottom: 12,
     },
     googleInfoText: {
@@ -341,11 +342,11 @@ const styles = StyleSheet.create({
         marginBottom: 32,
     },
     googleInfoLink: {
-        color: '#1D3557',
+        color: AppColors.navy,
         fontWeight: '600',
     },
     googleInfoButton: {
-        backgroundColor: '#1D3557',
+        backgroundColor: AppColors.navy,
         borderRadius: 14,
         paddingVertical: 14,
         paddingHorizontal: 40,
@@ -358,7 +359,7 @@ const styles = StyleSheet.create({
     },
     iconBanner: {
         alignItems: 'center',
-        backgroundColor: '#1D3557',
+        backgroundColor: AppColors.navy,
         paddingBottom: 36,
         paddingHorizontal: 32,
     },
@@ -370,7 +371,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 16,
-        shadowColor: '#1D3557',
+        shadowColor: AppColors.navy,
         shadowOffset: { width: 0, height: 6 },
         shadowOpacity: 0.25,
         shadowRadius: 12,
@@ -413,14 +414,14 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(29, 53, 87, 0.12)',
         paddingHorizontal: 14,
         paddingVertical: 4,
-        shadowColor: '#1D3557',
+        shadowColor: AppColors.navy,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.06,
         shadowRadius: 6,
         elevation: 3,
     },
     inputRowError: {
-        borderColor: '#E63946',
+        borderColor: AppColors.primary,
     },
     inputIcon: {
         marginRight: 10,
@@ -461,17 +462,17 @@ const styles = StyleSheet.create({
     },
     errorText: {
         fontSize: 12,
-        color: '#E63946',
+        color: AppColors.primary,
         fontWeight: '500',
     },
     saveButton: {
         marginHorizontal: 24,
         marginTop: 40,
-        backgroundColor: '#E63946',
+        backgroundColor: AppColors.primary,
         borderRadius: 14,
         padding: 18,
         alignItems: 'center',
-        shadowColor: '#E63946',
+        shadowColor: AppColors.primary,
         shadowOffset: { width: 0, height: 6 },
         shadowOpacity: 0.3,
         shadowRadius: 12,

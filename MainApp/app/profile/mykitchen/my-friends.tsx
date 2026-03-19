@@ -28,6 +28,7 @@ import { useFriends } from '@/hooks/useFriends';
 import { useToast } from '@/components/ToastProvider';
 import { FriendInfo } from '@/types/friends';
 import { Friendship } from '@/types/friends';
+import { AppColors } from '@/constants/colors';
 
 type Tab = 'friends' | 'requests';
 
@@ -208,7 +209,7 @@ const MyFriends = () => {
                 >
                     <Users
                         size={16}
-                        color={activeTab === 'friends' ? '#fff' : '#1D3557'}
+                        color={activeTab === 'friends' ? '#fff' : AppColors.navy}
                     />
                     <Text
                         style={[
@@ -226,7 +227,7 @@ const MyFriends = () => {
                 >
                     <Inbox
                         size={16}
-                        color={activeTab === 'requests' ? '#fff' : '#1D3557'}
+                        color={activeTab === 'requests' ? '#fff' : AppColors.navy}
                     />
                     <Text
                         style={[
@@ -241,13 +242,13 @@ const MyFriends = () => {
 
             {loading ? (
                 <View style={styles.centerContent}>
-                    <ActivityIndicator size="large" color="#E63946" />
+                    <ActivityIndicator size="large" color={AppColors.primary} />
                 </View>
             ) : activeTab === 'friends' ? (
                 friendsList.length === 0 ? (
                     <View style={styles.centerContent}>
                         <View style={styles.iconWrapper}>
-                            <Users size={48} color="#E63946" />
+                            <Users size={48} color={AppColors.primary} />
                         </View>
                         <Text style={styles.emptyTitle}>No Friends Yet</Text>
                         <Text style={styles.emptySubtitle}>
@@ -266,7 +267,7 @@ const MyFriends = () => {
             ) : incomingRequests.length === 0 ? (
                 <View style={styles.centerContent}>
                     <View style={styles.iconWrapper}>
-                        <Inbox size={48} color="#E63946" />
+                        <Inbox size={48} color={AppColors.primary} />
                     </View>
                     <Text style={styles.emptyTitle}>No Requests</Text>
                     <Text style={styles.emptySubtitle}>
@@ -355,7 +356,7 @@ export default MyFriends;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: AppColors.backgroundLight,
     },
     header: {
         flexDirection: 'row',
@@ -368,13 +369,13 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 20,
         fontWeight: '700',
-        color: '#1D3557',
+        color: AppColors.navy,
     },
     backButton: {
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: '#1D3557',
+        backgroundColor: AppColors.navy,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -382,7 +383,7 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: '#E63946',
+        backgroundColor: AppColors.primary,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -410,12 +411,12 @@ const styles = StyleSheet.create({
         gap: 6,
     },
     tabActive: {
-        backgroundColor: '#1D3557',
+        backgroundColor: AppColors.navy,
     },
     tabText: {
         fontSize: 14,
         fontWeight: '600',
-        color: '#1D3557',
+        color: AppColors.navy,
     },
     tabTextActive: {
         color: '#fff',
@@ -439,7 +440,7 @@ const styles = StyleSheet.create({
     emptyTitle: {
         fontSize: 22,
         fontWeight: 'bold',
-        color: '#1D3557',
+        color: AppColors.navy,
         marginBottom: 12,
     },
     emptySubtitle: {
@@ -477,7 +478,7 @@ const styles = StyleSheet.create({
     cardName: {
         fontSize: 16,
         fontWeight: '600',
-        color: '#1D3557',
+        color: AppColors.navy,
         flex: 1,
     },
     avatar: {
@@ -486,10 +487,10 @@ const styles = StyleSheet.create({
         borderRadius: 23,
         backgroundColor: '#f0f0f0',
         borderWidth: 2,
-        borderColor: '#E63946',
+        borderColor: AppColors.primary,
     },
     avatarPlaceholder: {
-        backgroundColor: '#1D3557',
+        backgroundColor: AppColors.navy,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -532,7 +533,7 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
     },
     modalContent: {
-        backgroundColor: '#F8F9FA',
+        backgroundColor: AppColors.backgroundLight,
         borderTopLeftRadius: 24,
         borderTopRightRadius: 24,
         paddingHorizontal: 24,
@@ -548,7 +549,7 @@ const styles = StyleSheet.create({
     modalTitle: {
         fontSize: 22,
         fontWeight: '700',
-        color: '#1D3557',
+        color: AppColors.navy,
     },
     modalCloseButton: {
         width: 36,
@@ -580,14 +581,14 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 16,
         paddingVertical: 14,
-        color: '#1D3557',
+        color: AppColors.navy,
     },
     sendButton: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         gap: 8,
-        backgroundColor: '#E63946',
+        backgroundColor: AppColors.primary,
         paddingVertical: 16,
         borderRadius: 14,
         marginBottom: 8,

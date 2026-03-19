@@ -1,20 +1,10 @@
 import { useEffect, useState } from 'react';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
+import { db } from '@/firebaseConfig';
+import { AboutData } from '@/types/appContent';
+import { Collections } from '@/constants/collections';
 
-export interface AboutFeature {
-    iconName: string;
-    color: string;
-    title: string;
-    desc: string;
-}
-
-export interface AboutData {
-    tagline: string;
-    description: string;
-    features: AboutFeature[];
-    credits: string;
-}
+export type { AboutFeature, AboutData } from '@/types/appContent';
 
 export function useAbout() {
     const [data, setData] = useState<AboutData | null>(null);
@@ -24,7 +14,7 @@ export function useAbout() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const snap = await getDoc(doc(db, 'appContent', 'about'));
+                const snap = await getDoc(doc(db, Collections.appContent, 'about'));
                 if (snap.exists()) {
                     setData(snap.data() as AboutData);
                 } else {

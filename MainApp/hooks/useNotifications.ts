@@ -7,25 +7,14 @@ import {
     updateDoc,
     deleteDoc,
     doc,
-    Timestamp,
 } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
+import { db } from '@/firebaseConfig';
 import { useAuth } from './useAuth';
+import { AppNotification } from '@/types/notification';
+import { Collections } from '@/constants/collections';
 
-export type NotificationType = 'friend_request' | 'like' | 'comment' | 'review' | 'chimdoo';
-
-export interface AppNotification {
-    id: string;
-    type: NotificationType;
-    title: string;
-    body: string;
-    read: boolean;
-    createdAt: Timestamp | null;
-    fromUserId?: string;
-    fromUserName?: string;
-    fromAvatar?: string;
-    metadata?: Record<string, string>;
-}
+// Re-export types so existing consumers still work
+export type { NotificationType, AppNotification } from '@/types/notification';
 
 export function useNotifications() {
     const { user } = useAuth();
@@ -40,7 +29,7 @@ export function useNotifications() {
         }
 
         const q = query(
-            collection(db, 'notifications', user.uid, 'items'),
+            collection(db, Collections.notifications, user.uid, 'items'),
             orderBy('createdAt', 'desc')
         );
 
@@ -59,7 +48,7 @@ export function useNotifications() {
     const markAsRead = useCallback(
         async (notifId: string) => {
             if (!user) return;
-            await updateDoc(doc(db, 'notifications', user.uid, 'items', notifId), {
+            await updateDoc(doc(db, Collections.notifications, user.uid, 'items', notifId), {
                 read: true,
             });
         },
@@ -71,7 +60,7 @@ export function useNotifications() {
         const unread = notifications.filter((n) => !n.read);
         await Promise.all(
             unread.map((n) =>
-                updateDoc(doc(db, 'notifications', user.uid, 'items', n.id), { read: true })
+                updateDoc(doc(db, Collections.notifications, user.uid, 'items', n.id), { read: true })
             )
         );
     }, [user, notifications]);
@@ -79,7 +68,7 @@ export function useNotifications() {
     const deleteNotification = useCallback(
         async (notifId: string) => {
             if (!user) return;
-            await deleteDoc(doc(db, 'notifications', user.uid, 'items', notifId));
+            await deleteDoc(doc(db, Collections.notifications, user.uid, 'items', notifId));
         },
         [user]
     );

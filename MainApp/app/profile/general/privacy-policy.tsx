@@ -11,6 +11,7 @@ import {
 import { useRouter } from 'expo-router';
 import { ChevronLeft, FileText } from 'lucide-react-native';
 import { usePrivacyPolicy } from '../../../hooks/usePrivacyPolicy';
+import { AppColors } from '@/constants/colors';
 
 export default function PrivacyPolicyScreen() {
     const router = useRouter();
@@ -65,7 +66,7 @@ export default function PrivacyPolicyScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#F8F9FA' },
+    container: { flex: 1, backgroundColor: AppColors.backgroundLight },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -73,7 +74,7 @@ const styles = StyleSheet.create({
         paddingTop: Platform.OS === 'ios' ? 60 : 48,
         paddingHorizontal: 20,
         paddingBottom: 20,
-        backgroundColor: '#1D3557',
+        backgroundColor: AppColors.navy,
     },
     backButton: {
         width: 40,
@@ -86,7 +87,7 @@ const styles = StyleSheet.create({
     headerTitle: { fontSize: 20, fontWeight: '700', color: '#fff' },
     banner: {
         alignItems: 'center',
-        backgroundColor: '#1D3557',
+        backgroundColor: AppColors.navy,
         paddingBottom: 32,
         paddingHorizontal: 32,
     },
@@ -111,14 +112,14 @@ const styles = StyleSheet.create({
     },
     bannerSub: { fontSize: 13, color: 'rgba(255,255,255,0.55)' },
     center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-    errorText: { fontSize: 14, color: '#E63946' },
+    errorText: { fontSize: 14, color: AppColors.primary },
     scrollContent: { paddingHorizontal: 24, paddingTop: 28, paddingBottom: 60 },
     section: {
         marginBottom: 16,
         backgroundColor: '#fff',
         borderRadius: 16,
         padding: 18,
-        shadowColor: '#1D3557',
+        shadowColor: AppColors.navy,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.06,
         shadowRadius: 8,
@@ -126,7 +127,7 @@ const styles = StyleSheet.create({
         borderLeftWidth: 3,
         borderLeftColor: '#8b5cf6',
     },
-    sectionTitle: { fontSize: 15, fontWeight: '700', color: '#1D3557', marginBottom: 10 },
+    sectionTitle: { fontSize: 15, fontWeight: '700', color: AppColors.navy, marginBottom: 10 },
     sectionContent: { fontSize: 14, color: '#555', lineHeight: 22 },
     footer: { alignItems: 'center', paddingTop: 8, paddingBottom: 16 },
     footerText: { fontSize: 13, color: '#aaa' },
