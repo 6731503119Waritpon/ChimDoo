@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Canvas, useFrame } from '@react-three/fiber/native';
 import { useGLTF, OrbitControls, Stage } from '@react-three/drei/native';
-import { ChevronRight, X } from 'lucide-react-native';
+import { ChevronRight } from 'lucide-react-native';
 import CountryFlag from 'react-native-country-flag';
 import { useFocusEffect } from 'expo-router';
 
@@ -19,6 +19,7 @@ import { useGlobe } from '@/hooks/useGlobe';
 import modelPath from '@/assets/models/earth.glb';
 import NotificationBell from '@/components/NotificationBell';
 import NotificationModal from '@/components/NotificationModal';
+import CountrySelectModal from '@/components/CountrySelectModal';
 import { AppColors } from '@/constants/colors';
 
 function EarthModel(props: any) {
@@ -197,52 +198,13 @@ export default function HomeScreen() {
           </Canvas>
         </View>
 
-        <Modal
+        <CountrySelectModal
           visible={modalVisible}
-          transparent
-          animationType="slide"
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <View style={styles.modalBackdrop}>
-            <View style={styles.modalSheet}>
-              <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>Select Country</Text>
-                <TouchableOpacity onPress={() => setModalVisible(false)}>
-                  <X size={22} color="#666" />
-                </TouchableOpacity>
-              </View>
-
-              <FlatList
-                data={globeCountries}
-                keyExtractor={(item) => item.id}
-                showsVerticalScrollIndicator={false}
-                renderItem={({ item }) => (
-                  <TouchableOpacity
-                    style={[
-                      styles.countryItem,
-                      selected?.id === item.id && styles.countryItemActive,
-                    ]}
-                    activeOpacity={0.6}
-                    onPress={() => handleSelectCountry(item)}
-                  >
-                    <CountryFlag isoCode={item.isoCode} size={28} style={{ borderRadius: 4 }} />
-                    <Text
-                      style={[
-                        styles.countryName,
-                        selected?.id === item.id && styles.countryNameActive,
-                      ]}
-                    >
-                      {item.name}
-                    </Text>
-                    {selected?.id === item.id && (
-                      <View style={styles.activeDot} />
-                    )}
-                  </TouchableOpacity>
-                )}
-              />
-            </View>
-          </View>
-        </Modal>
+          onClose={() => setModalVisible(false)}
+          countries={globeCountries}
+          selectedCountry={selected}
+          onSelectCountry={handleSelectCountry}
+        />
       </View>
       <NotificationModal visible={showNotif} onClose={() => setShowNotif(false)} />
     </>

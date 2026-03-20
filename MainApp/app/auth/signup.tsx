@@ -18,7 +18,8 @@ import * as Google from 'expo-auth-session/providers/google';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
 import { useGoogleAuth } from '../../hooks/useGoogleAuth';
-import { ArrowLeft, Eye, EyeOff } from 'lucide-react-native';
+import { ArrowLeft } from 'lucide-react-native';
+import SecureInput from '@/components/SecureInput';
 import { AppColors } from '@/constants/colors';
 
 WebBrowser.maybeCompleteAuthSession();
@@ -158,49 +159,22 @@ export default function SignupScreen() {
                         </View>
 
                         <View style={styles.inputContainer}>
-                            <Text style={styles.label}>Password</Text>
-                            <View style={styles.passwordRow}>
-                                <TextInput
-                                    style={styles.passwordInput}
-                                    placeholder="Create a password"
-                                    placeholderTextColor="#666"
-                                    value={password}
-                                    onChangeText={setPassword}
-                                    secureTextEntry={!showPassword}
-                                />
-                                <TouchableOpacity
-                                    style={styles.eyeButton}
-                                    onPress={() => setShowPassword(!showPassword)}
-                                >
-                                    {showPassword
-                                        ? <EyeOff size={20} color="#888" />
-                                        : <Eye size={20} color="#888" />
-                                    }
-                                </TouchableOpacity>
-                            </View>
+                            <SecureInput
+                                label="Password"
+                                value={password}
+                                onChangeText={setPassword}
+                                placeholder="Create a password"
+                                showStrength={true}
+                            />
                         </View>
 
                         <View style={styles.inputContainer}>
-                            <Text style={styles.label}>Confirm Password</Text>
-                            <View style={styles.passwordRow}>
-                                <TextInput
-                                    style={styles.passwordInput}
-                                    placeholder="Confirm your password"
-                                    placeholderTextColor="#666"
-                                    value={confirmPassword}
-                                    onChangeText={setConfirmPassword}
-                                    secureTextEntry={!showConfirm}
-                                />
-                                <TouchableOpacity
-                                    style={styles.eyeButton}
-                                    onPress={() => setShowConfirm(!showConfirm)}
-                                >
-                                    {showConfirm
-                                        ? <EyeOff size={20} color="#888" />
-                                        : <Eye size={20} color="#888" />
-                                    }
-                                </TouchableOpacity>
-                            </View>
+                            <SecureInput
+                                label="Confirm Password"
+                                value={confirmPassword}
+                                onChangeText={setConfirmPassword}
+                                placeholder="Confirm your password"
+                            />
                         </View>
 
                         <TouchableOpacity
@@ -288,22 +262,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         borderWidth: 1,
         borderColor: '#333',
-    },
-    passwordRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#333',
-        paddingHorizontal: 16,
-    },
-    passwordInput: {
-        flex: 1,
-        fontSize: 16,
-        paddingVertical: 16,
-    },
-    eyeButton: {
-        padding: 4,
     },
     button: {
         backgroundColor: AppColors.primary,
