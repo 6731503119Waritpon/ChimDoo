@@ -21,6 +21,8 @@ import { profileMenuConfig } from '@/config/menuProfile';
 import { useToast } from '@/components/ToastProvider';
 import LogoutModal from '@/components/LogoutModal';
 import AppVersionModal from '@/components/AppVersionModal';
+import GuestState from '@/components/GuestState';
+import ProfileMenuSection from '@/components/ProfileMenuSection';
 
 const Page = () => {
     const router = useRouter();
@@ -62,68 +64,16 @@ const Page = () => {
 
     if (!user) {
         return (
-            <View style={styles.guestContainer}>
-                <View style={styles.guestContent}>
-                    <View style={styles.guestIconWrapper}>
-                        <UserPen size={48} color="#E63946" />
-                    </View>
-                    <Text style={styles.guestTitle}>Welcome to ChimDoo</Text>
-                    <Text style={styles.guestSubtitle}>
-                        Sign in to access your profile, saved recipes, and more
-                    </Text>
-
-                    <View style={styles.guestButtons}>
-                        <TouchableOpacity
-                            style={styles.primaryButton}
-                            onPress={() => router.push('/auth/login')}
-                        >
-                            <Text style={styles.primaryButtonText}>Log In</Text>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={styles.outlineButton}
-                            onPress={() => router.push('/auth/signup')}
-                        >
-                            <Text style={styles.outlineButtonText}>
-                                Create Account
-                            </Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </View>
+            <GuestState
+                icon={UserPen}
+                title="Welcome to ChimDoo"
+                subtitle="Sign in to access your profile, saved recipes, and more"
+                showAuthButtons={true}
+            />
         );
     }
 
     const avatarLetter = (user.displayName || user.email || '?').charAt(0).toUpperCase();
-
-    const renderMenuSection = (title: string, items: ProfileMenuItem[]) => (
-        <View style={styles.menuSection} key={title}>
-            <Text style={styles.sectionTitle}>{title}</Text>
-            <View style={styles.menuCard}>
-                {items.map((item, index) => {
-                    const Icon = item.icon;
-                    return (
-                        <React.Fragment key={item.label}>
-                            <TouchableOpacity
-                                style={styles.menuItem}
-                                onPress={() => handleMenuPress(item)}
-                                activeOpacity={0.6}
-                            >
-                                <View style={styles.menuItemLeft}>
-                                    <View style={styles.menuIconWrapper}>
-                                        <Icon size={20} color={item.iconColor} />
-                                    </View>
-                                    <Text style={styles.menuItemLabel}>{item.label}</Text>
-                                </View>
-                                <ChevronRight size={18} color="#444" />
-                            </TouchableOpacity>
-                            {index < items.length - 1 && <View style={styles.menuDivider} />}
-                        </React.Fragment>
-                    );
-                })}
-            </View>
-        </View>
-    );
 
     return (
         <ScrollView
@@ -166,7 +116,12 @@ const Page = () => {
             </View>
 
             {profileMenuConfig.map((section) =>
-                renderMenuSection(section.section, section.items)
+                <ProfileMenuSection
+                    key={section.section}
+                    title={section.section}
+                    items={section.items}
+                    onPress={handleMenuPress}
+                />
             )}
 
             <TouchableOpacity
@@ -200,65 +155,6 @@ const styles = StyleSheet.create({
     centerContent: {
         alignItems: 'center',
         justifyContent: 'center',
-    },
-
-    guestContainer: {
-        flex: 1,
-        backgroundColor: '#fff',
-        justifyContent: 'center',
-        padding: 24,
-    },
-    guestContent: {
-        alignItems: 'center',
-    },
-    guestIconWrapper: {
-        width: 88,
-        height: 88,
-        borderRadius: 44,
-        backgroundColor: 'rgba(230, 57, 70, 0.1)',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 24,
-    },
-    guestTitle: {
-        fontSize: 26,
-        fontWeight: '800',
-        marginBottom: 10,
-    },
-    guestSubtitle: {
-        fontSize: 15,
-        color: '#777',
-        textAlign: 'center',
-        lineHeight: 22,
-        marginBottom: 36,
-        paddingHorizontal: 20,
-    },
-    guestButtons: {
-        width: '100%',
-        gap: 14,
-    },
-    primaryButton: {
-        backgroundColor: '#E63946',
-        borderRadius: 14,
-        paddingVertical: 16,
-        alignItems: 'center',
-    },
-    primaryButtonText: {
-        color: '#fff',
-        fontSize: 17,
-        fontWeight: '700',
-    },
-    outlineButton: {
-        borderWidth: 1.5,
-        borderColor: '#E63946',
-        borderRadius: 14,
-        paddingVertical: 16,
-        alignItems: 'center',
-    },
-    outlineButtonText: {
-        color: '#E63946',
-        fontSize: 17,
-        fontWeight: '700',
     },
 
     container: {
@@ -354,73 +250,6 @@ const styles = StyleSheet.create({
     editBadgeText: {
         fontSize: 13,
         fontWeight: '600',
-    },
-
-    menuSection: {
-        marginTop: 20,
-        paddingHorizontal: 20,
-    },
-    sectionTitle: {
-        fontSize: 13,
-        fontWeight: '600',
-        color: '#666',
-        textTransform: 'uppercase',
-        letterSpacing: 0.8,
-        marginBottom: 10,
-        marginLeft: 4,
-    },
-    menuCard: {
-        backgroundColor: '#FFFFFF',
-        borderRadius: 18,
-        borderWidth: 1,
-        borderColor: 'rgba(29, 53, 87, 0.07)',
-        overflow: 'hidden',
-        shadowColor: '#1D3557',
-        shadowOffset: {
-            width: 0,
-            height: 6,
-        },
-        shadowOpacity: 0.12,
-        shadowRadius: 16,
-        elevation: 8,
-    },
-    menuItem: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingVertical: 15,
-        paddingHorizontal: 16,
-    },
-    menuItemLeft: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 14,
-    },
-    menuIconWrapper: {
-        width: 36,
-        height: 36,
-        borderRadius: 10,
-        backgroundColor: '#F8F9FA',
-        borderWidth: 1,
-        borderColor: 'rgba(0,0,0,0.05)',
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: '#000',
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.12,
-        shadowRadius: 6,
-        elevation: 4,
-    },
-    menuItemLabel: {
-        fontSize: 16,
-        fontWeight: '500',
-    },
-    menuDivider: {
-        height: 0.5,
-        backgroundColor: '#919497ff',
     },
 
     logoutButton: {

@@ -1,3 +1,4 @@
+import SecureInput from '@/components/SecureInput';
 import React, { useState } from 'react';
 import {
     View,
@@ -11,7 +12,7 @@ import {
     ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ChevronLeft, Eye, EyeOff, Lock, ShieldCheck, AlertCircle } from 'lucide-react-native';
+import { ChevronLeft, ShieldCheck, AlertCircle } from 'lucide-react-native';
 import {
     reauthenticateWithCredential,
     EmailAuthProvider,
@@ -166,106 +167,37 @@ export default function ChangePasswordScreen() {
 
                 <View style={styles.form}>
 
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Current Password</Text>
-                        <View style={styles.inputRow}>
-                            <Lock size={18} color="#999" style={styles.inputIcon} />
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Enter current password"
-                                placeholderTextColor="#aaa"
-                                value={currentPassword}
-                                onChangeText={setCurrentPassword}
-                                secureTextEntry={!showCurrent}
-                                autoCapitalize="none"
-                            />
-                            <TouchableOpacity onPress={() => setShowCurrent(!showCurrent)}>
-                                {showCurrent
-                                    ? <EyeOff size={20} color="#888" />
-                                    : <Eye size={20} color="#888" />
-                                }
-                            </TouchableOpacity>
-                        </View>
-                    </View>
+                    <SecureInput
+                        label="Current Password"
+                        value={currentPassword}
+                        onChangeText={setCurrentPassword}
+                        placeholder="Enter current password"
+                    />
 
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>New Password</Text>
-                        <View style={styles.inputRow}>
-                            <Lock size={18} color="#999" style={styles.inputIcon} />
-                            <TextInput
-                                style={styles.input}
-                                placeholder="At least 8 characters"
-                                placeholderTextColor="#aaa"
-                                value={newPassword}
-                                onChangeText={setNewPassword}
-                                secureTextEntry={!showNew}
-                                autoCapitalize="none"
-                            />
-                            <TouchableOpacity onPress={() => setShowNew(!showNew)}>
-                                {showNew
-                                    ? <EyeOff size={20} color="#888" />
-                                    : <Eye size={20} color="#888" />
-                                }
-                            </TouchableOpacity>
-                        </View>
+                    <SecureInput
+                        label="New Password"
+                        value={newPassword}
+                        onChangeText={setNewPassword}
+                        placeholder="At least 8 characters"
+                        showStrength={true}
+                        helperText="Use uppercase letters, numbers, and symbols for a stronger password."
+                    />
 
-                        {newPassword.length > 0 && (
-                            <View style={styles.strengthWrapper}>
-                                <View style={styles.strengthBars}>
-                                    {[1, 2, 3, 4].map((n) => (
-                                        <View
-                                            key={n}
-                                            style={[
-                                                styles.strengthBar,
-                                                { backgroundColor: n <= strength.level ? strength.color : '#e5e7eb' },
-                                            ]}
-                                        />
-                                    ))}
-                                </View>
-                                <Text style={[styles.strengthLabel, { color: strength.color }]}>
-                                    {strength.label}
-                                </Text>
-                            </View>
-                        )}
-
-                        <Text style={styles.helperText}>
-                            Use uppercase letters, numbers, and symbols for a stronger password.
-                        </Text>
-                    </View>
-
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Confirm New Password</Text>
-                        <View style={[
-                            styles.inputRow,
+                    <SecureInput
+                        label="Confirm New Password"
+                        value={confirmPassword}
+                        onChangeText={setConfirmPassword}
+                        placeholder="Repeat new password"
+                        errorText={
                             confirmPassword.length > 0 && confirmPassword !== newPassword
-                                ? styles.inputRowError
-                                : null,
-                        ]}>
-                            <Lock size={18} color="#999" style={styles.inputIcon} />
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Repeat new password"
-                                placeholderTextColor="#aaa"
-                                value={confirmPassword}
-                                onChangeText={setConfirmPassword}
-                                secureTextEntry={!showConfirm}
-                                autoCapitalize="none"
-                            />
-                            <TouchableOpacity onPress={() => setShowConfirm(!showConfirm)}>
-                                {showConfirm
-                                    ? <EyeOff size={20} color="#888" />
-                                    : <Eye size={20} color="#888" />
-                                }
-                            </TouchableOpacity>
-                        </View>
-                        {confirmPassword.length > 0 && confirmPassword !== newPassword && (
-                            <Text style={styles.errorText}>Passwords do not match</Text>
-                        )}
-                    </View>
+                                ? 'Passwords do not match'
+                                : undefined
+                        }
+                    />
+
                 </View>
 
-                <TouchableOpacity
-                    style={[styles.saveButton, saving && styles.saveButtonDisabled]}
+                <TouchableOpacity style={[styles.saveButton, saving && styles.saveButtonDisabled]}
                     onPress={handleChangePassword}
                     disabled={saving}
                     activeOpacity={0.8}
@@ -395,76 +327,7 @@ const styles = StyleSheet.create({
         paddingTop: 32,
         gap: 24,
     },
-    inputGroup: {
-        gap: 8,
-    },
-    label: {
-        fontSize: 13,
-        fontWeight: '700',
-        color: '#555',
-        textTransform: 'uppercase',
-        letterSpacing: 0.8,
-    },
-    inputRow: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#fff',
-        borderRadius: 14,
-        borderWidth: 1,
-        borderColor: 'rgba(29, 53, 87, 0.12)',
-        paddingHorizontal: 14,
-        paddingVertical: 4,
-        shadowColor: AppColors.navy,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 6,
-        elevation: 3,
-    },
-    inputRowError: {
-        borderColor: AppColors.primary,
-    },
-    inputIcon: {
-        marginRight: 10,
-    },
-    input: {
-        flex: 1,
-        fontSize: 16,
-        paddingVertical: 14,
-        color: '#1a1a1a',
-    },
 
-    strengthWrapper: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 8,
-        marginTop: 6,
-    },
-    strengthBars: {
-        flexDirection: 'row',
-        gap: 4,
-        flex: 1,
-    },
-    strengthBar: {
-        flex: 1,
-        height: 4,
-        borderRadius: 2,
-    },
-    strengthLabel: {
-        fontSize: 12,
-        fontWeight: '700',
-        width: 48,
-        textAlign: 'right',
-    },
-    helperText: {
-        fontSize: 12,
-        color: '#888',
-        lineHeight: 18,
-    },
-    errorText: {
-        fontSize: 12,
-        color: AppColors.primary,
-        fontWeight: '500',
-    },
     saveButton: {
         marginHorizontal: 24,
         marginTop: 40,
