@@ -11,7 +11,7 @@ import {
     Dimensions,
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { ArrowLeft, Clock, Flame } from 'lucide-react-native';
+import { ArrowLeft } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import CountryFlag from 'react-native-country-flag';
 
@@ -19,63 +19,8 @@ import { useCountryData } from '@/hooks/useCountryData';
 import { FoodItem } from '@/types/recipe';
 import { globeCountries } from '@/config/home';
 import { AppColors } from '@/constants/colors';
-
-const PopularFoodCard = ({ item, onPress, badgeLabel = 'Popular' }: { item: any; onPress: () => void; badgeLabel?: string }) => (
-    <TouchableOpacity
-        style={styles.largeCard}
-        activeOpacity={0.9}
-        onPress={onPress}
-    >
-        <Image source={{ uri: item.image }} style={styles.largeCardImage} />
-        <LinearGradient
-            colors={['transparent', 'rgba(0,0,0,0.8)']}
-            start={{ x: 0.5, y: 0 }}
-            end={{ x: 0.5, y: 1 }}
-            style={styles.largeCardOverlay}
-        />
-
-        <View style={styles.largeCardContent}>
-            <View style={styles.largeCardBadge}>
-                <Text style={styles.largeCardBadgeText}>{badgeLabel}</Text>
-            </View>
-
-            <Text style={styles.largeCardTitle}>{item.name}</Text>
-            <Text style={styles.largeCardDesc} numberOfLines={2}>
-                {item.description}
-            </Text>
-
-            <View style={styles.largeCardMeta}>
-                <View style={styles.metaChip}>
-                    <Clock size={12} color="#fff" />
-                    <Text style={styles.metaChipText}>{item.prepTime}</Text>
-                </View>
-                <View style={styles.metaChip}>
-                    <Flame size={12} color="#fff" />
-                    <Text style={styles.metaChipText}>{item.taste}</Text>
-                </View>
-            </View>
-        </View>
-    </TouchableOpacity>
-);
-
-const NormalFoodItem = ({ item, onPress }: { item: any; onPress: () => void }) => (
-    <TouchableOpacity
-        style={styles.smallCard}
-        activeOpacity={0.7}
-        onPress={onPress}
-    >
-        <Image
-            source={{ uri: item.image }}
-            style={styles.smallCardImage}
-        />
-        <View style={styles.smallCardInfo}>
-            <Text style={styles.smallCardName}>{item.name}</Text>
-            <Text style={styles.smallCardDesc} numberOfLines={2}>
-                {item.description}
-            </Text>
-        </View>
-    </TouchableOpacity>
-);
+import PopularFoodCard from '@/components/PopularFoodCard';
+import NormalFoodItem from '@/components/NormalFoodItem';
 
 export default function CountryPage() {
     const { id } = useLocalSearchParams<{ id: string }>();

@@ -327,7 +327,6 @@ const styles = StyleSheet.create({
         paddingTop: 32,
         gap: 24,
     },
-
     saveButton: {
         marginHorizontal: 24,
         marginTop: 40,
