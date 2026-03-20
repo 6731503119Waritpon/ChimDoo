@@ -16,6 +16,8 @@ import { Search, Clock, Flame, X, UtensilsCrossed, CookingPot } from 'lucide-rea
 import { useChimDoo, ChimDooItem } from '@/hooks/useChimDoo';
 import NotificationBell from '@/components/NotificationBell';
 import NotificationModal from '@/components/NotificationModal';
+import GuestState from '@/components/GuestState';
+import RecipeCard from '@/components/RecipeCard';
 import { AppColors } from '@/constants/colors';
 
 const Page = () => {
@@ -51,56 +53,16 @@ const Page = () => {
     };
 
     const renderRecipeCard = ({ item }: { item: ChimDooItem }) => (
-        <TouchableOpacity
-            style={styles.recipeCard}
-            activeOpacity={0.7}
-            onPress={() => handleRecipePress(item)}
-        >
-            <Image source={{ uri: item.image }} style={styles.recipeImage} />
-            <View style={styles.recipeOverlay} />
-            <View style={styles.recipeContent}>
-                {item.category ? (
-                    <View style={styles.recipeBadge}>
-                        <Text style={styles.recipeBadgeText}>{item.category}</Text>
-                    </View>
-                ) : null}
-                <Text style={styles.recipeName}>{item.name}</Text>
-                <Text style={styles.recipeDesc} numberOfLines={2}>
-                    {item.description}
-                </Text>
-                <View style={styles.recipeMeta}>
-                    {item.prepTime ? (
-                        <View style={styles.metaChip}>
-                            <Clock size={13} color="#fff" />
-                            <Text style={styles.metaChipText}>
-                                {item.prepTime}
-                            </Text>
-                        </View>
-                    ) : null}
-                    {item.taste && item.taste.length > 0 ? (
-                        <View style={styles.metaChip}>
-                            <Flame size={13} color="#fff" />
-                            <Text style={styles.metaChipText}>
-                                {item.taste[0]}
-                            </Text>
-                        </View>
-                    ) : null}
-                </View>
-            </View>
-        </TouchableOpacity>
+        <RecipeCard item={item} onPress={handleRecipePress} />
     );
 
     if (!isLoggedIn) {
         return (
-            <View style={styles.guestContainer}>
-                <View style={styles.guestIconWrapper}>
-                    <UtensilsCrossed size={48} color={AppColors.primary} />
-                </View>
-                <Text style={styles.guestTitle}>Recipes</Text>
-                <Text style={styles.guestSubtitle}>
-                    Sign in to track menus you've tried and discover your favorite dishes!
-                </Text>
-            </View>
+            <GuestState
+                icon={UtensilsCrossed}
+                title="Recipes"
+                subtitle="Sign in to track menus you've tried and discover your favorite dishes!"
+            />
         );
     }
 
@@ -301,78 +263,6 @@ const styles = StyleSheet.create({
         paddingTop: 12,
         paddingBottom: 120,
     },
-    recipeCard: {
-        borderRadius: 22,
-        overflow: 'hidden',
-        marginBottom: 18,
-        height: 220,
-        position: 'relative',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.12,
-        shadowRadius: 16,
-        elevation: 8,
-    },
-    recipeImage: {
-        width: '100%',
-        height: '100%',
-        position: 'absolute',
-    },
-    recipeOverlay: {
-        ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(0,0,0,0.35)',
-    },
-    recipeContent: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        padding: 18,
-    },
-    recipeBadge: {
-        alignSelf: 'flex-start',
-        backgroundColor: 'rgba(230, 57, 70, 0.9)',
-        borderRadius: 12,
-        paddingHorizontal: 12,
-        paddingVertical: 5,
-        marginBottom: 8,
-    },
-    recipeBadgeText: {
-        color: '#fff',
-        fontSize: 12,
-        fontWeight: '700',
-    },
-    recipeName: {
-        fontSize: 22,
-        fontWeight: '800',
-        color: '#fff',
-        marginBottom: 4,
-        textShadowColor: 'rgba(0,0,0,0.4)',
-        textShadowOffset: { width: 0, height: 1 },
-        textShadowRadius: 4,
-    },
-    recipeDesc: {
-        fontSize: 13,
-        color: 'rgba(255,255,255,0.85)',
-        lineHeight: 18,
-        marginBottom: 8,
-    },
-    recipeMeta: {
-        flexDirection: 'row',
-        gap: 10,
-    },
-    metaChip: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 5,
-        backgroundColor: 'rgba(255,255,255,0.2)',
-        borderRadius: 10,
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-    },
-    metaChipText: {
-        color: '#fff',
-        fontSize: 12,
-        fontWeight: '600',
-    },
     emptyState: {
         alignItems: 'center',
         justifyContent: 'center',
@@ -393,41 +283,5 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         paddingHorizontal: 40,
         lineHeight: 22,
-    },
-    guestContainer: {
-        flex: 1,
-        backgroundColor: AppColors.backgroundLight,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 32,
-    },
-    guestIconWrapper: {
-        width: 96,
-        height: 96,
-        borderRadius: 48,
-        backgroundColor: 'rgba(230, 57, 70, 0.1)',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 24,
-    },
-    guestTitle: {
-        fontSize: 28,
-        fontWeight: '800',
-        color: AppColors.navy,
-        marginBottom: 12,
-    },
-    guestSubtitle: {
-        fontSize: 15,
-        color: '#666',
-        textAlign: 'center',
-        lineHeight: 22,
-        paddingHorizontal: 10,
-    },
-    guestState: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingTop: 80,
-        paddingHorizontal: 32,
     },
 });
