@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Platform, Animated } from 'react-native';
+import { View, Text, StyleSheet, Platform, Animated, PanResponder } from 'react-native';
 import {
     CheckCircle,
     XCircle,
@@ -66,9 +66,51 @@ const Toast: React.FC<ToastProps> = ({
 }) => {
     const translateY = useRef(new Animated.Value(-120)).current;
     const opacity = useRef(new Animated.Value(0)).current;
+    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const theme = toastThemes[type];
     const IconComponent = theme.icon;
+
+    const hideAnimation = () => {
+        Animated.parallel([
+            Animated.timing(translateY, {
+                toValue: -120,
+                duration: 300,
+                useNativeDriver: true,
+            }),
+            Animated.timing(opacity, {
+                toValue: 0,
+                duration: 250,
+                useNativeDriver: true,
+            }),
+        ]).start(() => onHide());
+    };
+
+    const panResponder = useRef(
+        PanResponder.create({
+            onMoveShouldSetPanResponderCapture: (_, gestureState) => {
+                return Math.abs(gestureState.dx) > 10 || Math.abs(gestureState.dy) > 10;
+            },
+            onPanResponderRelease: (_, gestureState) => {
+                if (Math.abs(gestureState.dx) > 30 || gestureState.dy < -20) {
+                    if (timerRef.current) clearTimeout(timerRef.current);
+
+                    Animated.parallel([
+                        Animated.timing(translateY, {
+                            toValue: -150,
+                            duration: 200,
+                            useNativeDriver: true,
+                        }),
+                        Animated.timing(opacity, {
+                            toValue: 0,
+                            duration: 200,
+                            useNativeDriver: true,
+                        }),
+                    ]).start(() => onHide());
+                }
+            },
+        })
+    ).current;
 
     useEffect(() => {
         if (visible) {
@@ -76,42 +118,36 @@ const Toast: React.FC<ToastProps> = ({
                 Animated.spring(translateY, {
                     toValue: 0,
                     useNativeDriver: true,
-                    tension: 80,
-                    friction: 10,
+                    tension: 170,
+                    friction: 20,
+                    restDisplacementThreshold: 0.5,
+                    restSpeedThreshold: 0.5,
                 }),
                 Animated.timing(opacity, {
                     toValue: 1,
-                    duration: 250,
+                    duration: 180,
                     useNativeDriver: true,
                 }),
             ]).start();
 
-            const timer = setTimeout(() => {
-                Animated.parallel([
-                    Animated.timing(translateY, {
-                        toValue: -120,
-                        duration: 300,
-                        useNativeDriver: true,
-                    }),
-                    Animated.timing(opacity, {
-                        toValue: 0,
-                        duration: 250,
-                        useNativeDriver: true,
-                    }),
-                ]).start(() => onHide());
+            timerRef.current = setTimeout(() => {
+                hideAnimation();
             }, duration);
 
-            return () => clearTimeout(timer);
+            return () => {
+                if (timerRef.current) clearTimeout(timerRef.current);
+            };
         } else {
             translateY.setValue(-120);
             opacity.setValue(0);
         }
-    }, [visible]);
+    }, [visible, duration]);
 
     if (!visible) return null;
 
     return (
         <Animated.View
+            {...panResponder.panHandlers}
             style={[
                 styles.container,
                 {

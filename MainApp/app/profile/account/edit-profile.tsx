@@ -1,22 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-    View,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    StyleSheet,
-    ActivityIndicator,
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    ScrollView,
+    View, Text, TextInput, TouchableOpacity, StyleSheet,
+    ActivityIndicator, Image, KeyboardAvoidingView, Platform,
+    ScrollView, Alert, ActionSheetIOS,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, Camera } from 'lucide-react-native';
 import { updateProfile } from 'firebase/auth';
+import { doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc } from 'firebase/firestore';
+import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../../../hooks/useAuth';
 import { useToast } from '@/components/ToastProvider';
 import { AppColors } from '@/constants/colors';
+import { db } from '@/firebaseConfig';
+import { Collections } from '@/constants/collections';
 
 export default function EditProfileScreen() {
     const router = useRouter();
@@ -24,7 +21,87 @@ export default function EditProfileScreen() {
     const toast = useToast();
 
     const [displayName, setDisplayName] = useState(user?.displayName || '');
+    const [photoPreview, setPhotoPreview] = useState<string | null>(user?.photoURL || null);
+    const [newPhotoBase64, setNewPhotoBase64] = useState<string | null>(null);
+    const [photoRemoved, setPhotoRemoved] = useState(false);
     const [saving, setSaving] = useState(false);
+
+    useEffect(() => {
+        if (!user) return;
+        getDoc(doc(db, Collections.users, user.uid)).then((snap) => {
+            const data = snap.data();
+            if (data?.photoBase64) setPhotoPreview(data.photoBase64);
+        });
+    }, [user]);
+
+    const pickImage = async (useCamera: boolean) => {
+        const perm = useCamera
+            ? await ImagePicker.requestCameraPermissionsAsync()
+            : await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+        if (!perm.granted) {
+            toast.warning('Permission Denied', `Please allow ${useCamera ? 'camera' : 'gallery'} access in Settings.`);
+            return;
+        }
+
+        const opts: ImagePicker.ImagePickerOptions = {
+            mediaTypes: ['images'],
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 0.3,
+            base64: true,
+        };
+
+        const result = useCamera
+            ? await ImagePicker.launchCameraAsync(opts)
+            : await ImagePicker.launchImageLibraryAsync(opts);
+
+        if (!result.canceled && result.assets[0]) {
+            const asset = result.assets[0];
+            setPhotoPreview(asset.uri);
+            setPhotoRemoved(false);
+            if (asset.base64) {
+                setNewPhotoBase64(`data:image/jpeg;base64,${asset.base64}`);
+            }
+        }
+    };
+
+    const removePhoto = () => {
+        setPhotoPreview(null);
+        setNewPhotoBase64(null);
+        setPhotoRemoved(true);
+    };
+
+    const showImageOptions = () => {
+        const hasPhoto = !!photoPreview;
+        if (Platform.OS === 'ios') {
+            const options = hasPhoto
+                ? ['Cancel', 'Take Photo', 'Choose from Gallery', 'Remove Photo']
+                : ['Cancel', 'Take Photo', 'Choose from Gallery'];
+            ActionSheetIOS.showActionSheetWithOptions(
+                {
+                    options,
+                    cancelButtonIndex: 0,
+                    destructiveButtonIndex: hasPhoto ? 3 : undefined,
+                },
+                (index) => {
+                    if (index === 1) pickImage(true);
+                    if (index === 2) pickImage(false);
+                    if (index === 3 && hasPhoto) removePhoto();
+                }
+            );
+        } else {
+            const buttons: any[] = [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Take Photo', onPress: () => pickImage(true) },
+                { text: 'Choose from Gallery', onPress: () => pickImage(false) },
+            ];
+            if (hasPhoto) {
+                buttons.push({ text: 'Remove Photo', style: 'destructive', onPress: removePhoto });
+            }
+            Alert.alert('Change Photo', 'Choose an option', buttons);
+        }
+    };
 
     const handleSave = async () => {
         if (!user) return;
@@ -36,7 +113,39 @@ export default function EditProfileScreen() {
 
         setSaving(true);
         try {
+            if (newPhotoBase64) {
+                await setDoc(
+                    doc(db, Collections.users, user.uid),
+                    { photoBase64: newPhotoBase64 },
+                    { merge: true }
+                );
+            } else if (photoRemoved) {
+                await setDoc(
+                    doc(db, Collections.users, user.uid),
+                    { photoBase64: null },
+                    { merge: true }
+                );
+            }
+
             await updateProfile(user, { displayName: displayName.trim() });
+
+            const userSnap = await getDoc(doc(db, Collections.users, user.uid));
+            const currentAvatar = userSnap.data()?.photoBase64 || '';
+
+            const reviewsQuery = query(
+                collection(db, Collections.reviews),
+                where('userId', '==', user.uid)
+            );
+            const reviewsSnap = await getDocs(reviewsQuery);
+
+            const updatePromises = reviewsSnap.docs.map((d) =>
+                updateDoc(d.ref, {
+                    userName: displayName.trim(),
+                    userAvatar: currentAvatar,
+                })
+            );
+            await Promise.all(updatePromises);
+
             toast.success('Success', 'Profile updated successfully!');
             setTimeout(() => router.back(), 1000);
         } catch (error: any) {
@@ -69,11 +178,15 @@ export default function EditProfileScreen() {
                 </View>
 
                 <View style={styles.avatarSection}>
-                    <View style={styles.avatarWrapper}>
+                    <TouchableOpacity
+                        style={styles.avatarWrapper}
+                        onPress={showImageOptions}
+                        activeOpacity={0.8}
+                    >
                         <View style={styles.avatarGradientRing}>
-                            {user?.photoURL ? (
+                            {photoPreview ? (
                                 <Image
-                                    source={{ uri: user.photoURL }}
+                                    source={{ uri: photoPreview }}
                                     style={styles.avatar}
                                 />
                             ) : (
@@ -84,19 +197,13 @@ export default function EditProfileScreen() {
                                 </View>
                             )}
                         </View>
-                        <TouchableOpacity
-                            style={styles.cameraButton}
-                            onPress={() =>
-                                toast.info(
-                                    'Coming Soon',
-                                    'Photo upload will be available in a future update!'
-                                )
-                            }
-                        >
+                        <View style={styles.cameraButton}>
                             <Camera size={16} color="#fff" />
-                        </TouchableOpacity>
-                    </View>
-                    <Text style={styles.changePhotoText}>Change Photo</Text>
+                        </View>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={showImageOptions}>
+                        <Text style={styles.changePhotoText}>Change Photo</Text>
+                    </TouchableOpacity>
                 </View>
 
                 <View style={styles.form}>

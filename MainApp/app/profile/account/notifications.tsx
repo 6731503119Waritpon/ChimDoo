@@ -9,9 +9,10 @@ import {
     Switch,
     Image,
     Alert,
+    Modal,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ChevronLeft, Bell, UserPlus, Heart, MessageCircle, Star, Trash2 } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, Bell, UserPlus, Heart, MessageCircle, Star, Trash2 } from 'lucide-react-native';
 import { useNotifications, AppNotification, NotificationType } from '../../../hooks/useNotifications';
 import { useNotificationSettings } from '../../../hooks/useNotificationSettings';
 import { formatRelativeTime } from '../../../utils/formatTime';
@@ -30,6 +31,7 @@ export default function NotificationsScreen() {
     const { notifications, deleteNotification } = useNotifications();
     const { settings, updateSetting } = useNotificationSettings();
     const [selected, setSelected] = useState<AppNotification | null>(null);
+    const [showSettingsModal, setShowSettingsModal] = useState(false);
 
     const handleDelete = (id: string) => {
         Alert.alert('Delete Notification', 'Remove this notification?', [
@@ -88,25 +90,17 @@ export default function NotificationsScreen() {
                 showsVerticalScrollIndicator={false}
                 ListHeaderComponent={
                     <View style={styles.settingsSection}>
-                        <Text style={styles.sectionLabel}>Notification Types</Text>
-                        {(Object.keys(TYPE_META) as NotificationType[]).map((type) => {
-                            const meta = TYPE_META[type];
-                            const Icon = meta.icon;
-                            return (
-                                <View key={type} style={styles.settingRow}>
-                                    <View style={[styles.settingIcon, { backgroundColor: `${meta.color}14` }]}>
-                                        <Icon size={16} color={meta.color} />
-                                    </View>
-                                    <Text style={styles.settingLabel}>{meta.label}</Text>
-                                    <Switch
-                                        value={settings[type]}
-                                        onValueChange={(val) => updateSetting(type, val)}
-                                        thumbColor={settings[type] ? '#fff' : '#eee'}
-                                        trackColor={{ false: '#ddd', true: AppColors.primary }}
-                                    />
-                                </View>
-                            );
-                        })}
+                        <TouchableOpacity
+                            style={styles.settingsButton}
+                            onPress={() => setShowSettingsModal(true)}
+                            activeOpacity={0.7}
+                        >
+                            <View style={[styles.settingIcon, { backgroundColor: 'rgba(37, 99, 235, 0.1)' }]}>
+                                <Bell size={18} color={AppColors.primary} />
+                            </View>
+                            <Text style={styles.settingsButtonText}>Notification Settings</Text>
+                            <ChevronRight size={20} color="#ccc" />
+                        </TouchableOpacity>
                         <Text style={styles.sectionLabel2}>Recent</Text>
                     </View>
                 }
@@ -134,6 +128,47 @@ export default function NotificationsScreen() {
                     </View>
                 </TouchableOpacity>
             )}
+
+            <Modal
+                transparent
+                visible={showSettingsModal}
+                animationType="fade"
+                onRequestClose={() => setShowSettingsModal(false)}
+            >
+                <TouchableOpacity 
+                    style={styles.modalBackdrop} 
+                    activeOpacity={1} 
+                    onPress={() => setShowSettingsModal(false)}
+                >
+                    <View style={styles.modalContent} onStartShouldSetResponder={() => true}>
+                        <View style={styles.modalHeader}>
+                            <Text style={styles.modalTitle}>Notification Settings</Text>
+                            <TouchableOpacity onPress={() => setShowSettingsModal(false)}>
+                                <Text style={styles.modalCloseText}>Done</Text>
+                            </TouchableOpacity>
+                        </View>
+                        
+                        {(Object.keys(TYPE_META) as NotificationType[]).map((type) => {
+                            const meta = TYPE_META[type];
+                            const Icon = meta.icon;
+                            return (
+                                <View key={type} style={styles.settingRow}>
+                                    <View style={[styles.settingIcon, { backgroundColor: `${meta.color}14` }]}>
+                                        <Icon size={16} color={meta.color} />
+                                    </View>
+                                    <Text style={styles.settingLabel}>{meta.label}</Text>
+                                    <Switch
+                                        value={settings[type]}
+                                        onValueChange={(val) => updateSetting(type, val)}
+                                        thumbColor={Platform.OS === 'ios' ? '#fff' : (settings[type] ? '#fff' : '#eee')}
+                                        trackColor={{ false: '#ddd', true: AppColors.primary }}
+                                    />
+                                </View>
+                            );
+                        })}
+                    </View>
+                </TouchableOpacity>
+            </Modal>
         </View>
     );
 }
@@ -221,4 +256,54 @@ const styles = StyleSheet.create({
         borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10,
     },
     detailCloseText: { color: '#fff', fontWeight: '700', fontSize: 14 },
+
+    settingsButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        borderRadius: 16,
+        padding: 16,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+        elevation: 2,
+    },
+    settingsButtonText: {
+        flex: 1,
+        fontSize: 16,
+        fontWeight: '600',
+        color: AppColors.navy,
+        marginLeft: 12,
+    },
+    modalBackdrop: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: 24,
+    },
+    modalContent: {
+        backgroundColor: '#fff',
+        borderRadius: 24,
+        padding: 24,
+        width: '100%',
+        maxHeight: '80%',
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginBottom: 20,
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: '700',
+        color: AppColors.navy,
+    },
+    modalCloseText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: AppColors.primary,
+    },
 });

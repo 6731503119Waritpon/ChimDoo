@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import {
     View,
     Text,
@@ -10,6 +10,7 @@ import {
     Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import { useFocusEffect } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth';
 import {
     UserPen,
@@ -23,6 +24,9 @@ import LogoutModal from '@/components/LogoutModal';
 import AppVersionModal from '@/components/AppVersionModal';
 import GuestState from '@/components/GuestState';
 import ProfileMenuSection from '@/components/ProfileMenuSection';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '@/firebaseConfig';
+import { Collections } from '@/constants/collections';
 
 const Page = () => {
     const router = useRouter();
@@ -31,6 +35,22 @@ const Page = () => {
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [loggingOut, setLoggingOut] = useState(false);
     const [showVersionModal, setShowVersionModal] = useState(false);
+    const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
+    const [displayName, setDisplayName] = useState(user?.displayName || '');
+
+    useFocusEffect(
+        useCallback(() => {
+            if (!user) return;
+            user.reload().then(() => {
+                setDisplayName(user.displayName || '');
+            });
+
+            getDoc(doc(db, Collections.users, user.uid)).then((snap) => {
+                const data = snap.data();
+                setProfilePhoto(data?.photoBase64 || null);
+            });
+        }, [user])
+    );
 
     const handleLogout = async () => {
         setLoggingOut(true);
@@ -83,9 +103,9 @@ const Page = () => {
         >
             <View style={styles.profileCard}>
                 <View style={styles.avatarRing}>
-                    {user.photoURL ? (
+                    {(profilePhoto || user.photoURL) ? (
                         <Image
-                            source={{ uri: user.photoURL }}
+                            source={{ uri: profilePhoto || user.photoURL! }}
                             style={styles.avatar}
                         />
                     ) : (
@@ -99,7 +119,7 @@ const Page = () => {
 
                 <View style={styles.profileInfo}>
                     <Text style={styles.displayName} numberOfLines={1}>
-                        {user.displayName || 'Unnamed User'}
+                        {displayName || 'Unnamed User'}
                     </Text>
                     <Text style={styles.email} numberOfLines={1}>
                         {user.email}
@@ -132,8 +152,6 @@ const Page = () => {
                 <LogOut size={20} color="#ef4444" />
                 <Text style={styles.logoutText}>Log Out</Text>
             </TouchableOpacity>
-
-            <Text style={styles.versionFooter}>ChimDoo v1.0.0</Text>
 
             <LogoutModal
                 visible={showLogoutModal}
@@ -269,12 +287,5 @@ const styles = StyleSheet.create({
         color: '#ef4444',
         fontSize: 16,
         fontWeight: '600',
-    },
-
-    versionFooter: {
-        textAlign: 'center',
-        color: '#444',
-        fontSize: 12,
-        marginTop: 20,
     },
 });

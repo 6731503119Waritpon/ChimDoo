@@ -124,6 +124,10 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     backButton: {
+        position: 'absolute',
+        top: Platform.OS === 'ios' ? 60 : 40,
+        left: 24,
+        zIndex: 10,
         width: 40,
         height: 40,
         borderRadius: 20,

@@ -266,6 +266,10 @@ const styles = StyleSheet.create({
         fontWeight: '600',
     },
     backButton: {
+        position: 'absolute',
+        top: Platform.OS === 'ios' ? 60 : 40,
+        left: 24,
+        zIndex: 10,
         width: 40,
         height: 40,
         borderRadius: 20,

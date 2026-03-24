@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { Bell, X, UserPlus, Heart, MessageCircle, Star, CheckCheck } from 'lucide-react-native';
 import { BlurView } from 'expo-blur';
+import { useRouter } from 'expo-router';
 import { useNotifications, AppNotification } from '../hooks/useNotifications';
 import { formatRelativeTime } from '@/utils/formatTime';
 import { AppColors } from '@/constants/colors';
@@ -37,6 +38,7 @@ interface Props {
 }
 
 export default function NotificationModal({ visible, onClose }: Props) {
+    const router = useRouter();
     const { notifications, markAsRead, markAllRead, deleteNotification } = useNotifications();
     const slideAnim = useRef(new Animated.Value(-300)).current;
     const [selected, setSelected] = useState<AppNotification | null>(null);
@@ -129,11 +131,22 @@ export default function NotificationModal({ visible, onClose }: Props) {
                         bounces={false}
                         contentContainerStyle={styles.list}
                     >
-                        {notifications.map((item) => (
+                        {notifications.slice(0, 10).map((item) => (
                             <View key={item.id}>
                                 {renderItem({ item })}
                             </View>
                         ))}
+                        {notifications.length > 10 && (
+                            <TouchableOpacity 
+                                style={styles.seeAllButton}
+                                onPress={() => {
+                                    onClose();
+                                    router.push('/profile/account/notifications');
+                                }}
+                            >
+                                <Text style={styles.seeAllText}>See All</Text>
+                            </TouchableOpacity>
+                        )}
                     </ScrollView>
                 )}
             </Animated.View>
@@ -316,5 +329,18 @@ const styles = StyleSheet.create({
     detailTime: {
         fontSize: 12,
         color: '#aaa',
+    },
+    seeAllButton: {
+        paddingVertical: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 4,
+        borderTopWidth: 1,
+        borderTopColor: '#f0f0f0',
+    },
+    seeAllText: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: AppColors.primary,
     },
 });
