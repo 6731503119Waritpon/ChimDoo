@@ -8,8 +8,8 @@ import {
     User,
 } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
+import { clearChatHistory } from '@/services/groq';
 
-// Sign up with email and password
 export const signUp = async (
     email: string,
     password: string,
@@ -30,6 +30,7 @@ export const signIn = async (email: string, password: string): Promise<User> => 
 };
 
 export const logOut = async (): Promise<void> => {
+    clearChatHistory();
     await signOut(auth);
 };
 
