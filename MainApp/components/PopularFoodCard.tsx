@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, Image, Dimensions } from 'rea
 import { Clock, Flame, Soup } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 
 const { width } = Dimensions.get('window');
 
@@ -76,18 +77,19 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
         marginBottom: 8,
     },
-    largeCardBadgeText: { color: '#fff', fontSize: 11, fontWeight: '700' },
+    largeCardBadgeText: { color: '#fff', fontSize: 11, fontFamily: AppFonts.bold },
     largeCardTitle: {
-        fontSize: 22, fontWeight: '800', color: '#fff',
+        fontSize: 22, color: '#fff',
+        fontFamily: AppFonts.bold,
         marginBottom: 4, textShadowColor: 'rgba(0,0,0,0.5)',
         textShadowOffset: { width: 0, height: 1 }, textShadowRadius: 4,
     },
-    largeCardDesc: { fontSize: 13, color: '#eee', marginBottom: 10 },
+    largeCardDesc: { fontFamily: AppFonts.regular, fontSize: 13, color: '#eee', marginBottom: 10 },
     largeCardMeta: { flexDirection: 'row', gap: 8 },
     metaChip: {
         flexDirection: 'row', alignItems: 'center', gap: 4,
         backgroundColor: 'rgba(255,255,255,0.2)', paddingHorizontal: 8,
         paddingVertical: 4, borderRadius: 8,
     },
-    metaChipText: { color: '#fff', fontSize: 11, fontWeight: '600' },
+    metaChipText: { color: '#fff', fontSize: 11, fontFamily: AppFonts.semiBold },
 });

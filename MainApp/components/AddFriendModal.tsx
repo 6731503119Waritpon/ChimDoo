@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
     View,
     Text,
@@ -9,9 +9,14 @@ import {
     ActivityIndicator,
     KeyboardAvoidingView,
     Platform,
+    Animated,
+    Dimensions,
 } from 'react-native';
 import { X, Mail, Send } from 'lucide-react-native';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
+
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 interface AddFriendModalProps {
     visible: boolean;
@@ -30,23 +35,57 @@ export default function AddFriendModal({
     sending,
     onSend,
 }: AddFriendModalProps) {
+    const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
+    const backdropOpacity = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        if (visible) {
+            Animated.parallel([
+                Animated.timing(backdropOpacity, {
+                    toValue: 1,
+                    duration: 300,
+                    useNativeDriver: true,
+                }),
+                Animated.spring(slideAnim, {
+                    toValue: 0,
+                    useNativeDriver: true,
+                    bounciness: 0,
+                    speed: 12,
+                })
+            ]).start();
+        } else {
+            backdropOpacity.setValue(0);
+            slideAnim.setValue(SCREEN_HEIGHT);
+        }
+    }, [visible]);
+
+    if (!visible) return null;
+
     return (
         <Modal
             visible={visible}
-            animationType="slide"
+            animationType="none"
             transparent={true}
             onRequestClose={onClose}
         >
             <KeyboardAvoidingView
-                style={styles.modalOverlay}
+                style={styles.root}
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             >
-                <TouchableOpacity
-                    style={{ flex: 1 }}
-                    activeOpacity={1}
-                    onPress={onClose}
-                />
-                <View style={styles.modalContent}>
+                <Animated.View style={[styles.overlay, { opacity: backdropOpacity }]}>
+                    <TouchableOpacity
+                        style={StyleSheet.absoluteFill}
+                        activeOpacity={1}
+                        onPress={onClose}
+                    />
+                </Animated.View>
+
+                <Animated.View 
+                    style={[
+                        styles.modalContent,
+                        { transform: [{ translateY: slideAnim }] }
+                    ]}
+                >
                     <View style={styles.modalHeader}>
                         <Text style={styles.modalTitle}>Add Friend</Text>
                         <TouchableOpacity
@@ -65,7 +104,7 @@ export default function AddFriendModal({
                         <Mail size={20} color="#888" />
                         <TextInput
                             style={styles.emailInput}
-                            placeholder="friend@example.com"
+                            placeholder="your friend's email"
                             placeholderTextColor="#aaa"
                             value={emailInput}
                             onChangeText={setEmailInput}
@@ -91,17 +130,20 @@ export default function AddFriendModal({
                             </>
                         )}
                     </TouchableOpacity>
-                </View>
+                </Animated.View>
             </KeyboardAvoidingView>
         </Modal>
     );
 }
 
 const styles = StyleSheet.create({
-    modalOverlay: {
+    root: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.5)',
         justifyContent: 'flex-end',
+    },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0,0,0,0.5)',
     },
     modalContent: {
         backgroundColor: AppColors.backgroundLight,
@@ -118,8 +160,8 @@ const styles = StyleSheet.create({
         paddingBottom: 4,
     },
     modalTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 22,
-        fontWeight: '700',
         color: AppColors.navy,
     },
     modalCloseButton: {
@@ -131,6 +173,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     modalSubtitle: {
+        fontFamily: AppFonts.regular,
         fontSize: 14,
         color: '#888',
         marginBottom: 20,
@@ -149,6 +192,7 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     emailInput: {
+        fontFamily: AppFonts.regular,
         flex: 1,
         fontSize: 16,
         paddingVertical: 14,
@@ -168,8 +212,8 @@ const styles = StyleSheet.create({
         opacity: 0.6,
     },
     sendButtonText: {
+        fontFamily: AppFonts.bold,
         fontSize: 16,
-        fontWeight: '700',
         color: '#fff',
     },
 });

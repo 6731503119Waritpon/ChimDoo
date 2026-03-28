@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Clock, Flame, Soup } from 'lucide-react-native';
 import { ChimDooItem } from '@/hooks/useChimDoo';
+import { AppFonts } from '@/constants/theme';
 
 interface RecipeCardProps {
     item: ChimDooItem;
@@ -86,11 +87,11 @@ const styles = StyleSheet.create({
     recipeBadgeText: {
         color: '#fff',
         fontSize: 12,
-        fontWeight: '700',
+        fontFamily: AppFonts.bold,
     },
     recipeName: {
+        fontFamily: AppFonts.bold,
         fontSize: 22,
-        fontWeight: '800',
         color: '#fff',
         marginBottom: 4,
         textShadowColor: 'rgba(0,0,0,0.4)',
@@ -98,6 +99,7 @@ const styles = StyleSheet.create({
         textShadowRadius: 4,
     },
     recipeDesc: {
+        fontFamily: AppFonts.regular,
         fontSize: 13,
         color: 'rgba(255,255,255,0.85)',
         lineHeight: 18,
@@ -119,6 +121,6 @@ const styles = StyleSheet.create({
     metaChipText: {
         color: '#fff',
         fontSize: 12,
-        fontWeight: '600',
+        fontFamily: AppFonts.semiBold,
     },
 });

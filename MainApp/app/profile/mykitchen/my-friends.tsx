@@ -23,6 +23,7 @@ import { useFriends } from '@/hooks/useFriends';
 import { useToast } from '@/components/ToastProvider';
 import { FriendInfo, Friendship } from '@/types/friends';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 import EmptyState from '@/components/EmptyState';
 import FriendCard from '@/components/FriendCard';
 import FriendRequestCard from '@/components/FriendRequestCard';
@@ -238,8 +239,8 @@ const styles = StyleSheet.create({
         paddingBottom: 20,
     },
     headerTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 20,
-        fontWeight: '700',
         color: AppColors.navy,
     },
     backButton: {
@@ -285,8 +286,8 @@ const styles = StyleSheet.create({
         backgroundColor: AppColors.navy,
     },
     tabText: {
+        fontFamily: AppFonts.semiBold,
         fontSize: 14,
-        fontWeight: '600',
         color: AppColors.navy,
     },
     tabTextActive: {

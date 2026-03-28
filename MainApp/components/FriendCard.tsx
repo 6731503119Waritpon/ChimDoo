@@ -3,6 +3,7 @@ import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
 import { UserX } from 'lucide-react-native';
 import { FriendInfo } from '@/types/friends';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 
 interface FriendCardProps {
     item: FriendInfo;
@@ -58,8 +59,8 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     cardName: {
+        fontFamily: AppFonts.semiBold,
         fontSize: 16,
-        fontWeight: '600',
         color: AppColors.navy,
         flex: 1,
     },
@@ -77,9 +78,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     avatarText: {
+        fontFamily: AppFonts.bold,
         color: '#fff',
         fontSize: 18,
-        fontWeight: '700',
     },
     removeButton: {
         width: 40,

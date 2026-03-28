@@ -12,6 +12,7 @@ import { useRouter } from 'expo-router';
 import { ChevronLeft, FileText } from 'lucide-react-native';
 import { usePrivacyPolicy } from '../../../hooks/usePrivacyPolicy';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 
 export default function PrivacyPolicyScreen() {
     const router = useRouter();
@@ -29,7 +30,7 @@ export default function PrivacyPolicyScreen() {
 
             <View style={styles.banner}>
                 <View style={styles.bannerIconCircle}>
-                    <FileText size={36} color="#8b5cf6" />
+                    <FileText size={36} color={AppColors.primary} />
                 </View>
                 <Text style={styles.bannerTitle}>Privacy Policy &{'\n'}Terms of Service</Text>
                 <Text style={styles.bannerSub}>
@@ -39,7 +40,7 @@ export default function PrivacyPolicyScreen() {
 
             {loading ? (
                 <View style={styles.center}>
-                    <ActivityIndicator size="large" color="#8b5cf6" />
+                    <ActivityIndicator size="large" color={AppColors.primary} />
                 </View>
             ) : error ? (
                 <View style={styles.center}>
@@ -84,7 +85,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    headerTitle: { fontSize: 20, fontWeight: '700', color: '#fff' },
+    headerTitle: {
+        fontFamily: AppFonts.bold,
+        fontSize: 20,
+        color: '#fff',
+    },
     banner: {
         alignItems: 'center',
         backgroundColor: AppColors.navy,
@@ -95,24 +100,35 @@ const styles = StyleSheet.create({
         width: 72,
         height: 72,
         borderRadius: 36,
-        backgroundColor: 'rgba(139, 92, 246, 0.15)',
+        backgroundColor: '#fff',
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 14,
-        borderWidth: 1,
-        borderColor: 'rgba(139, 92, 246, 0.3)',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.1,
+        shadowRadius: 10,
+        elevation: 5,
     },
     bannerTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 18,
-        fontWeight: '700',
         color: '#fff',
         textAlign: 'center',
         marginBottom: 6,
         lineHeight: 26,
     },
-    bannerSub: { fontSize: 13, color: 'rgba(255,255,255,0.55)' },
+    bannerSub: {
+        fontFamily: AppFonts.regular,
+        fontSize: 13,
+        color: 'rgba(255,255,255,0.55)',
+    },
     center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-    errorText: { fontSize: 14, color: AppColors.primary },
+    errorText: {
+        fontFamily: AppFonts.medium,
+        fontSize: 14,
+        color: AppColors.primary,
+    },
     scrollContent: { paddingHorizontal: 24, paddingTop: 28, paddingBottom: 60 },
     section: {
         marginBottom: 16,
@@ -125,10 +141,24 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
         elevation: 2,
         borderLeftWidth: 3,
-        borderLeftColor: '#8b5cf6',
+        borderLeftColor: AppColors.primary,
     },
-    sectionTitle: { fontSize: 15, fontWeight: '700', color: AppColors.navy, marginBottom: 10 },
-    sectionContent: { fontSize: 14, color: '#555', lineHeight: 22 },
+    sectionTitle: {
+        fontFamily: AppFonts.bold,
+        fontSize: 15,
+        color: AppColors.navy,
+        marginBottom: 10,
+    },
+    sectionContent: {
+        fontFamily: AppFonts.regular,
+        fontSize: 14,
+        color: '#555',
+        lineHeight: 22,
+    },
     footer: { alignItems: 'center', paddingTop: 8, paddingBottom: 16 },
-    footerText: { fontSize: 13, color: '#aaa' },
+    footerText: {
+        fontFamily: AppFonts.regular,
+        fontSize: 13,
+        color: '#aaa',
+    },
 });

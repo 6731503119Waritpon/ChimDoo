@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, TextInputProps } from 'react-native';
 import { Lock, Eye, EyeOff } from 'lucide-react-native';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 
 interface SecureInputProps extends TextInputProps {
     label: string;
@@ -99,8 +100,8 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     label: {
+        fontFamily: AppFonts.bold,
         fontSize: 13,
-        fontWeight: '700',
         color: '#555',
         textTransform: 'uppercase',
         letterSpacing: 0.8,
@@ -127,6 +128,7 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     input: {
+        fontFamily: AppFonts.regular,
         flex: 1,
         fontSize: 16,
         paddingVertical: 14,
@@ -149,19 +151,20 @@ const styles = StyleSheet.create({
         borderRadius: 2,
     },
     strengthLabel: {
+        fontFamily: AppFonts.bold,
         fontSize: 12,
-        fontWeight: '700',
         width: 48,
         textAlign: 'right',
     },
     helperText: {
+        fontFamily: AppFonts.regular,
         fontSize: 12,
         color: '#888',
         lineHeight: 18,
     },
     errorText: {
+        fontFamily: AppFonts.medium,
         fontSize: 12,
         color: AppColors.primary,
-        fontWeight: '500',
     },
 });

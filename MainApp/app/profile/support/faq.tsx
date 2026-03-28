@@ -15,6 +15,7 @@ import { collection, getDocs, orderBy, query } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { ActivityIndicator } from 'react-native';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -72,7 +73,7 @@ export default function FAQScreen() {
 
             <View style={styles.heroSection}>
                 <View style={styles.heroIconWrapper}>
-                    <HelpCircle size={40} color="#3b82f6" />
+                    <HelpCircle size={40} color={AppColors.primary} />
                 </View>
                 <Text style={styles.heroTitle}>How can we help?</Text>
                 <Text style={styles.heroSubtitle}>
@@ -87,7 +88,7 @@ export default function FAQScreen() {
             >
                 {loading ? (
                     <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="large" color="#3b82f6" />
+                        <ActivityIndicator size="large" color={AppColors.primary} />
                     </View>
                 ) : (
                     faqData.map((item) => {
@@ -112,7 +113,7 @@ export default function FAQScreen() {
                                         {item.question}
                                     </Text>
                                     {isExpanded ? (
-                                        <ChevronUp size={20} color="#3b82f6" />
+                                        <ChevronUp size={20} color={AppColors.primary} />
                                     ) : (
                                         <ChevronDown size={20} color="#555" />
                                     )}
@@ -161,13 +162,14 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: '#1a1a1a',
+        backgroundColor: AppColors.navy,
         alignItems: 'center',
         justifyContent: 'center',
     },
     headerTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 20,
-        fontWeight: '700',
+        color: AppColors.navy,
     },
     heroSection: {
         alignItems: 'center',
@@ -179,19 +181,21 @@ const styles = StyleSheet.create({
         width: 72,
         height: 72,
         borderRadius: 36,
-        backgroundColor: 'rgba(82, 232, 243, 0.12)',
+        backgroundColor: 'rgba(230, 57, 70, 0.1)',
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 16,
         borderWidth: 2,
-        borderColor: '#96b9e9ff',
+        borderColor: AppColors.primary,
     },
     heroTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 26,
-        fontWeight: '800',
+        color: AppColors.navy,
         marginBottom: 8,
     },
     heroSubtitle: {
+        fontFamily: AppFonts.regular,
         fontSize: 15,
         color: '#777',
         textAlign: 'center',
@@ -210,14 +214,20 @@ const styles = StyleSheet.create({
         paddingBottom: 40,
     },
     faqCard: {
+        backgroundColor: '#fff',
         borderRadius: 16,
         padding: 18,
         marginBottom: 12,
         borderWidth: 1,
-        borderColor: '#1e1e1e',
+        borderColor: '#eee',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+        elevation: 2,
     },
     faqCardExpanded: {
-        borderColor: '#3b82f6',
+        borderColor: AppColors.primary,
     },
     questionRow: {
         flexDirection: 'row',
@@ -226,23 +236,26 @@ const styles = StyleSheet.create({
         gap: 12,
     },
     questionText: {
+        fontFamily: AppFonts.semiBold,
         fontSize: 15,
-        fontWeight: '600',
+        color: AppColors.navy,
         flex: 1,
     },
     questionTextActive: {
-        color: '#3b82f6',
+        color: AppColors.primary,
     },
     answerContainer: {
         marginTop: 12,
     },
     answerDivider: {
         height: 1,
-        backgroundColor: '#2a2a2a',
+        backgroundColor: '#f1f1f1',
         marginBottom: 12,
     },
     answerText: {
+        fontFamily: AppFonts.regular,
         fontSize: 14,
+        color: '#666',
         lineHeight: 22,
     },
     footerSection: {
@@ -251,20 +264,20 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
     },
     footerText: {
+        fontFamily: AppFonts.regular,
         fontSize: 15,
         color: '#666',
         marginBottom: 16,
     },
     contactButton: {
-        borderWidth: 1,
-        borderColor: '#3b82f6',
-        borderRadius: 12,
+        backgroundColor: AppColors.primary,
+        borderRadius: 14,
         paddingVertical: 14,
         paddingHorizontal: 32,
     },
     contactButtonText: {
-        color: '#3b82f6',
+        fontFamily: AppFonts.bold,
+        color: '#fff',
         fontSize: 15,
-        fontWeight: '600',
     },
 });

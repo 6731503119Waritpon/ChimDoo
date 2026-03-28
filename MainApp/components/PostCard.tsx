@@ -4,6 +4,7 @@ import { Heart, MessageCircle, Share2, UserPlus, UserCheck, Clock } from 'lucide
 import { CommunityPost } from '@/types/community';
 import { formatTimestamp } from '@/utils/formatTime';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 
 interface PostCardProps {
     item: CommunityPost;
@@ -167,16 +168,16 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     postAvatarText: {
+        fontFamily: AppFonts.bold,
         color: '#fff',
         fontSize: 18,
-        fontWeight: '700',
     },
     postUserInfo: {
         flex: 1,
     },
     postUserName: {
+        fontFamily: AppFonts.bold,
         fontSize: 15,
-        fontWeight: '700',
         color: AppColors.navy,
     },
     postMeta: {
@@ -186,9 +187,9 @@ const styles = StyleSheet.create({
         marginTop: 2,
     },
     postFoodName: {
+        fontFamily: AppFonts.semiBold,
         fontSize: 12,
         color: AppColors.primary,
-        fontWeight: '600',
     },
     countryChip: {
         backgroundColor: 'rgba(230, 57, 70, 0.1)',
@@ -197,15 +198,16 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     countryChipText: {
+        fontFamily: AppFonts.semiBold,
         fontSize: 10,
         color: AppColors.primary,
-        fontWeight: '600',
     },
     postDot: {
         fontSize: 12,
         color: '#ccc',
     },
     postTime: {
+        fontFamily: AppFonts.regular,
         fontSize: 12,
         color: '#aaa',
     },
@@ -229,8 +231,8 @@ const styles = StyleSheet.create({
         gap: 6,
     },
     actionText: {
+        fontFamily: AppFonts.semiBold,
         fontSize: 14,
-        fontWeight: '600',
         color: '#444',
     },
 
@@ -240,12 +242,13 @@ const styles = StyleSheet.create({
         paddingTop: 0,
     },
     captionUser: {
+        fontFamily: AppFonts.bold,
         fontSize: 14,
-        fontWeight: '700',
         color: AppColors.navy,
         marginBottom: 4,
     },
     captionText: {
+        fontFamily: AppFonts.regular,
         fontSize: 14,
         color: '#555',
         lineHeight: 20,
@@ -261,8 +264,8 @@ const styles = StyleSheet.create({
         borderRadius: 20,
     },
     addFriendText: {
+        fontFamily: AppFonts.semiBold,
         fontSize: 12,
-        fontWeight: '600',
         color: AppColors.navy,
     },
     friendBadge: {
@@ -283,8 +286,8 @@ const styles = StyleSheet.create({
         borderRadius: 20,
     },
     friendBadgePendingText: {
+        fontFamily: AppFonts.semiBold,
         fontSize: 11,
-        fontWeight: '600',
         color: '#f59e0b',
     },
 });

@@ -19,6 +19,7 @@ import { useCountryData } from '@/hooks/useCountryData';
 import { FoodItem } from '@/types/recipe';
 import { globeCountries } from '@/config/home';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 import PopularFoodCard from '@/components/PopularFoodCard';
 import NormalFoodItem from '@/components/NormalFoodItem';
 
@@ -190,11 +191,12 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     headerFlag: {
+        fontFamily: AppFonts.regular,
         fontSize: 24,
     },
     headerTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 20,
-        fontWeight: '700',
         color: AppColors.navy,
     },
     contentWrapper: {
@@ -218,8 +220,8 @@ const styles = StyleSheet.create({
         marginBottom: 24,
     },
     sectionTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 13,
-        fontWeight: '700',
         color: '#889',
         textTransform: 'uppercase',
         letterSpacing: 1,
@@ -227,6 +229,7 @@ const styles = StyleSheet.create({
         marginLeft: 20,
     },
     errorText: {
+        fontFamily: AppFonts.regular,
         fontSize: 18,
         color: '#777',
         marginBottom: 16,
@@ -238,7 +241,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
     },
     backBtnText: {
+        fontFamily: AppFonts.semiBold,
         color: '#fff',
-        fontWeight: '600',
     },
 });

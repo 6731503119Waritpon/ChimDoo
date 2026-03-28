@@ -8,6 +8,9 @@ import {
     LucideIcon,
 } from 'lucide-react-native';
 
+import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
+
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
 export interface ToastConfig {
@@ -207,10 +210,11 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     title: {
+        fontFamily: AppFonts.bold,
         fontSize: 15,
-        fontWeight: '700',
     },
     message: {
+        fontFamily: AppFonts.regular,
         fontSize: 13,
         color: '#666',
         marginTop: 2,

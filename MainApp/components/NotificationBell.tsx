@@ -3,6 +3,7 @@ import { View, TouchableOpacity, StyleSheet, Text } from 'react-native';
 import { Bell } from 'lucide-react-native';
 import { useNotifications } from '../hooks/useNotifications';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 
 interface Props {
     onPress: () => void;
@@ -48,9 +49,9 @@ const styles = StyleSheet.create({
         borderColor: '#fff',
     },
     badgeText: {
+        fontFamily: AppFonts.bold,
         color: '#fff',
         fontSize: 10,
-        fontWeight: '800',
         lineHeight: 13,
     },
 });

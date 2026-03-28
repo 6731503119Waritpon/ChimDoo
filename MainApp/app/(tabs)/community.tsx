@@ -19,6 +19,7 @@ import GuestState from '@/components/GuestState';
 import PostCard from '@/components/PostCard';
 import { sharePost } from '@/utils/sharePost';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 
 
 
@@ -216,6 +217,7 @@ const styles = StyleSheet.create({
         gap: 12,
     },
     loadingText: {
+        fontFamily: AppFonts.regular,
         fontSize: 15,
         color: '#888',
     },
@@ -229,12 +231,13 @@ const styles = StyleSheet.create({
         paddingBottom: 12,
     },
     headerTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 32,
-        fontWeight: '800',
         color: AppColors.navy,
         letterSpacing: -0.5,
     },
     headerSubtitle: {
+        fontFamily: AppFonts.regular,
         fontSize: 14,
         color: '#888',
         marginTop: 2,
@@ -266,8 +269,8 @@ const styles = StyleSheet.create({
         backgroundColor: AppColors.navy,
     },
     feedTabText: {
+        fontFamily: AppFonts.semiBold,
         fontSize: 14,
-        fontWeight: '600',
         color: AppColors.navy,
     },
     feedTabTextActive: {
@@ -281,12 +284,13 @@ const styles = StyleSheet.create({
         padding: 40,
     },
     emptyTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 22,
-        fontWeight: '700',
         color: AppColors.navy,
         marginBottom: 8,
     },
     emptySubtitle: {
+        fontFamily: AppFonts.regular,
         fontSize: 15,
         color: '#888',
         textAlign: 'center',

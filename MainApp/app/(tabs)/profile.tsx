@@ -27,6 +27,7 @@ import ProfileMenuSection from '@/components/ProfileMenuSection';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { Collections } from '@/constants/collections';
+import { AppFonts } from '@/constants/theme';
 
 const Page = () => {
     const router = useRouter();
@@ -242,16 +243,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     avatarInitial: {
+        fontFamily: AppFonts.bold,
         fontSize: 36,
-        fontWeight: 'bold',
         color: '#1D3557',
     },
     displayName: {
+        fontFamily: AppFonts.bold,
         fontSize: 22,
-        fontWeight: '700',
         marginBottom: 4,
     },
     email: {
+        fontFamily: AppFonts.regular,
         fontSize: 14,
         color: '#777',
         marginBottom: 16,
@@ -266,8 +268,8 @@ const styles = StyleSheet.create({
         borderRadius: 20,
     },
     editBadgeText: {
+        fontFamily: AppFonts.semiBold,
         fontSize: 13,
-        fontWeight: '600',
     },
 
     logoutButton: {
@@ -284,8 +286,8 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(239, 68, 68, 0.2)',
     },
     logoutText: {
+        fontFamily: AppFonts.bold,
         color: '#ef4444',
         fontSize: 16,
-        fontWeight: '600',
     },
 });

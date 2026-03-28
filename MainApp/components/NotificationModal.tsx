@@ -17,6 +17,7 @@ import { useRouter } from 'expo-router';
 import { useNotifications, AppNotification } from '../hooks/useNotifications';
 import { formatRelativeTime } from '@/utils/formatTime';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 
 const { width, height } = Dimensions.get('window');
 
@@ -203,9 +204,9 @@ const styles = StyleSheet.create({
         borderBottomColor: '#f0f0f0',
     },
     panelTitle: {
+        fontFamily: AppFonts.bold,
         flex: 1,
         fontSize: 16,
-        fontWeight: '700',
         color: AppColors.navy,
     },
     markAllBtn: {
@@ -257,11 +258,12 @@ const styles = StyleSheet.create({
         gap: 2,
     },
     cardTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 13,
-        fontWeight: '700',
         color: '#1a1a1a',
     },
     cardBody2: {
+        fontFamily: AppFonts.regular,
         fontSize: 12,
         color: '#666',
         lineHeight: 17,
@@ -271,6 +273,7 @@ const styles = StyleSheet.create({
         gap: 6,
     },
     timeText: {
+        fontFamily: AppFonts.regular,
         fontSize: 11,
         color: '#aaa',
     },
@@ -287,6 +290,7 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     emptyText: {
+        fontFamily: AppFonts.regular,
         fontSize: 14,
         color: '#bbb',
     },
@@ -315,18 +319,20 @@ const styles = StyleSheet.create({
         alignItems: 'flex-start',
     },
     detailTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 16,
-        fontWeight: '700',
         color: AppColors.navy,
         flex: 1,
         marginRight: 12,
     },
     detailBody: {
+        fontFamily: AppFonts.regular,
         fontSize: 14,
         color: '#444',
         lineHeight: 22,
     },
     detailTime: {
+        fontFamily: AppFonts.regular,
         fontSize: 12,
         color: '#aaa',
     },
@@ -339,8 +345,8 @@ const styles = StyleSheet.create({
         borderTopColor: '#f0f0f0',
     },
     seeAllText: {
+        fontFamily: AppFonts.semiBold,
         fontSize: 14,
-        fontWeight: '600',
         color: AppColors.primary,
     },
 });

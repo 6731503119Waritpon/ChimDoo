@@ -12,6 +12,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../../../hooks/useAuth';
 import { useToast } from '@/components/ToastProvider';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 import { db } from '@/firebaseConfig';
 import { Collections } from '@/constants/collections';
 
@@ -165,6 +166,7 @@ export default function EditProfileScreen() {
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
+                keyboardShouldPersistTaps="handled"
             >
                 <View style={styles.header}>
                     <TouchableOpacity
@@ -212,7 +214,7 @@ export default function EditProfileScreen() {
                         <TextInput
                             style={styles.input}
                             placeholder="Enter your name"
-                            placeholderTextColor="#555"
+                            placeholderTextColor="#ccc"
                             value={displayName}
                             onChangeText={setDisplayName}
                             autoCapitalize="words"
@@ -220,14 +222,14 @@ export default function EditProfileScreen() {
                     </View>
 
                     <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Email</Text>
+                        <Text style={styles.label}>Email Address</Text>
                         <View style={styles.readOnlyInput}>
                             <Text style={styles.readOnlyText}>
                                 {user?.email || 'No email'}
                             </Text>
                         </View>
                         <Text style={styles.helperText}>
-                            Email cannot be changed here
+                            Registered email cannot be changed
                         </Text>
                     </View>
                 </View>
@@ -236,6 +238,7 @@ export default function EditProfileScreen() {
                     style={[styles.saveButton, saving && styles.saveButtonDisabled]}
                     onPress={handleSave}
                     disabled={saving}
+                    activeOpacity={0.8}
                 >
                     {saving ? (
                         <ActivityIndicator color="#fff" />
@@ -269,14 +272,14 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: '#1a1a1a',
+        backgroundColor: AppColors.navy,
         alignItems: 'center',
         justifyContent: 'center',
     },
     headerTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 20,
-        fontWeight: '700',
-        color: '#fff',
+        color: AppColors.navy,
     },
     avatarSection: {
         alignItems: 'center',
@@ -305,13 +308,13 @@ const styles = StyleSheet.create({
         width: 98,
         height: 98,
         borderRadius: 49,
-        backgroundColor: '#fff',
+        backgroundColor: 'rgba(29, 53, 87, 0.05)',
         alignItems: 'center',
         justifyContent: 'center',
     },
     avatarInitial: {
+        fontFamily: AppFonts.bold,
         fontSize: 40,
-        fontWeight: 'bold',
         color: AppColors.navy,
     },
     cameraButton: {
@@ -321,17 +324,17 @@ const styles = StyleSheet.create({
         width: 34,
         height: 34,
         borderRadius: 17,
-        backgroundColor: AppColors.navy,
+        backgroundColor: AppColors.primary,
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 3,
-        borderColor: '#0a0a0a',
+        borderColor: '#fff',
     },
     changePhotoText: {
+        fontFamily: AppFonts.semiBold,
         marginTop: 12,
         fontSize: 14,
-        color: AppColors.navy,
-        fontWeight: '600',
+        color: AppColors.primary,
     },
     form: {
         paddingHorizontal: 24,
@@ -341,32 +344,38 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     label: {
+        fontFamily: AppFonts.bold,
         fontSize: 14,
-        fontWeight: '600',
-        color: '#aaa',
+        color: '#555',
         textTransform: 'uppercase',
         letterSpacing: 0.8,
     },
     input: {
+        fontFamily: AppFonts.regular,
+        backgroundColor: '#fff',
         borderRadius: 14,
         padding: 16,
         fontSize: 16,
         borderWidth: 1,
-        borderColor: '#2a2a2a',
+        borderColor: 'rgba(29, 53, 87, 0.12)',
+        color: AppColors.navy,
     },
     readOnlyInput: {
-        backgroundColor: '#cacacaff',
+        backgroundColor: 'rgba(29, 53, 87, 0.05)',
         borderRadius: 14,
         padding: 16,
-        borderColor: '#1e1e1e',
+        borderWidth: 1,
+        borderColor: 'rgba(29, 53, 87, 0.1)',
     },
     readOnlyText: {
+        fontFamily: AppFonts.regular,
         fontSize: 16,
-        color: '#555',
+        color: '#777',
     },
     helperText: {
+        fontFamily: AppFonts.regular,
         fontSize: 12,
-        color: '#444',
+        color: '#888',
         marginTop: 2,
     },
     saveButton: {
@@ -376,13 +385,18 @@ const styles = StyleSheet.create({
         borderRadius: 14,
         padding: 18,
         alignItems: 'center',
+        shadowColor: AppColors.primary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 4,
     },
     saveButtonDisabled: {
         opacity: 0.6,
     },
     saveButtonText: {
+        fontFamily: AppFonts.bold,
         color: '#fff',
         fontSize: 17,
-        fontWeight: '700',
     },
 });

@@ -20,6 +20,7 @@ import modelPath from '@/assets/models/earth.glb';
 import NotificationModal from '@/components/NotificationModal';
 import CountrySelectModal from '@/components/CountrySelectModal';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 
 function EarthModel(props: any) {
   const gltf = useGLTF(modelPath);
@@ -241,12 +242,13 @@ const styles = StyleSheet.create({
     top: Platform.OS === 'ios' ? 64 : 48,
   },
   appName: {
+    fontFamily: AppFonts.bold,
     fontSize: 32,
-    fontWeight: '800',
     color: AppColors.navy,
     letterSpacing: -0.5,
   },
   subtitle: {
+    fontFamily: AppFonts.regular,
     fontSize: 15,
     color: '#777',
     marginTop: 4,
@@ -274,8 +276,8 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   pillText: {
+    fontFamily: AppFonts.medium,
     fontSize: 16,
-    fontWeight: '500',
     color: AppColors.navy,
     flex: 1,
   },
@@ -306,8 +308,8 @@ const styles = StyleSheet.create({
     borderBottomColor: '#e5e5e5',
   },
   modalTitle: {
+    fontFamily: AppFonts.bold,
     fontSize: 20,
-    fontWeight: '700',
     color: AppColors.navy,
   },
   countryItem: {
@@ -324,14 +326,14 @@ const styles = StyleSheet.create({
     fontSize: 28,
   },
   countryName: {
+    fontFamily: AppFonts.medium,
     fontSize: 17,
-    fontWeight: '500',
     color: '#333',
     flex: 1,
   },
   countryNameActive: {
+    fontFamily: AppFonts.bold,
     color: AppColors.primary,
-    fontWeight: '700',
   },
   activeDot: {
     width: 10,

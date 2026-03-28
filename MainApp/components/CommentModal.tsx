@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     View,
     Text,
@@ -10,6 +10,8 @@ import {
     KeyboardAvoidingView,
     Platform,
     ActivityIndicator,
+    Animated,
+    Dimensions,
 } from 'react-native';
 import { X, Send } from 'lucide-react-native';
 import { Comment } from '@/types/community';
@@ -18,6 +20,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { Unsubscribe } from 'firebase/firestore';
 import { formatTimestamp } from '@/utils/formatTime';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
+
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 interface Props {
     visible: boolean;
@@ -25,14 +30,36 @@ interface Props {
     onClose: () => void;
 }
 
-
-
 const CommentModal: React.FC<Props> = ({ visible, reviewId, onClose }) => {
     const { addComment, subscribeToComments, isLoggedIn } = useCommunity();
     const [comments, setComments] = useState<Comment[]>([]);
     const [text, setText] = useState('');
     const [sending, setSending] = useState(false);
     const [loadingComments, setLoadingComments] = useState(true);
+
+    const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
+    const backdropOpacity = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        if (visible) {
+            Animated.parallel([
+                Animated.timing(backdropOpacity, {
+                    toValue: 1,
+                    duration: 300,
+                    useNativeDriver: true,
+                }),
+                Animated.spring(slideAnim, {
+                    toValue: 0,
+                    useNativeDriver: true,
+                    bounciness: 0,
+                    speed: 12,
+                })
+            ]).start();
+        } else {
+            backdropOpacity.setValue(0);
+            slideAnim.setValue(SCREEN_HEIGHT);
+        }
+    }, [visible]);
 
     useEffect(() => {
         if (!visible || !reviewId) return;
@@ -77,18 +104,33 @@ const CommentModal: React.FC<Props> = ({ visible, reviewId, onClose }) => {
         </View>
     );
 
+    if (!visible) return null;
+
     return (
         <Modal
             visible={visible}
             transparent
-            animationType="slide"
+            animationType="none"
             onRequestClose={onClose}
         >
             <KeyboardAvoidingView
-                style={styles.overlay}
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={styles.root}
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             >
-                <View style={styles.modal}>
+                <Animated.View style={[styles.overlay, { opacity: backdropOpacity }]}>
+                    <TouchableOpacity
+                        style={StyleSheet.absoluteFill}
+                        activeOpacity={1}
+                        onPress={onClose}
+                    />
+                </Animated.View>
+
+                <Animated.View 
+                    style={[
+                        styles.modal,
+                        { transform: [{ translateY: slideAnim }] }
+                    ]}
+                >
                     <View style={styles.header}>
                         <Text style={styles.headerTitle}>Comments</Text>
                         <TouchableOpacity onPress={onClose}>
@@ -125,6 +167,7 @@ const CommentModal: React.FC<Props> = ({ visible, reviewId, onClose }) => {
                                 onChangeText={setText}
                                 multiline
                                 maxLength={300}
+                                editable={!sending}
                             />
                             <TouchableOpacity
                                 style={[
@@ -142,7 +185,7 @@ const CommentModal: React.FC<Props> = ({ visible, reviewId, onClose }) => {
                             </TouchableOpacity>
                         </View>
                     )}
-                </View>
+                </Animated.View>
             </KeyboardAvoidingView>
         </Modal>
     );
@@ -151,10 +194,13 @@ const CommentModal: React.FC<Props> = ({ visible, reviewId, onClose }) => {
 export default CommentModal;
 
 const styles = StyleSheet.create({
-    overlay: {
+    root: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.5)',
         justifyContent: 'flex-end',
+    },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0,0,0,0.5)',
     },
     modal: {
         backgroundColor: '#fff',
@@ -162,7 +208,7 @@ const styles = StyleSheet.create({
         borderTopRightRadius: 28,
         paddingHorizontal: 20,
         paddingTop: 20,
-        paddingBottom: Platform.OS === 'ios' ? 40 : 20,
+        paddingBottom: Platform.OS === 'ios' ? 40 : 24,
         maxHeight: '75%',
     },
     header: {
@@ -173,8 +219,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 4,
     },
     headerTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 20,
-        fontWeight: '800',
         color: AppColors.navy,
     },
     loadingContainer: {
@@ -188,11 +234,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     emptyText: {
+        fontFamily: AppFonts.semiBold,
         fontSize: 16,
-        fontWeight: '600',
         color: '#999',
     },
     emptySubtext: {
+        fontFamily: AppFonts.regular,
         fontSize: 14,
         color: '#bbb',
         marginTop: 4,
@@ -214,9 +261,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     commentAvatarText: {
+        fontFamily: AppFonts.bold,
         color: '#fff',
         fontSize: 14,
-        fontWeight: '700',
     },
     commentContent: {
         flex: 1,
@@ -228,15 +275,17 @@ const styles = StyleSheet.create({
         marginBottom: 4,
     },
     commentUserName: {
+        fontFamily: AppFonts.bold,
         fontSize: 14,
-        fontWeight: '700',
         color: AppColors.navy,
     },
     commentTime: {
+        fontFamily: AppFonts.regular,
         fontSize: 12,
         color: '#aaa',
     },
     commentText: {
+        fontFamily: AppFonts.regular,
         fontSize: 14,
         color: '#444',
         lineHeight: 20,
@@ -250,6 +299,7 @@ const styles = StyleSheet.create({
         borderTopColor: '#eee',
     },
     input: {
+        fontFamily: AppFonts.regular,
         flex: 1,
         backgroundColor: AppColors.backgroundLight,
         borderRadius: 20,

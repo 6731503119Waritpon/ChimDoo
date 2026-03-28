@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native
 import { router, Stack } from 'expo-router';
 import { ChevronLeft, Globe } from 'lucide-react-native';
 import { AppColors } from '@/constants/colors';
-
+import { AppFonts } from '@/constants/theme';
 
 const LanguageSettings = () => {
     const [isModalVisible, setModalVisible] = useState(false);
@@ -19,6 +19,8 @@ const LanguageSettings = () => {
                     >
                         <ChevronLeft size={28} color="#fff" />
                     </TouchableOpacity>
+                    <Text style={styles.headerTitle}>Language</Text>
+                    <View style={{ width: 40 }} />
                 </View>
             <View style={styles.content}>
                 <View style={styles.iconWrapper}>
@@ -65,12 +67,13 @@ const styles = StyleSheet.create({
         marginBottom: 24,
     },
     title: {
+        fontFamily: AppFonts.bold,
         fontSize: 24,
-        fontWeight: 'bold',
         color: AppColors.navy,
         marginBottom: 12,
     },
     subtitle: {
+        fontFamily: AppFonts.regular,
         fontSize: 16,
         color: '#666',
         textAlign: 'center',
@@ -79,13 +82,13 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     button: {
-        backgroundColor: AppColors.navy,
+        backgroundColor: AppColors.primary,
         paddingVertical: 16,
         paddingHorizontal: 32,
         borderRadius: 14,
-        shadowColor: '#000',
+        shadowColor: AppColors.primary,
         shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
+        shadowOpacity: 0.2,
         shadowRadius: 8,
         elevation: 3,
         width: '100%',
@@ -94,7 +97,7 @@ const styles = StyleSheet.create({
     buttonText: {
         color: '#fff',
         fontSize: 16,
-        fontWeight: '700',
+        fontFamily: AppFonts.bold,
     },
     header: {
             flexDirection: 'row',
@@ -108,13 +111,13 @@ const styles = StyleSheet.create({
             width: 40,
             height: 40,
             borderRadius: 20,
-            backgroundColor: '#1a1a1a',
+            backgroundColor: AppColors.navy,
             alignItems: 'center',
             justifyContent: 'center',
         },
         headerTitle: {
+            fontFamily: AppFonts.bold,
             fontSize: 20,
-            fontWeight: '700',
-            color: '#fff',
+            color: AppColors.navy,
         },
 });

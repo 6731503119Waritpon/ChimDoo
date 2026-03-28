@@ -14,6 +14,7 @@ import { useToast } from '@/components/ToastProvider';
 import ChimDooRequiredModal from '@/components/ChimDooRequiredModal';
 import ReviewModal from '@/components/ReviewModal';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 
 const HERO_H = 340;
 const RADIUS = 28;
@@ -227,7 +228,7 @@ const s = StyleSheet.create({
     heroImg: { width: '100%', height: '100%' },
     heroTitle: {
         position: 'absolute', bottom: 46, left: 24, right: 24,
-        fontSize: 34, fontWeight: '800', color: '#fff', letterSpacing: -0.5,
+        fontFamily: AppFonts.bold, fontSize: 34, color: '#fff', letterSpacing: -0.5,
         textShadowColor: 'rgba(0,0,0,0.4)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 12,
     },
     back: {
@@ -243,7 +244,7 @@ const s = StyleSheet.create({
         borderTopLeftRadius: RADIUS, borderTopRightRadius: RADIUS,
         marginTop: -RADIUS, paddingHorizontal: 22, paddingTop: 28,
     },
-    desc: { fontSize: 16, color: AppColors.textMuted, lineHeight: 25, marginBottom: 22 },
+    desc: { fontFamily: AppFonts.regular, fontSize: 16, color: AppColors.textMuted, lineHeight: 25, marginBottom: 22 },
     
     metaRow: { flexDirection: 'row', gap: 10, marginBottom: 28 },
     metaCard: {
@@ -254,21 +255,21 @@ const s = StyleSheet.create({
         width: 42, height: 42, borderRadius: 21,
         backgroundColor: 'rgba(29,53,87,0.08)', justifyContent: 'center', alignItems: 'center', marginBottom: 10,
     },
-    metaValue: { fontSize: 13, fontWeight: '700', color: AppColors.textDark, textAlign: 'center', marginBottom: 3, paddingHorizontal: 2 },
-    metaLabel: { fontSize: 12, color: AppColors.textLight, fontWeight: '500' },
+    metaValue: { fontFamily: AppFonts.bold, fontSize: 13, color: AppColors.textDark, textAlign: 'center', marginBottom: 3, paddingHorizontal: 2 },
+    metaLabel: { fontFamily: AppFonts.medium, fontSize: 12, color: AppColors.textLight },
 
     section: { marginBottom: 28 },
     sectionHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
     sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-    sectionTitle: { fontSize: 22, fontWeight: '800', color: AppColors.navy, letterSpacing: -0.3 },
+    sectionTitle: { fontFamily: AppFonts.bold, fontSize: 22, color: AppColors.navy, letterSpacing: -0.3 },
     badge: { backgroundColor: AppColors.primary, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4, minWidth: 28, alignItems: 'center' },
-    badgeText: { color: '#fff', fontSize: 13, fontWeight: '700' },
+    badgeText: { color: '#fff', fontSize: 13, fontFamily: AppFonts.bold },
 
     ingredientRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 16, borderRadius: 14, marginBottom: 4 },
     ingredientRowAlt: { backgroundColor: 'rgba(29,53,87,0.04)' },
     bullet: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: AppColors.primary, justifyContent: 'center', alignItems: 'center', marginRight: 14 },
     bulletInner: { width: 8, height: 8, borderRadius: 4, backgroundColor: AppColors.primary },
-    ingredientText: { flex: 1, fontSize: 15, color: AppColors.textDark, lineHeight: 22 },
+    ingredientText: { fontFamily: AppFonts.regular, flex: 1, fontSize: 15, color: AppColors.textDark, lineHeight: 22 },
 
     step: { flexDirection: 'row', marginBottom: 16, position: 'relative' },
     stepLine: { position: 'absolute', left: 17, top: 38, bottom: -16, width: 2.5, backgroundColor: 'rgba(230,57,70,0.15)', borderRadius: 2 },
@@ -277,14 +278,14 @@ const s = StyleSheet.create({
         marginRight: 14, marginTop: 2,
         shadowColor: AppColors.primary, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 4,
     },
-    stepNum: { color: '#fff', fontWeight: '800', fontSize: 15 },
+    stepNum: { fontFamily: AppFonts.bold, color: '#fff', fontSize: 15 },
     stepCard: {
         flex: 1, backgroundColor: '#fff', borderRadius: 14, padding: 16,
         shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 6, elevation: 2,
     },
-    stepText: { fontSize: 15, color: AppColors.textDark, lineHeight: 23 },
+    stepText: { fontFamily: AppFonts.regular, fontSize: 15, color: AppColors.textDark, lineHeight: 23 },
 
-    empty: { color: AppColors.textLight, fontStyle: 'italic', fontSize: 14, paddingVertical: 8 },
+    empty: { fontFamily: AppFonts.regular, color: AppColors.textLight, fontStyle: 'italic', fontSize: 14, paddingVertical: 8 },
 
     bar: { position: 'absolute', bottom: 0, left: 0, right: 0, overflow: 'hidden' },
     barBlur: {
@@ -295,8 +296,8 @@ const s = StyleSheet.create({
     chimBtn: { flex: 1, borderRadius: 18, overflow: 'hidden', shadowColor: AppColors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 10, elevation: 6 },
     chimBtnDone: { shadowColor: '#000', shadowOpacity: 0.08 },
     btnGrad: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingVertical: 16, paddingHorizontal: 20, borderRadius: 18 },
-    chimTxt: { color: '#fff', fontSize: 18, fontWeight: '800' },
-    chimTxtDone: { color: AppColors.navy, fontSize: 18, fontWeight: '700' },
+    chimTxt: { fontFamily: AppFonts.bold, color: '#fff', fontSize: 18 },
+    chimTxtDone: { fontFamily: AppFonts.bold, color: AppColors.navy, fontSize: 18 },
     revBtn: { borderRadius: 18, overflow: 'hidden', shadowColor: AppColors.navy, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.25, shadowRadius: 10, elevation: 6 },
-    revTxt: { color: '#fff', fontSize: 16, fontWeight: '700' },
+    revTxt: { fontFamily: AppFonts.bold, color: '#fff', fontSize: 16 },
 });

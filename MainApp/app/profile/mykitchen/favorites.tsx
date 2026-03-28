@@ -14,6 +14,7 @@ import { ChevronLeft, Heart } from 'lucide-react-native';
 import { useCommunity } from '@/hooks/useCommunity';
 import { CommunityPost } from '@/types/community';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 
 const formatTime = (timestamp: any): string => {
     if (!timestamp?.toDate) return '';
@@ -113,8 +114,8 @@ const styles = StyleSheet.create({
         paddingBottom: 20,
     },
     headerTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 20,
-        fontWeight: '700',
         color: AppColors.navy,
     },
     backButton: {
@@ -141,12 +142,13 @@ const styles = StyleSheet.create({
         marginBottom: 24,
     },
     emptyTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 22,
-        fontWeight: 'bold',
         color: AppColors.navy,
         marginBottom: 12,
     },
     emptySubtitle: {
+        fontFamily: AppFonts.regular,
         fontSize: 15,
         color: '#666',
         textAlign: 'center',
@@ -180,8 +182,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     cardFoodName: {
+        fontFamily: AppFonts.bold,
         fontSize: 16,
-        fontWeight: '700',
         color: AppColors.navy,
         flexShrink: 1,
     },
@@ -192,11 +194,12 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     countryChipText: {
+        fontFamily: AppFonts.semiBold,
         fontSize: 10,
         color: AppColors.navy,
-        fontWeight: '600',
     },
     cardDescription: {
+        fontFamily: AppFonts.regular,
         fontSize: 13,
         color: '#666',
         lineHeight: 18,
@@ -208,11 +211,12 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     cardBy: {
+        fontFamily: AppFonts.medium,
         fontSize: 12,
         color: '#aaa',
-        fontWeight: '500',
     },
     cardTime: {
+        fontFamily: AppFonts.regular,
         fontSize: 12,
         color: '#ccc',
     },

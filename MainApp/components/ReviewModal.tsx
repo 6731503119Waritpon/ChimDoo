@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     View,
     Text,
@@ -11,10 +11,15 @@ import {
     KeyboardAvoidingView,
     Platform,
     ScrollView,
+    Animated,
+    Dimensions,
 } from 'react-native';
 import { Camera, ImageIcon, X, Send } from 'lucide-react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
+
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 interface Props {
     visible: boolean;
@@ -28,6 +33,30 @@ const ReviewModal: React.FC<Props> = ({ visible, foodName, onClose, onSubmit }) 
     const [imageBase64, setImageBase64] = useState<string | null>(null);
     const [description, setDescription] = useState('');
     const [submitting, setSubmitting] = useState(false);
+
+    const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
+    const backdropOpacity = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        if (visible) {
+            Animated.parallel([
+                Animated.timing(backdropOpacity, {
+                    toValue: 1,
+                    duration: 300,
+                    useNativeDriver: true,
+                }),
+                Animated.spring(slideAnim, {
+                    toValue: 0,
+                    useNativeDriver: true,
+                    bounciness: 0,
+                    speed: 12,
+                })
+            ]).start();
+        } else {
+            backdropOpacity.setValue(0);
+            slideAnim.setValue(SCREEN_HEIGHT);
+        }
+    }, [visible]);
 
     const pickImage = async (useCamera: boolean) => {
         const permissionResult = useCamera
@@ -84,18 +113,33 @@ const ReviewModal: React.FC<Props> = ({ visible, foodName, onClose, onSubmit }) 
         onClose();
     };
 
+    if (!visible) return null;
+
     return (
         <Modal
             visible={visible}
             transparent
-            animationType="slide"
+            animationType="none"
             onRequestClose={handleClose}
         >
             <KeyboardAvoidingView
-                style={styles.overlay}
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={styles.root}
+                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             >
-                <View style={styles.modal}>
+                <Animated.View style={[styles.overlay, { opacity: backdropOpacity }]}>
+                    <TouchableOpacity
+                        style={StyleSheet.absoluteFill}
+                        activeOpacity={1}
+                        onPress={handleClose}
+                    />
+                </Animated.View>
+
+                <Animated.View 
+                    style={[
+                        styles.modal,
+                        { transform: [{ translateY: slideAnim }] }
+                    ]}
+                >
                     <View style={styles.header}>
                         <Text style={styles.headerTitle}>Write a Review</Text>
                         <TouchableOpacity onPress={handleClose} disabled={submitting}>
@@ -171,7 +215,7 @@ const ReviewModal: React.FC<Props> = ({ visible, foodName, onClose, onSubmit }) 
                             </>
                         )}
                     </TouchableOpacity>
-                </View>
+                </Animated.View>
             </KeyboardAvoidingView>
         </Modal>
     );
@@ -180,10 +224,13 @@ const ReviewModal: React.FC<Props> = ({ visible, foodName, onClose, onSubmit }) 
 export default ReviewModal;
 
 const styles = StyleSheet.create({
-    overlay: {
+    root: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.5)',
         justifyContent: 'flex-end',
+    },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(0,0,0,0.5)',
     },
     modal: {
         backgroundColor: '#fff',
@@ -201,8 +248,8 @@ const styles = StyleSheet.create({
         marginBottom: 16,
     },
     headerTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 22,
-        fontWeight: '800',
         color: AppColors.navy,
     },
     foodBadge: {
@@ -214,8 +261,8 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     foodBadgeText: {
+        fontFamily: AppFonts.semiBold,
         fontSize: 15,
-        fontWeight: '600',
         color: AppColors.navy,
     },
     imagePickerRow: {
@@ -236,8 +283,8 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     imagePickerText: {
+        fontFamily: AppFonts.semiBold,
         fontSize: 13,
-        fontWeight: '600',
         color: '#666',
     },
     imagePreviewContainer: {
@@ -263,12 +310,13 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     label: {
+        fontFamily: AppFonts.bold,
         fontSize: 15,
-        fontWeight: '700',
         color: AppColors.navy,
         marginBottom: 8,
     },
     textInput: {
+        fontFamily: AppFonts.regular,
         backgroundColor: AppColors.backgroundLight,
         borderRadius: 14,
         padding: 16,
@@ -279,6 +327,7 @@ const styles = StyleSheet.create({
         borderColor: '#E8E8E8',
     },
     charCount: {
+        fontFamily: AppFonts.regular,
         fontSize: 12,
         color: '#aaa',
         textAlign: 'right',
@@ -299,8 +348,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#ccc',
     },
     submitText: {
+        fontFamily: AppFonts.bold,
         color: '#fff',
         fontSize: 16,
-        fontWeight: '700',
     },
 });

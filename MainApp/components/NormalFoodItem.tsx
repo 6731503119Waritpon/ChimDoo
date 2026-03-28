@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 
 interface NormalFoodItemProps {
     item: any;
@@ -30,6 +31,6 @@ const styles = StyleSheet.create({
     },
     smallCardImage: { width: 64, height: 64, borderRadius: 32, backgroundColor: '#f0f0f0' },
     smallCardInfo: { flex: 1 },
-    smallCardName: { fontSize: 16, fontWeight: '700', color: AppColors.navy, marginBottom: 4 },
-    smallCardDesc: { fontSize: 13, color: '#777', lineHeight: 18 },
+    smallCardName: { fontFamily: AppFonts.bold, fontSize: 16, color: AppColors.navy, marginBottom: 4 },
+    smallCardDesc: { fontFamily: AppFonts.regular, fontSize: 13, color: '#777', lineHeight: 18 },
 });

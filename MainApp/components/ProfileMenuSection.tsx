@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
 import { ProfileMenuItem } from '@/types/menuProfile';
+import { AppFonts } from '@/constants/theme';
 
 interface ProfileMenuSectionProps {
     title: string;
@@ -48,8 +49,8 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     sectionTitle: {
+        fontFamily: AppFonts.semiBold,
         fontSize: 13,
-        fontWeight: '600',
         color: '#666',
         textTransform: 'uppercase',
         letterSpacing: 0.8,
@@ -102,8 +103,8 @@ const styles = StyleSheet.create({
         elevation: 4,
     },
     menuItemLabel: {
+        fontFamily: AppFonts.medium,
         fontSize: 16,
-        fontWeight: '500',
     },
     menuDivider: {
         height: 0.5,

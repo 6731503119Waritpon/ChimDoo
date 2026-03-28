@@ -17,6 +17,7 @@ import { useNotifications, AppNotification, NotificationType } from '../../../ho
 import { useNotificationSettings } from '../../../hooks/useNotificationSettings';
 import { formatRelativeTime } from '../../../utils/formatTime';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 
 const TYPE_META: Record<NotificationType, { label: string; icon: any; color: string }> = {
     friend_request: { label: 'Friend Requests', icon: UserPlus, color: '#3b82f6' },
@@ -95,13 +96,13 @@ export default function NotificationsScreen() {
                             onPress={() => setShowSettingsModal(true)}
                             activeOpacity={0.7}
                         >
-                            <View style={[styles.settingIcon, { backgroundColor: 'rgba(37, 99, 235, 0.1)' }]}>
+                            <View style={[styles.settingIconCircle, { backgroundColor: 'rgba(230, 57, 70, 0.1)' }]}>
                                 <Bell size={18} color={AppColors.primary} />
                             </View>
                             <Text style={styles.settingsButtonText}>Notification Settings</Text>
                             <ChevronRight size={20} color="#ccc" />
                         </TouchableOpacity>
-                        <Text style={styles.sectionLabel2}>Recent</Text>
+                        <Text style={styles.sectionLabel}>Recent</Text>
                     </View>
                 }
                 ListEmptyComponent={
@@ -160,7 +161,7 @@ export default function NotificationsScreen() {
                                     <Switch
                                         value={settings[type]}
                                         onValueChange={(val) => updateSetting(type, val)}
-                                        thumbColor={Platform.OS === 'ios' ? '#fff' : (settings[type] ? '#fff' : '#eee')}
+                                        thumbColor="#fff"
                                         trackColor={{ false: '#ddd', true: AppColors.primary }}
                                     />
                                 </View>
@@ -189,17 +190,21 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(255,255,255,0.15)',
         alignItems: 'center', justifyContent: 'center',
     },
-    headerTitle: { fontSize: 20, fontWeight: '700', color: '#fff' },
+    headerTitle: {
+        fontFamily: AppFonts.bold,
+        fontSize: 20,
+        color: '#fff',
+    },
     listContent: { paddingBottom: 40 },
     settingsSection: { paddingHorizontal: 20, paddingTop: 20 },
     sectionLabel: {
-        fontSize: 12, fontWeight: '700', color: '#999',
-        textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12,
-    },
-    sectionLabel2: {
-        fontSize: 12, fontWeight: '700', color: '#999',
-        textTransform: 'uppercase', letterSpacing: 1,
-        marginTop: 24, marginBottom: 12,
+        fontFamily: AppFonts.bold,
+        fontSize: 12,
+        color: '#999',
+        textTransform: 'uppercase',
+        letterSpacing: 1,
+        marginTop: 24,
+        marginBottom: 12,
     },
     settingRow: {
         flexDirection: 'row', alignItems: 'center',
@@ -212,7 +217,16 @@ const styles = StyleSheet.create({
         width: 36, height: 36, borderRadius: 10,
         alignItems: 'center', justifyContent: 'center',
     },
-    settingLabel: { flex: 1, fontSize: 15, fontWeight: '500', color: AppColors.navy },
+    settingIconCircle: {
+        width: 36, height: 36, borderRadius: 18,
+        alignItems: 'center', justifyContent: 'center',
+    },
+    settingLabel: {
+        fontFamily: AppFonts.medium,
+        flex: 1,
+        fontSize: 15,
+        color: AppColors.navy,
+    },
     card: {
         flexDirection: 'row', alignItems: 'center',
         backgroundColor: '#fff', marginHorizontal: 20,
@@ -232,12 +246,31 @@ const styles = StyleSheet.create({
     avatar: { width: 46, height: 46, borderRadius: 23 },
     cardContent: { flex: 1 },
     cardTop: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 3 },
-    cardTitle: { fontSize: 14, fontWeight: '700', color: '#1a1a1a', flex: 1 },
-    cardTime: { fontSize: 11, color: '#aaa', marginLeft: 8 },
-    cardBody: { fontSize: 13, color: '#666', lineHeight: 18 },
+    cardTitle: {
+        fontFamily: AppFonts.bold,
+        fontSize: 14,
+        color: '#1a1a1a',
+        flex: 1,
+    },
+    cardTime: {
+        fontFamily: AppFonts.regular,
+        fontSize: 11,
+        color: '#aaa',
+        marginLeft: 8,
+    },
+    cardBody: {
+        fontFamily: AppFonts.regular,
+        fontSize: 13,
+        color: '#666',
+        lineHeight: 18,
+    },
     deleteBtn: { padding: 6 },
     empty: { alignItems: 'center', paddingTop: 40, gap: 12 },
-    emptyText: { fontSize: 14, color: '#bbb' },
+    emptyText: {
+        fontFamily: AppFonts.medium,
+        fontSize: 14,
+        color: '#bbb',
+    },
     detailBackdrop: {
         ...StyleSheet.absoluteFillObject,
         backgroundColor: 'rgba(0,0,0,0.45)',
@@ -248,15 +281,31 @@ const styles = StyleSheet.create({
         shadowColor: '#000', shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.2, shadowRadius: 16, elevation: 10,
     },
-    detailTitle: { fontSize: 16, fontWeight: '700', color: AppColors.navy },
-    detailBody: { fontSize: 14, color: '#444', lineHeight: 22 },
-    detailTime: { fontSize: 12, color: '#aaa' },
+    detailTitle: {
+        fontFamily: AppFonts.bold,
+        fontSize: 16,
+        color: AppColors.navy,
+    },
+    detailBody: {
+        fontFamily: AppFonts.regular,
+        fontSize: 14,
+        color: '#444',
+        lineHeight: 22,
+    },
+    detailTime: {
+        fontFamily: AppFonts.regular,
+        fontSize: 12,
+        color: '#aaa',
+    },
     detailClose: {
         alignSelf: 'flex-end', backgroundColor: AppColors.navy,
         borderRadius: 10, paddingHorizontal: 20, paddingVertical: 10,
     },
-    detailCloseText: { color: '#fff', fontWeight: '700', fontSize: 14 },
-
+    detailCloseText: {
+        fontFamily: AppFonts.bold,
+        color: '#fff',
+        fontSize: 14,
+    },
     settingsButton: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -270,9 +319,9 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     settingsButtonText: {
+        fontFamily: AppFonts.semiBold,
         flex: 1,
         fontSize: 16,
-        fontWeight: '600',
         color: AppColors.navy,
         marginLeft: 12,
     },
@@ -297,13 +346,13 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     modalTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 18,
-        fontWeight: '700',
         color: AppColors.navy,
     },
     modalCloseText: {
+        fontFamily: AppFonts.semiBold,
         fontSize: 16,
-        fontWeight: '600',
         color: AppColors.primary,
     },
 });

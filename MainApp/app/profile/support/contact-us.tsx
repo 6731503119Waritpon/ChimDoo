@@ -15,6 +15,7 @@ import { ChevronLeft, Mail, MessageSquare, User, Send } from 'lucide-react-nativ
 import { useAuth } from '../../../hooks/useAuth';
 import { useToast } from '@/components/ToastProvider';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 
 const SCRIPT_URL = process.env.EXPO_PUBLIC_CONTACT_SCRIPT_URL ?? '';
 
@@ -205,8 +206,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     headerTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 20,
-        fontWeight: '700',
         color: '#fff',
     },
     banner: {
@@ -230,12 +231,13 @@ const styles = StyleSheet.create({
         elevation: 8,
     },
     bannerTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 20,
-        fontWeight: '700',
         color: '#fff',
         marginBottom: 6,
     },
     bannerSub: {
+        fontFamily: AppFonts.regular,
         fontSize: 14,
         color: 'rgba(255,255,255,0.65)',
         textAlign: 'center',
@@ -250,8 +252,8 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     label: {
+        fontFamily: AppFonts.bold,
         fontSize: 13,
-        fontWeight: '700',
         color: '#555',
         textTransform: 'uppercase',
         letterSpacing: 0.8,
@@ -280,6 +282,7 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     input: {
+        fontFamily: AppFonts.regular,
         flex: 1,
         fontSize: 16,
         paddingVertical: 14,
@@ -290,6 +293,7 @@ const styles = StyleSheet.create({
         paddingVertical: 0,
     },
     charCount: {
+        fontFamily: AppFonts.regular,
         fontSize: 12,
         color: '#aaa',
         textAlign: 'right',
@@ -314,8 +318,8 @@ const styles = StyleSheet.create({
         opacity: 0.6,
     },
     sendButtonText: {
+        fontFamily: AppFonts.bold,
         color: '#fff',
         fontSize: 17,
-        fontWeight: '700',
     },
 });

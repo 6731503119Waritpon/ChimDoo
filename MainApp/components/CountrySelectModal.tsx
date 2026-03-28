@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, Modal, FlatList, StyleSheet, Platform, An
 import { X, Search, Globe } from 'lucide-react-native';
 import CountryFlag from 'react-native-country-flag';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 import { GlobeCountry } from '@/types/home';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
@@ -190,13 +191,14 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   searchInput: {
+    fontFamily: AppFonts.regular,
     flex: 1,
     fontSize: 15,
     color: '#333',
   },
   modalTitle: {
+    fontFamily: AppFonts.bold,
     fontSize: 20,
-    fontWeight: '700',
     color: AppColors.navy,
   },
   countryItem: {
@@ -210,14 +212,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(230, 57, 70, 0.07)',
   },
   countryName: {
+    fontFamily: AppFonts.medium,
     fontSize: 17,
-    fontWeight: '500',
     color: '#333',
     flex: 1,
   },
   countryNameActive: {
+    fontFamily: AppFonts.bold,
     color: AppColors.primary,
-    fontWeight: '700',
   },
   activeDot: {
     width: 10,
@@ -243,9 +245,9 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   footerText: {
+    fontFamily: AppFonts.medium,
     fontSize: 14,
     color: '#bbb',
-    fontWeight: '500',
     fontStyle: 'italic',
   },
 });

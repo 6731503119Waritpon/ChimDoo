@@ -12,6 +12,7 @@ import {
 import { X, Smartphone, CheckCircle2, Clock } from 'lucide-react-native';
 import { useAppVersion } from '../hooks/useAppVersion';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 
 interface Props {
     visible: boolean;
@@ -128,8 +129,8 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     headerTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 18,
-        fontWeight: '700',
         color: AppColors.navy,
     },
     closeButton: {
@@ -160,11 +161,12 @@ const styles = StyleSheet.create({
         gap: 2,
     },
     currentVersion: {
+        fontFamily: AppFonts.bold,
         fontSize: 24,
-        fontWeight: '800',
         color: AppColors.navy,
     },
     currentLabel: {
+        fontFamily: AppFonts.regular,
         fontSize: 13,
         color: '#888',
     },
@@ -178,8 +180,8 @@ const styles = StyleSheet.create({
         borderRadius: 20,
     },
     upToDateText: {
+        fontFamily: AppFonts.semiBold,
         fontSize: 13,
-        fontWeight: '600',
         color: '#22c55e',
     },
     center: {
@@ -189,10 +191,12 @@ const styles = StyleSheet.create({
         gap: 12,
     },
     loadingText: {
+        fontFamily: AppFonts.regular,
         fontSize: 14,
         color: '#888',
     },
     errorText: {
+        fontFamily: AppFonts.regular,
         fontSize: 14,
         color: AppColors.primary,
     },
@@ -201,8 +205,8 @@ const styles = StyleSheet.create({
         paddingBottom: 40,
     },
     historyLabel: {
+        fontFamily: AppFonts.bold,
         fontSize: 13,
-        fontWeight: '700',
         color: '#999',
         textTransform: 'uppercase',
         letterSpacing: 1,
@@ -237,8 +241,8 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     versionNumber: {
+        fontFamily: AppFonts.bold,
         fontSize: 18,
-        fontWeight: '800',
         color: AppColors.navy,
     },
     latestTag: {
@@ -248,9 +252,9 @@ const styles = StyleSheet.create({
         paddingVertical: 3,
     },
     latestTagText: {
+        fontFamily: AppFonts.bold,
         color: '#fff',
         fontSize: 11,
-        fontWeight: '700',
     },
     dateRow: {
         flexDirection: 'row',
@@ -258,12 +262,13 @@ const styles = StyleSheet.create({
         gap: 4,
     },
     dateText: {
+        fontFamily: AppFonts.regular,
         fontSize: 12,
         color: '#aaa',
     },
     versionTitle: {
+        fontFamily: AppFonts.semiBold,
         fontSize: 14,
-        fontWeight: '600',
         color: '#555',
         marginBottom: 12,
     },
@@ -286,6 +291,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#8b5cf6',
     },
     changeText: {
+        fontFamily: AppFonts.regular,
         flex: 1,
         fontSize: 14,
         color: '#444',

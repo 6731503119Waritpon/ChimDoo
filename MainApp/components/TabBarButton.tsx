@@ -2,6 +2,7 @@ import { Pressable, StyleSheet, Text } from "react-native"
 import React, { useEffect } from "react"
 import { icon } from "@/constants/icon"
 import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated"
+import { AppFonts } from "@/constants/theme"
 
 interface TabBarButtonProps {
     onPress: (props: any) => void;
@@ -74,7 +75,7 @@ const styles = StyleSheet.create({
         paddingVertical: 2,
     },
     label: {
+        fontFamily: AppFonts.semiBold,
         fontSize: 11,
-        fontWeight: '600',
     },
-})
+})

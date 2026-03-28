@@ -21,6 +21,7 @@ import {
 import { useAuth } from '../../../hooks/useAuth';
 import { useToast } from '@/components/ToastProvider';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 
 export default function ChangePasswordScreen() {
     const router = useRouter();
@@ -240,8 +241,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     headerTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 20,
-        fontWeight: '700',
         color: '#fff',
     },
     googleInfoContainer: {
@@ -261,12 +262,13 @@ const styles = StyleSheet.create({
         marginBottom: 24,
     },
     googleInfoTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 22,
-        fontWeight: '700',
         color: AppColors.navy,
         marginBottom: 12,
     },
     googleInfoText: {
+        fontFamily: AppFonts.regular,
         fontSize: 15,
         color: '#666',
         textAlign: 'center',
@@ -274,8 +276,8 @@ const styles = StyleSheet.create({
         marginBottom: 32,
     },
     googleInfoLink: {
+        fontFamily: AppFonts.semiBold,
         color: AppColors.navy,
-        fontWeight: '600',
     },
     googleInfoButton: {
         backgroundColor: AppColors.navy,
@@ -287,7 +289,7 @@ const styles = StyleSheet.create({
     googleInfoButtonText: {
         color: '#fff',
         fontSize: 16,
-        fontWeight: '700',
+        fontFamily: AppFonts.bold,
     },
     iconBanner: {
         alignItems: 'center',
@@ -310,12 +312,13 @@ const styles = StyleSheet.create({
         elevation: 8,
     },
     bannerText: {
+        fontFamily: AppFonts.bold,
         fontSize: 20,
-        fontWeight: '700',
         color: '#fff',
         marginBottom: 6,
     },
     bannerSub: {
+        fontFamily: AppFonts.regular,
         fontSize: 14,
         color: 'rgba(255,255,255,0.65)',
         textAlign: 'center',
@@ -344,8 +347,8 @@ const styles = StyleSheet.create({
         opacity: 0.6,
     },
     saveButtonText: {
+        fontFamily: AppFonts.bold,
         color: '#fff',
         fontSize: 17,
-        fontWeight: '700',
     },
 });

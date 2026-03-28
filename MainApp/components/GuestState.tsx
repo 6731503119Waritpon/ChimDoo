@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { AppColors } from '@/constants/colors';
 import { LucideIcon } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
+import { AppFonts } from '@/constants/theme';
 
 interface GuestStateProps {
     icon: LucideIcon;
@@ -75,13 +76,14 @@ const styles = StyleSheet.create({
         marginBottom: 24,
     },
     guestTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 28,
-        fontWeight: '800',
         color: AppColors.navy || '#1D3557',
         marginBottom: 12,
         textAlign: 'center',
     },
     guestSubtitle: {
+        fontFamily: AppFonts.regular,
         fontSize: 15,
         color: '#666',
         textAlign: 'center',
@@ -100,9 +102,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     primaryButtonText: {
+        fontFamily: AppFonts.bold,
         color: '#fff',
         fontSize: 16,
-        fontWeight: '700',
     },
     outlineButton: {
         borderWidth: 2,
@@ -112,8 +114,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     outlineButtonText: {
+        fontFamily: AppFonts.bold,
         color: AppColors.primary || '#E63946',
         fontSize: 16,
-        fontWeight: '700',
     },
 });

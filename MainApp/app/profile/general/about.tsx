@@ -24,6 +24,7 @@ import {
 } from 'lucide-react-native';
 import { useAbout } from '../../../hooks/useAbout';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 
 const ICON_MAP: Record<string, React.ComponentType<LucideProps>> = {
   Globe,
@@ -122,9 +123,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  headerTitle: { fontSize: 20, fontWeight: '700', color: '#fff' },
+  headerTitle: {
+    fontFamily: AppFonts.bold,
+    fontSize: 20,
+    color: '#fff',
+  },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  errorText: { fontSize: 14, color: AppColors.primary },
+  errorText: {
+    fontFamily: AppFonts.medium,
+    fontSize: 14,
+    color: AppColors.primary,
+  },
   scrollContent: { paddingBottom: 60 },
   hero: {
     alignItems: 'center',
@@ -134,13 +143,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 32,
   },
   appName: {
+    fontFamily: AppFonts.bold,
     fontSize: 32,
-    fontWeight: '900',
     color: '#fff',
     letterSpacing: -0.5,
     marginBottom: 6,
   },
   tagline: {
+    fontFamily: AppFonts.medium,
     fontSize: 15,
     color: 'rgba(255,255,255,0.7)',
     fontStyle: 'italic',
@@ -148,14 +158,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   heroDesc: {
+    fontFamily: AppFonts.regular,
     fontSize: 14,
     color: 'rgba(255,255,255,0.65)',
     textAlign: 'center',
     lineHeight: 22,
   },
   sectionLabel: {
+    fontFamily: AppFonts.bold,
     fontSize: 13,
-    fontWeight: '700',
     color: '#999',
     textTransform: 'uppercase',
     letterSpacing: 1,
@@ -186,8 +197,18 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   featureText: { flex: 1 },
-  featureTitle: { fontSize: 15, fontWeight: '700', color: AppColors.navy, marginBottom: 3 },
-  featureDesc: { fontSize: 13, color: '#777', lineHeight: 18 },
+  featureTitle: {
+    fontFamily: AppFonts.bold,
+    fontSize: 15,
+    color: AppColors.navy,
+    marginBottom: 3,
+  },
+  featureDesc: {
+    fontFamily: AppFonts.regular,
+    fontSize: 13,
+    color: '#777',
+    lineHeight: 18,
+  },
   creditsCard: {
     marginHorizontal: 20,
     marginTop: 20,
@@ -201,8 +222,23 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 2,
   },
-  creditsTitle: { fontSize: 18, fontWeight: '700', color: AppColors.navy, marginBottom: 10 },
-  creditsText: { fontSize: 14, color: '#666', textAlign: 'center', lineHeight: 22 },
+  creditsTitle: {
+    fontFamily: AppFonts.bold,
+    fontSize: 18,
+    color: AppColors.navy,
+    marginBottom: 10,
+  },
+  creditsText: {
+    fontFamily: AppFonts.regular,
+    fontSize: 14,
+    color: '#666',
+    textAlign: 'center',
+    lineHeight: 22,
+  },
   divider: { height: 1, backgroundColor: '#f0f0f0', width: '100%', marginVertical: 16 },
-  creditsFooter: { fontSize: 13, color: '#aaa' },
+  creditsFooter: {
+    fontFamily: AppFonts.regular,
+    fontSize: 13,
+    color: '#aaa',
+  },
 });

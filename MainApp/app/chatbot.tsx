@@ -6,6 +6,7 @@ import {
 import { useRouter, Stack } from 'expo-router';
 import { ChevronLeft, Send, Sparkles } from 'lucide-react-native';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 import { initOrRestoreChat, sendMessageToGroq, globalUIMessages, Message } from '@/services/groq';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { db } from '@/firebaseConfig';
@@ -117,7 +118,6 @@ export default function ChatbotScreen() {
                 style={styles.keyboardView}
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             >
-                {/* Header */}
                 <View style={styles.header}>
                     <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
                         <ChevronLeft size={28} color={AppColors.navy} />
@@ -193,15 +193,20 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: '#eee',
         zIndex: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+        elevation: 3,
     },
     backBtn: { width: 40, height: 40, justifyContent: 'center', alignItems: 'flex-start' },
     headerTitleContainer: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-    headerTitle: { fontSize: 18, fontWeight: '700', color: AppColors.navy },
+    headerTitle: { fontFamily: AppFonts.bold, fontSize: 18, color: AppColors.navy },
 
     loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    loadingText: { marginTop: 16, color: '#888', fontSize: 14 },
+    loadingText: { fontFamily: AppFonts.regular, marginTop: 16, color: '#888', fontSize: 14 },
 
-    chatContainer: { padding: 16, paddingBottom: 20 },
+    chatContainer: { padding: 16, paddingBottom: 24 },
 
     messageWrapper: { 
         flexDirection: 'row', 
@@ -237,12 +242,16 @@ const styles = StyleSheet.create({
         borderWidth: 1, borderColor: '#eee',
     },
 
-    messageText: { fontSize: 15, lineHeight: 22 },
+    messageText: { 
+        fontFamily: AppFonts.regular, 
+        fontSize: 15, 
+        lineHeight: 22 
+    },
     messageTextUser: { color: '#fff' },
-    messageTextAI: { color: AppColors.textDark },
+    messageTextAI: { color: AppColors.navy },
 
     typingIndicator: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 24, paddingBottom: 16 },
-    typingText: { fontSize: 13, color: '#888', fontStyle: 'italic' },
+    typingText: { fontFamily: AppFonts.regular, fontSize: 13, color: '#888', fontStyle: 'italic' },
 
     inputContainer: {
         backgroundColor: '#fff',
@@ -262,9 +271,10 @@ const styles = StyleSheet.create({
         maxHeight: 120,
     },
     input: {
+        fontFamily: AppFonts.regular,
         flex: 1,
         fontSize: 15,
-        color: AppColors.textDark,
+        color: AppColors.navy,
         paddingTop: 8,
         paddingBottom: 8,
         marginRight: 10,

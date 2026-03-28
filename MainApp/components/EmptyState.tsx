@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 import { LucideIcon } from 'lucide-react-native';
 
 interface EmptyStateProps {
@@ -38,12 +39,13 @@ const styles = StyleSheet.create({
         marginBottom: 24,
     },
     emptyTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 22,
-        fontWeight: 'bold',
         color: AppColors.navy,
         marginBottom: 12,
     },
     emptySubtitle: {
+        fontFamily: AppFonts.regular,
         fontSize: 15,
         color: '#666',
         textAlign: 'center',

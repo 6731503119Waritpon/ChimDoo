@@ -19,6 +19,7 @@ import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { auth } from '../../firebaseConfig';
 import { useGoogleAuth } from '../../hooks/useGoogleAuth';
 import { ArrowLeft } from 'lucide-react-native';
+import { AppFonts } from '@/constants/theme';
 import SecureInput from '@/components/SecureInput';
 import { AppColors } from '@/constants/colors';
 
@@ -245,11 +246,12 @@ const styles = StyleSheet.create({
         marginBottom: 40,
     },
     title: {
+        fontFamily: AppFonts.bold,
         fontSize: 32,
-        fontWeight: 'bold',
         marginBottom: 8,
     },
     subtitle: {
+        fontFamily: AppFonts.regular,
         fontSize: 16,
         color: '#666',
     },
@@ -260,11 +262,12 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     label: {
+        fontFamily: AppFonts.semiBold,
         fontSize: 14,
-        fontWeight: '600',
         marginBottom: 8,
     },
     input: {
+        fontFamily: AppFonts.regular,
         borderRadius: 12,
         padding: 16,
         fontSize: 16,
@@ -282,9 +285,9 @@ const styles = StyleSheet.create({
         opacity: 0.7,
     },
     buttonText: {
+        fontFamily: AppFonts.bold,
         color: '#fff',
         fontSize: 18,
-        fontWeight: '600',
     },
     footer: {
         flexDirection: 'row',
@@ -292,13 +295,14 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     footerText: {
+        fontFamily: AppFonts.regular,
         color: '#666',
         fontSize: 14,
     },
     loginLink: {
+        fontFamily: AppFonts.bold,
         color: AppColors.primary,
         fontSize: 14,
-        fontWeight: '600',
     },
     backButton: {
         width: 40,
@@ -322,6 +326,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#ddd',
     },
     dividerText: {
+        fontFamily: AppFonts.medium,
         marginHorizontal: 10,
         color: '#666',
     },
@@ -337,9 +342,9 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     googleButtonText: {
+        fontFamily: AppFonts.bold,
         color: '#000',
         fontSize: 16,
-        fontWeight: '600',
         marginLeft: 10,
     },
 });

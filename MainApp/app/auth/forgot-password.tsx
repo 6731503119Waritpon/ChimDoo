@@ -15,6 +15,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '@/components/ToastProvider';
 import { ArrowLeft, Mail, KeyRound, CheckCircle2, RefreshCcw } from 'lucide-react-native';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 
 export default function ForgotPasswordScreen() {
     const router = useRouter();
@@ -136,7 +137,7 @@ export default function ForgotPasswordScreen() {
 
                         <View style={styles.infoBox}>
                             <Text style={styles.infoText}>
-                                <Text style={{ fontWeight: 'bold' }}>Note: </Text>
+                                <Text style={{ fontFamily: AppFonts.bold }}>Note: </Text>
                                 This system is currently in development. Password recovery may not be fully functional yet.
                             </Text>
                         </View>
@@ -199,12 +200,13 @@ const styles = StyleSheet.create({
         elevation: 8,
     },
     title: {
+        fontFamily: AppFonts.bold,
         fontSize: 32,
-        fontWeight: 'bold',
         color: AppColors.navy,
         marginBottom: 12,
     },
     subtitle: {
+        fontFamily: AppFonts.regular,
         fontSize: 16,
         color: AppColors.textMuted,
         textAlign: 'center',
@@ -218,8 +220,8 @@ const styles = StyleSheet.create({
         marginBottom: 32,
     },
     label: {
+        fontFamily: AppFonts.bold,
         fontSize: 14,
-        fontWeight: '700',
         color: AppColors.navy,
         marginBottom: 8,
         marginLeft: 4,
@@ -238,6 +240,7 @@ const styles = StyleSheet.create({
         marginRight: 12,
     },
     input: {
+        fontFamily: AppFonts.regular,
         flex: 1,
         fontSize: 16,
         color: AppColors.textDark,
@@ -257,9 +260,9 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     buttonText: {
+        fontFamily: AppFonts.bold,
         color: AppColors.white,
         fontSize: 18,
-        fontWeight: '700',
     },
     infoBox: {
         marginTop: 40,
@@ -270,6 +273,7 @@ const styles = StyleSheet.create({
         borderColor: '#FED7D7',
     },
     infoText: {
+        fontFamily: AppFonts.regular,
         fontSize: 13,
         color: '#C53030',
         textAlign: 'center',
@@ -289,12 +293,13 @@ const styles = StyleSheet.create({
         marginBottom: 32,
     },
     successTitle: {
+        fontFamily: AppFonts.bold,
         fontSize: 28,
-        fontWeight: 'bold',
         color: AppColors.navy,
         marginBottom: 16,
     },
     successText: {
+        fontFamily: AppFonts.regular,
         fontSize: 16,
         color: AppColors.textMuted,
         textAlign: 'center',
@@ -302,7 +307,7 @@ const styles = StyleSheet.create({
         marginBottom: 40,
     },
     emailHighlight: {
-        fontWeight: 'bold',
+        fontFamily: AppFonts.bold,
         color: AppColors.navy,
     },
     resendButton: {
@@ -312,9 +317,9 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     resendButtonText: {
+        fontFamily: AppFonts.medium,
         fontSize: 14,
         color: AppColors.textMuted,
         marginLeft: 8,
-        fontWeight: '500',
     },
 });

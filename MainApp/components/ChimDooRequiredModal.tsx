@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { AlertTriangle, X } from 'lucide-react-native';
 import { AppColors } from '@/constants/colors';
+import { AppFonts } from '@/constants/theme';
 
 interface Props {
     visible: boolean;
@@ -84,12 +85,13 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     title: {
+        fontFamily: AppFonts.bold,
         fontSize: 22,
-        fontWeight: '800',
         color: AppColors.navy,
         marginBottom: 12,
     },
     message: {
+        fontFamily: AppFonts.regular,
         fontSize: 15,
         color: '#666',
         textAlign: 'center',
@@ -105,8 +107,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     okButtonText: {
+        fontFamily: AppFonts.bold,
         color: '#fff',
         fontSize: 16,
-        fontWeight: '700',
     },
 });
