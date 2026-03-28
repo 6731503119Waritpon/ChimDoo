@@ -9,10 +9,11 @@ import {
     Platform,
     ActivityIndicator,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '@/components/ToastProvider';
-import { ArrowLeft } from 'lucide-react-native';
+import { ArrowLeft, Mail, KeyRound, CheckCircle2, RefreshCcw } from 'lucide-react-native';
 import { AppColors } from '@/constants/colors';
 
 export default function ForgotPasswordScreen() {
@@ -29,6 +30,12 @@ export default function ForgotPasswordScreen() {
             return;
         }
 
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            toast.warning('Invalid Email', 'Please enter a valid email address');
+            return;
+        }
+
         try {
             await resetPassword(email);
             setEmailSent(true);
@@ -39,31 +46,46 @@ export default function ForgotPasswordScreen() {
 
     if (emailSent) {
         return (
-            <View style={styles.container}>
+            <SafeAreaView style={styles.container}>
+                <View style={[styles.backgroundAccent, { top: -120, right: -120 }]} />
                 <View style={styles.content}>
                     <View style={styles.successContainer}>
+                        <View style={styles.successIconWrapper}>
+                            <CheckCircle2 size={60} color={AppColors.success} />
+                        </View>
                         <Text style={styles.successTitle}>Check Your Email</Text>
                         <Text style={styles.successText}>
-                            We've sent a password reset link to {email}
+                            We've sent a password reset link to{'\n'}
+                            <Text style={styles.emailHighlight}>{email}</Text>
                         </Text>
+                        
                         <TouchableOpacity
                             style={styles.button}
-                            onPress={() => router.push('/auth/login')}
+                            onPress={() => router.back()}
                         >
                             <Text style={styles.buttonText}>Back to Login</Text>
                         </TouchableOpacity>
+
+                        <TouchableOpacity 
+                            style={styles.resendButton}
+                            onPress={() => setEmailSent(false)}
+                        >
+                            <RefreshCcw size={16} color={AppColors.textMuted} />
+                            <Text style={styles.resendButtonText}>Didn't receive the email? Try again</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
-            </View>
+            </SafeAreaView>
         );
     }
 
     return (
-        <KeyboardAvoidingView
-            style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        >
-            <View style={styles.content}>
+        <SafeAreaView style={styles.container}>
+            <View style={styles.backgroundAccent} />
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            >
                 <TouchableOpacity
                     style={styles.backButton}
                     onPress={() => router.back()}
@@ -71,52 +93,75 @@ export default function ForgotPasswordScreen() {
                     <ArrowLeft size={22} color={AppColors.navy} />
                 </TouchableOpacity>
 
-                <View style={styles.header}>
-                    <Text style={styles.title}>Forgot Password?</Text>
-                    <Text style={styles.subtitle}>
-                        Enter your email and we'll send you a reset link
-                    </Text>
-                </View>
-
-                <View style={styles.form}>
-                    <View style={styles.inputContainer}>
-                        <Text style={styles.label}>Email</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Enter your email"
-                            placeholderTextColor="#666"
-                            value={email}
-                            onChangeText={setEmail}
-                            keyboardType="email-address"
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                        />
+                <View style={styles.content}>
+                    <View style={styles.header}>
+                        <View style={styles.iconCircle}>
+                            <KeyRound size={32} color={AppColors.white} />
+                        </View>
+                        <Text style={styles.title}>Forgot Password?</Text>
+                        <Text style={styles.subtitle}>
+                            Don't worry! It happens. Please enter the email address associated with your account.
+                        </Text>
                     </View>
 
-                    <TouchableOpacity
-                        style={[styles.button, loading && styles.buttonDisabled]}
-                        onPress={handleResetPassword}
-                        disabled={loading}
-                    >
-                        {loading ? (
-                            <ActivityIndicator color="#fff" />
-                        ) : (
-                            <Text style={styles.buttonText}>Send Reset Link</Text>
-                        )}
-                    </TouchableOpacity>
-                    <View>
-                        <Text style={styles.warningText}>Warning: This system is still under development, so a password recovery feature is not yet available.</Text>
+                    <View style={styles.formContainer}>
+                        <View style={styles.inputWrapper}>
+                            <Text style={styles.label}>Email Address</Text>
+                            <View style={styles.inputContainer}>
+                                <Mail size={20} color={AppColors.textMuted} style={styles.inputIcon} />
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Enter your email"
+                                    placeholderTextColor={AppColors.textPlaceholder}
+                                    value={email}
+                                    onChangeText={setEmail}
+                                    keyboardType="email-address"
+                                    autoCapitalize="none"
+                                    autoCorrect={false}
+                                />
+                            </View>
+                        </View>
+
+                        <TouchableOpacity
+                            style={[styles.button, loading && { opacity: 0.6 }]}
+                            onPress={handleResetPassword}
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <ActivityIndicator color={AppColors.white} />
+                            ) : (
+                                <Text style={styles.buttonText}>Send Reset Link</Text>
+                            )}
+                        </TouchableOpacity>
+
+                        <View style={styles.infoBox}>
+                            <Text style={styles.infoText}>
+                                <Text style={{ fontWeight: 'bold' }}>Note: </Text>
+                                This system is currently in development. Password recovery may not be fully functional yet.
+                            </Text>
+                        </View>
                     </View>
                 </View>
-            </View>
-        </KeyboardAvoidingView>
+            </KeyboardAvoidingView>
+        </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: AppColors.backgroundLight,
+        backgroundColor: AppColors.white,
+    },
+    backgroundAccent: {
+        position: 'absolute',
+        top: -100,
+        right: -100,
+        width: 300,
+        height: 300,
+        borderRadius: 150,
+        backgroundColor: AppColors.primary,
+        opacity: 0.05,
+        zIndex: 0,
     },
     content: {
         flex: 1,
@@ -125,90 +170,151 @@ const styles = StyleSheet.create({
     },
     backButton: {
         position: 'absolute',
-        top: Platform.OS === 'ios' ? 60 : 40,
-        left: 24,
+        top: 20,
+        left: 20,
         zIndex: 10,
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
         backgroundColor: '#F0F2F5',
         alignItems: 'center',
         justifyContent: 'center',
     },
-    backButtonText: {
-        fontSize: 16,
-    },
     header: {
         alignItems: 'center',
-        marginBottom: 48,
+        marginBottom: 40,
+    },
+    iconCircle: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        backgroundColor: AppColors.primary,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 24,
+        shadowColor: AppColors.primary,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.3,
+        shadowRadius: 12,
+        elevation: 8,
     },
     title: {
-        fontSize: 28,
+        fontSize: 32,
         fontWeight: 'bold',
-        marginBottom: 8,
+        color: AppColors.navy,
+        marginBottom: 12,
     },
     subtitle: {
         fontSize: 16,
-        color: '#666',
+        color: AppColors.textMuted,
         textAlign: 'center',
+        lineHeight: 24,
         paddingHorizontal: 20,
     },
-    form: {
-        marginBottom: 32,
+    formContainer: {
+        width: '100%',
     },
-    inputContainer: {
-        marginBottom: 24,
+    inputWrapper: {
+        marginBottom: 32,
     },
     label: {
         fontSize: 14,
-        fontWeight: '600',
+        fontWeight: '700',
+        color: AppColors.navy,
         marginBottom: 8,
+        marginLeft: 4,
+    },
+    inputContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#F8F9FA',
+        borderRadius: 16,
+        borderWidth: 1,
+        borderColor: AppColors.borderLight,
+        paddingHorizontal: 16,
+        height: 60,
+    },
+    inputIcon: {
+        marginRight: 12,
     },
     input: {
-        borderRadius: 12,
-        padding: 16,
+        flex: 1,
         fontSize: 16,
-        borderWidth: 1,
-        borderColor: '#333',
+        color: AppColors.textDark,
+        height: '100%',
     },
     button: {
         backgroundColor: AppColors.primary,
-        borderRadius: 12,
-        padding: 16,
+        borderRadius: 16,
+        height: 60,
+        width: '100%',
         alignItems: 'center',
-    },
-    buttonDisabled: {
-        opacity: 0.7,
+        justifyContent: 'center',
+        shadowColor: AppColors.primary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 5,
     },
     buttonText: {
-        color: '#fff',
+        color: AppColors.white,
         fontSize: 18,
-        fontWeight: '600',
+        fontWeight: '700',
+    },
+    infoBox: {
+        marginTop: 40,
+        padding: 16,
+        backgroundColor: '#FFF5F5',
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: '#FED7D7',
+    },
+    infoText: {
+        fontSize: 13,
+        color: '#C53030',
+        textAlign: 'center',
+        lineHeight: 18,
     },
     successContainer: {
         alignItems: 'center',
+        paddingHorizontal: 20,
     },
-    successIcon: {
-        fontSize: 80,
-        marginBottom: 24,
+    successIconWrapper: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        backgroundColor: '#DCFCE7',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 32,
     },
     successTitle: {
         fontSize: 28,
         fontWeight: 'bold',
+        color: AppColors.navy,
         marginBottom: 16,
     },
     successText: {
         fontSize: 16,
-        color: '#666',
+        color: AppColors.textMuted,
         textAlign: 'center',
-        marginBottom: 32,
-        paddingHorizontal: 20,
+        lineHeight: 24,
+        marginBottom: 40,
     },
-    warningText: {
-        fontSize: 12,
-        color: '#ff0000ff',
-        textAlign: 'center',
-        marginTop: 32,
-        paddingHorizontal: 20,
+    emailHighlight: {
+        fontWeight: 'bold',
+        color: AppColors.navy,
+    },
+    resendButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 24,
+        padding: 10,
+    },
+    resendButtonText: {
+        fontSize: 14,
+        color: AppColors.textMuted,
+        marginLeft: 8,
+        fontWeight: '500',
     },
 });

@@ -17,13 +17,21 @@ import { useFocusEffect } from 'expo-router';
 import { globeCountries } from '@/config/home';
 import { useGlobe } from '@/hooks/useGlobe';
 import modelPath from '@/assets/models/earth.glb';
-import NotificationBell from '@/components/NotificationBell';
 import NotificationModal from '@/components/NotificationModal';
 import CountrySelectModal from '@/components/CountrySelectModal';
 import { AppColors } from '@/constants/colors';
 
 function EarthModel(props: any) {
   const gltf = useGLTF(modelPath);
+  React.useEffect(() => {
+    gltf.scene.traverse((child: any) => {
+      if (child.isMesh && child.material) {
+        child.material.roughness = 0.1;
+        child.material.metalness = 0.2;
+      }
+    });
+  }, [gltf]);
+
   return <primitive {...props} object={gltf.scene} />;
 }
 
@@ -49,7 +57,7 @@ function AnimatedControls({ target, zooming, onRotationDone, onZoomDone }: Anima
   const zoomProgress = useRef(0);
   const zoomStartDistance = useRef(5);
   const zoomFinished = useRef(false);
-  const ZOOM_TARGET = 10;
+  const ZOOM_TARGET = 20;
 
   React.useEffect(() => {
     if (target && controlsRef.current) {
@@ -142,7 +150,6 @@ export default function HomeScreen() {
     handleRotationDone,
     handleZoomDone,
   } = useGlobe();
-  const [showNotif, setShowNotif] = React.useState(false);
   const [canvasKey, setCanvasKey] = React.useState(0);
 
   useFocusEffect(
@@ -155,12 +162,9 @@ export default function HomeScreen() {
     <>
       <View style={styles.container}>
         <View style={styles.header}>
-          <TouchableOpacity style={styles.headerCenter} onPress={() => setShowNotif(true)} activeOpacity={0.75}>
+          <View style={styles.headerCenter}>
             <Text style={styles.appName}>ChimDoo</Text>
             <Text style={styles.subtitle}>Choose your place to Chim</Text>
-          </TouchableOpacity>
-          <View style={styles.headerBell}>
-            <NotificationBell onPress={() => setShowNotif(true)} />
           </View>
         </View>
 
@@ -185,7 +189,11 @@ export default function HomeScreen() {
         <View style={styles.canvasContainer}>
           <Canvas key={canvasKey} camera={{ position: [0, 0, 5], fov: 45 }}>
             <Suspense fallback={null}>
-              <Stage environment="city" intensity={0.6} shadows={false}>
+              <ambientLight intensity={1.5} />
+              <hemisphereLight intensity={2.5} color="#ffffff" groundColor="#000000" />
+              <directionalLight position={[10, 10, 10]} intensity={4} />
+              <pointLight position={[0, 0, 10]} intensity={3} color="#ffffff" />
+              <Stage environment={null} intensity={1.5} shadows={false}>
                 <EarthModel />
               </Stage>
             </Suspense>
@@ -206,7 +214,6 @@ export default function HomeScreen() {
           onSelectCountry={handleSelectCountry}
         />
       </View>
-      <NotificationModal visible={showNotif} onClose={() => setShowNotif(false)} />
     </>
   );
 }
@@ -248,6 +255,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
     marginTop: 18,
     marginBottom: 4,
+    zIndex: 10,
   },
   pillButton: {
     flexDirection: 'row',
@@ -273,6 +281,7 @@ const styles = StyleSheet.create({
   },
   canvasContainer: {
     flex: 1,
+    marginTop: -80,
     marginVertical: 8,
   },
   modalBackdrop: {

@@ -14,8 +14,6 @@ import {
 import { useRouter } from 'expo-router';
 import { Search, Clock, Flame, X, UtensilsCrossed, CookingPot } from 'lucide-react-native';
 import { useChimDoo, ChimDooItem } from '@/hooks/useChimDoo';
-import NotificationBell from '@/components/NotificationBell';
-import NotificationModal from '@/components/NotificationModal';
 import GuestState from '@/components/GuestState';
 import RecipeCard from '@/components/RecipeCard';
 import { AppColors } from '@/constants/colors';
@@ -26,7 +24,6 @@ const Page = () => {
     const [activeCategory, setActiveCategory] = useState('All');
 
     const { chimDooList, loading, isLoggedIn } = useChimDoo();
-    const [showNotif, setShowNotif] = useState(false);
 
     const categories = useMemo(() => {
         const cats = new Set(chimDooList.map((r) => r.category).filter(Boolean));
@@ -79,12 +76,10 @@ const Page = () => {
             <View style={styles.container}>
                 <View style={styles.header}>
                     <View style={styles.headerRow}>
-                        <CookingPot size={28} color={AppColors.primary} />
                         <Text style={styles.headerTitle}>Recipes</Text>
                     </View>
                     <View style={styles.headerRight}>
                         <Text style={styles.headerSubtitle}>Menus you've tried!</Text>
-                        <NotificationBell onPress={() => setShowNotif(true)} />
                     </View>
                 </View>
 
@@ -160,7 +155,6 @@ const Page = () => {
                     }
                 />
             </View>
-            <NotificationModal visible={showNotif} onClose={() => setShowNotif(false)} />
         </>
     );
 };

@@ -45,3 +45,4 @@ app-example
 
 # Firebase
 .firebase/.env
+.firebase/

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Dimensions } from 'react-native';
-import { Clock, Flame } from 'lucide-react-native';
+import { Clock, Flame, Soup } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AppColors } from '@/constants/colors';
 
@@ -24,7 +24,10 @@ export default function PopularFoodCard({ item, onPress, badgeLabel = 'Popular' 
             />
 
             <View style={styles.largeCardContent}>
-                <View style={styles.largeCardBadge}>
+                <View style={[
+                    styles.largeCardBadge,
+                    { backgroundColor: badgeLabel === 'Popular' ? AppColors.gold : AppColors.primary }
+                ]}>
                     <Text style={styles.largeCardBadgeText}>{badgeLabel}</Text>
                 </View>
 
@@ -37,8 +40,11 @@ export default function PopularFoodCard({ item, onPress, badgeLabel = 'Popular' 
                         <Text style={styles.metaChipText}>{item.prepTime}</Text>
                     </View>
                     <View style={styles.metaChip}>
-                        <Flame size={12} color="#fff" />
-                        <Text style={styles.metaChipText}>{item.taste}</Text>
+                        <Soup size={12} color="#fff" />
+                        <Text style={styles.metaChipText}>
+                            {Array.isArray(item.taste) ? item.taste.join(', ') : item.taste}
+                        </Text>
+
                     </View>
                 </View>
             </View>
@@ -48,7 +54,7 @@ export default function PopularFoodCard({ item, onPress, badgeLabel = 'Popular' 
 
 const styles = StyleSheet.create({
     largeCard: {
-        width: width * 0.8,
+        width: width > 600 ? 350 : width * 0.82,
         height: 220,
         borderRadius: 24,
         overflow: 'hidden',
@@ -65,7 +71,6 @@ const styles = StyleSheet.create({
     largeCardContent: { flex: 1, justifyContent: 'flex-end', padding: 20 },
     largeCardBadge: {
         alignSelf: 'flex-start',
-        backgroundColor: AppColors.primary,
         borderRadius: 8,
         paddingHorizontal: 10,
         paddingVertical: 4,

@@ -15,8 +15,6 @@ import { useCommunity } from '@/hooks/useCommunity';
 import { useFriends } from '@/hooks/useFriends';
 import { useToast } from '@/components/ToastProvider';
 import CommentModal from '@/components/CommentModal';
-import NotificationBell from '@/components/NotificationBell';
-import NotificationModal from '@/components/NotificationModal';
 import GuestState from '@/components/GuestState';
 import PostCard from '@/components/PostCard';
 import { sharePost } from '@/utils/sharePost';
@@ -29,7 +27,6 @@ type FeedTab = 'global' | 'friends';
 const Page = () => {
     const toast = useToast();
     const { posts, loading, toggleLike, isLoggedIn, currentUserId } = useCommunity();
-    const [showNotif, setShowNotif] = useState(false);
     const { friendUserIds, getFriendStatus, sendFriendRequest } = useFriends();
     const [commentReviewId, setCommentReviewId] = useState<string | null>(null);
     const [feedTab, setFeedTab] = useState<FeedTab>('global');
@@ -104,14 +101,13 @@ const Page = () => {
     return (
         <>
             <View style={styles.container}>
-                <View style={[styles.header, { justifyContent: 'space-between' }]}>
+                <View style={styles.header}>
                     <View>
                         <Text style={styles.headerTitle}>Community</Text>
                         <Text style={styles.headerSubtitle}>
                             See what others are cooking
                         </Text>
                     </View>
-                    <NotificationBell onPress={() => setShowNotif(true)} />
                 </View>
 
                 <View style={styles.feedTabsContainer}>
@@ -201,7 +197,6 @@ const Page = () => {
                     onClose={() => setCommentReviewId(null)}
                 />
             </View>
-            <NotificationModal visible={showNotif} onClose={() => setShowNotif(false)} />
         </>
     );
 };

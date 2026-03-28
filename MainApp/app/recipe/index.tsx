@@ -6,7 +6,7 @@ import {
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
-import { ArrowLeft, Clock, Flame, Utensils, UtensilsCrossed, Check, Star, ChefHat, CookingPot } from 'lucide-react-native';
+import { ArrowLeft, Clock, Flame, Utensils, UtensilsCrossed, Check, Star, ChefHat, CookingPot, Soup, HandPlatter } from 'lucide-react-native';
 import { FoodItem } from '@/types/recipe';
 import { useChimDoo } from '@/hooks/useChimDoo';
 import { useCommunity } from '@/hooks/useCommunity';
@@ -23,7 +23,7 @@ function MetaCard({ icon, value, label }: { icon: React.ReactNode; value?: strin
     return (
         <View style={s.metaCard}>
             <View style={s.metaIconBg}>{icon}</View>
-            <Text style={s.metaValue} numberOfLines={1}>{value || '—'}</Text>
+            <Text style={s.metaValue}>{value || '—'}</Text>
             <Text style={s.metaLabel}>{label}</Text>
         </View>
     );
@@ -120,7 +120,13 @@ export default function RecipePage() {
 
     if (!food) return null;
 
-    const tasteDisplay = Array.isArray(food.taste) ? food.taste.join(', ') : food.taste;
+    const tasteDisplay = Array.isArray(food.taste)
+        ? food.taste.reduce((acc, curr, i) => {
+            const separator = (i > 0 && i % 2 === 0) ? '\n' : (i === 0 ? '' : ', ');
+            return acc + separator + curr;
+        }, '')
+        : food.taste;
+
     const ingredientCount = food.ingredients?.length || 0;
 
     return (
@@ -140,8 +146,8 @@ export default function RecipePage() {
 
                     <View style={s.metaRow}>
                         <MetaCard icon={<Clock size={20} color={AppColors.primary} />} value={food.prepTime} label="Time" />
-                        <MetaCard icon={<Flame size={20} color={AppColors.warning} />} value={tasteDisplay} label="Taste" />
-                        <MetaCard icon={<Utensils size={20} color={AppColors.navy} />} value={food.servings} label="Serving" />
+                        <MetaCard icon={<Soup size={20} color={AppColors.warning} />} value={tasteDisplay} label="Taste" />
+                        <MetaCard icon={<HandPlatter size={20} color={AppColors.navy} />} value={food.servings} label="Serving" />
                     </View>
                     <View style={s.section}>
                         <View style={s.sectionHead}>
@@ -248,7 +254,7 @@ const s = StyleSheet.create({
         width: 42, height: 42, borderRadius: 21,
         backgroundColor: 'rgba(29,53,87,0.08)', justifyContent: 'center', alignItems: 'center', marginBottom: 10,
     },
-    metaValue: { fontSize: 13, fontWeight: '700', color: AppColors.textDark, textAlign: 'center', marginBottom: 3 },
+    metaValue: { fontSize: 13, fontWeight: '700', color: AppColors.textDark, textAlign: 'center', marginBottom: 3, paddingHorizontal: 2 },
     metaLabel: { fontSize: 12, color: AppColors.textLight, fontWeight: '500' },
 
     section: { marginBottom: 28 },

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { Clock, Flame } from 'lucide-react-native';
+import { Clock, Flame, Soup } from 'lucide-react-native';
 import { ChimDooItem } from '@/hooks/useChimDoo';
 
 interface RecipeCardProps {
@@ -36,7 +36,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ item, onPress }) => {
                     ) : null}
                     {item.taste && item.taste.length > 0 ? (
                         <View style={styles.metaChip}>
-                            <Flame size={13} color="#fff" />
+                            <Soup size={13} color="#fff" />
                             <Text style={styles.metaChipText}>{item.taste[0]}</Text>
                         </View>
                     ) : null}

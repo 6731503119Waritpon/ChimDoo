@@ -106,7 +106,15 @@ export default function SignupScreen() {
             await signUp(email, password, displayName);
             router.replace('/(tabs)');
         } catch (err: any) {
-            toast.error('Signup Failed', err.message || 'Please try again');
+            let errorMessage = 'Please try again';
+            
+            if (err.code === 'auth/email-already-in-use') {
+                errorMessage = 'This email is already registered. Please sign in instead.';
+            } else if (err.message) {
+                errorMessage = err.message;
+            }
+            
+            toast.error('Signup Failed', errorMessage);
         }
     };
 

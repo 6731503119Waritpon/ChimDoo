@@ -1,10 +1,11 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, Modal, FlatList, StyleSheet, Platform } from 'react-native';
-import { X } from 'lucide-react-native';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
+import { View, Text, TouchableOpacity, Modal, FlatList, StyleSheet, Platform, Animated, Dimensions, TextInput } from 'react-native';
+import { X, Search, Globe } from 'lucide-react-native';
 import CountryFlag from 'react-native-country-flag';
 import { AppColors } from '@/constants/colors';
-
 import { GlobeCountry } from '@/types/home';
+
+const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
 interface CountrySelectModalProps {
   visible: boolean;
@@ -21,68 +22,152 @@ export default function CountrySelectModal({
   selectedCountry,
   onSelectCountry,
 }: CountrySelectModalProps) {
+  const [search, setSearch] = useState('');
+  
+  const filteredCountries = useMemo(() => {
+    if (!search.trim()) return countries;
+    return countries.filter(c =>
+      c.name.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [search, countries]);
+
+  const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
+  const backdropOpacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (visible) {
+      Animated.parallel([
+        Animated.timing(backdropOpacity, {
+          toValue: 1,
+          duration: 300,
+          useNativeDriver: true,
+        }),
+        Animated.spring(slideAnim, {
+          toValue: 0,
+          useNativeDriver: true,
+          bounciness: 0,
+          speed: 12,
+        })
+      ]).start();
+    } else {
+      slideAnim.setValue(SCREEN_HEIGHT);
+      backdropOpacity.setValue(0);
+    }
+  }, [visible]);
+
+  if (!visible) return null;
+
   return (
     <Modal
       visible={visible}
       transparent
-      animationType="slide"
+      animationType="none"
       onRequestClose={onClose}
     >
-      <View style={styles.modalBackdrop}>
-        <View style={styles.modalSheet}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Select Country</Text>
-            <TouchableOpacity onPress={onClose} activeOpacity={0.6}>
-              <X size={22} color="#666" />
-            </TouchableOpacity>
-          </View>
+      <Animated.View style={[styles.modalBackdrop, { opacity: backdropOpacity }]}>
+        <TouchableOpacity
+          style={StyleSheet.absoluteFill}
+          activeOpacity={1}
+          onPress={onClose}
+        />
+      </Animated.View>
 
-          <FlatList
-            data={countries}
-            keyExtractor={(item) => item.id}
-            showsVerticalScrollIndicator={false}
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                style={[
-                  styles.countryItem,
-                  selectedCountry?.id === item.id && styles.countryItemActive,
-                ]}
-                activeOpacity={0.6}
-                onPress={() => onSelectCountry(item)}
-              >
-                <CountryFlag isoCode={item.isoCode} size={28} style={{ borderRadius: 4 }} />
-                <Text
-                  style={[
-                    styles.countryName,
-                    selectedCountry?.id === item.id && styles.countryNameActive,
-                  ]}
-                >
-                  {item.name}
-                </Text>
-                {selectedCountry?.id === item.id && (
-                  <View style={styles.activeDot} />
-                )}
+      <Animated.View
+        style={[
+          styles.modalSheet,
+          { transform: [{ translateY: slideAnim }] }
+        ]}
+      >
+        <View style={styles.modalHeader}>
+          <Text style={styles.modalTitle}>Select Country</Text>
+          <TouchableOpacity onPress={onClose} activeOpacity={0.6}>
+            <X size={22} color="#666" />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.searchWrapper}>
+          <View style={styles.searchBar}>
+            <Search size={18} color="#999" />
+            <TextInput
+              style={styles.searchInput}
+              placeholder="Search country..."
+              placeholderTextColor="#aaa"
+              value={search}
+              onChangeText={setSearch}
+              autoCorrect={false}
+            />
+            {search.length > 0 && (
+              <TouchableOpacity onPress={() => setSearch('')}>
+                <X size={16} color="#999" />
               </TouchableOpacity>
             )}
-          />
+          </View>
         </View>
-      </View>
+
+        <FlatList
+          data={filteredCountries}
+          keyExtractor={(item) => item.id}
+
+          showsVerticalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={[
+                styles.countryItem,
+                selectedCountry?.id === item.id && styles.countryItemActive,
+              ]}
+              activeOpacity={0.6}
+              onPress={() => onSelectCountry(item)}
+            >
+              <CountryFlag isoCode={item.isoCode} size={28} style={{ borderRadius: 4 }} />
+              <Text
+                style={[
+                  styles.countryName,
+                  selectedCountry?.id === item.id && styles.countryNameActive,
+                ]}
+              >
+                {item.name}
+              </Text>
+              {selectedCountry?.id === item.id && (
+                <View style={styles.activeDot} />
+              )}
+            </TouchableOpacity>
+          )}
+          ListFooterComponent={
+            <View style={styles.footer}>
+              <View style={styles.footerDivider} />
+              <View style={styles.footerContent}>
+                <Globe size={16} color="#bbb" />
+                <Text style={styles.footerText}>More countries coming soon...</Text>
+              </View>
+            </View>
+          }
+        />
+      </Animated.View>
     </Modal>
   );
 }
 
 const styles = StyleSheet.create({
   modalBackdrop: {
-    flex: 1,
+    ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0,0,0,0.45)',
-    justifyContent: 'flex-end',
   },
   modalSheet: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
     backgroundColor: '#FFFFFF',
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    maxHeight: '60%',
+    maxHeight: '80%',
+    minHeight: 600,
     paddingBottom: Platform.OS === 'ios' ? 34 : 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 20,
   },
   modalHeader: {
     flexDirection: 'row',
@@ -90,8 +175,24 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 24,
     paddingVertical: 18,
-    borderBottomWidth: 0.5,
-    borderBottomColor: '#e5e5e5',
+  },
+  searchWrapper: {
+    paddingHorizontal: 24,
+    marginBottom: 12,
+  },
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: Platform.OS === 'ios' ? 12 : 4,
+    gap: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 15,
+    color: '#333',
   },
   modalTitle: {
     fontSize: 20,
@@ -123,5 +224,28 @@ const styles = StyleSheet.create({
     height: 10,
     borderRadius: 5,
     backgroundColor: AppColors.primary,
+  },
+  footer: {
+    paddingHorizontal: 24,
+    paddingBottom: 24,
+    marginTop: 8,
+  },
+  footerDivider: {
+    height: 1,
+    backgroundColor: '#f0f0f0',
+    marginBottom: 20,
+    width: '100%',
+  },
+  footerContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  footerText: {
+    fontSize: 14,
+    color: '#bbb',
+    fontWeight: '500',
+    fontStyle: 'italic',
   },
 });

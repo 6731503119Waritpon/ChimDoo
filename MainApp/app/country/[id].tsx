@@ -22,6 +22,8 @@ import { AppColors } from '@/constants/colors';
 import PopularFoodCard from '@/components/PopularFoodCard';
 import NormalFoodItem from '@/components/NormalFoodItem';
 
+const { width } = Dimensions.get('window');
+
 export default function CountryPage() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const router = useRouter();
@@ -66,84 +68,90 @@ export default function CountryPage() {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <TouchableOpacity
-                    style={styles.headerBackBtn}
-                    onPress={() => router.back()}
-                >
-                    <ArrowLeft size={22} color={AppColors.navy} />
-                </TouchableOpacity>
-                <View style={styles.headerCenter}>
-                    {isoCode ? (
-                        <CountryFlag isoCode={isoCode} size={28} style={{ borderRadius: 6, marginRight: 4 }} />
-                    ) : (
-                        <Text style={styles.headerFlag}>{data.flag}</Text>
-                    )}
-                    <Text style={styles.headerTitle}>{data.name}</Text>
+                <View style={styles.contentWrapper}>
+                    <View style={styles.headerInner}>
+                        <TouchableOpacity
+                            style={styles.headerBackBtn}
+                            onPress={() => router.back()}
+                        >
+                            <ArrowLeft size={22} color={AppColors.navy} />
+                        </TouchableOpacity>
+                        <View style={styles.headerCenter}>
+                            {isoCode ? (
+                                <CountryFlag isoCode={isoCode} size={28} style={{ borderRadius: 6, marginRight: 4 }} />
+                            ) : (
+                                <Text style={styles.headerFlag}>{data.flag}</Text>
+                            )}
+                            <Text style={styles.headerTitle}>{data.name}</Text>
+                        </View>
+                        <View style={{ width: 40 }} />
+                    </View>
                 </View>
-                <View style={{ width: 40 }} />
             </View>
 
             <ScrollView
+                style={styles.flex1}
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
             >
-                {popularFoods.length > 0 && (
-                    <View style={styles.sectionContainer}>
-                        <Text style={styles.sectionTitle}>POPULAR DISHES</Text>
-                        <ScrollView
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={{ paddingHorizontal: 20, gap: 16 }}
-                        >
-                            {popularFoods.map((food, index) => (
-                                <PopularFoodCard
-                                    key={`pop-${index}`}
+                <View style={styles.contentWrapper}>
+                    {popularFoods.length > 0 && (
+                        <View style={styles.sectionContainer}>
+                            <Text style={styles.sectionTitle}>POPULAR DISHES</Text>
+                            <ScrollView
+                                horizontal
+                                showsHorizontalScrollIndicator={Platform.OS === 'web'}
+                                contentContainerStyle={styles.horizontalScrollContent}
+                            >
+                                {popularFoods.map((food, index) => (
+                                    <PopularFoodCard
+                                        key={`pop-${index}`}
+                                        item={food}
+                                        onPress={() => handleFoodPress(food)}
+                                    />
+                                ))}
+                            </ScrollView>
+                        </View>
+                    )}
+
+                    {recommendFoods.length > 0 && (
+                        <View style={styles.sectionContainer}>
+                            <Text style={styles.sectionTitle}>RECOMMEND DISHES</Text>
+                            <ScrollView
+                                horizontal
+                                showsHorizontalScrollIndicator={Platform.OS === 'web'}
+                                contentContainerStyle={styles.horizontalScrollContent}
+                            >
+                                {recommendFoods.map((food, index) => (
+                                    <PopularFoodCard
+                                        key={`rec-${index}`}
+                                        item={food}
+                                        onPress={() => handleFoodPress(food)}
+                                        badgeLabel="Recommend"
+                                    />
+                                ))}
+                            </ScrollView>
+                        </View>
+                    )}
+
+                    {normalFoods.length > 0 && (
+                        <View style={[styles.sectionContainer, { paddingHorizontal: 20 }]}>
+                            <Text style={styles.sectionTitle}>MORE TO EXPLORE</Text>
+                            {normalFoods.map((food, index) => (
+                                <NormalFoodItem
+                                    key={`norm-${index}`}
                                     item={food}
                                     onPress={() => handleFoodPress(food)}
                                 />
                             ))}
-                        </ScrollView>
-                    </View>
-                )}
-
-                {recommendFoods.length > 0 && (
-                    <View style={styles.sectionContainer}>
-                        <Text style={styles.sectionTitle}>RECOMMEND DISHES</Text>
-                        <ScrollView
-                            horizontal
-                            showsHorizontalScrollIndicator={false}
-                            contentContainerStyle={{ paddingHorizontal: 20, gap: 16 }}
-                        >
-                            {recommendFoods.map((food, index) => (
-                                <PopularFoodCard
-                                    key={`rec-${index}`}
-                                    item={food}
-                                    onPress={() => handleFoodPress(food)}
-                                    badgeLabel="Recommend"
-                                />
-                            ))}
-                        </ScrollView>
-                    </View>
-                )}
-
-                {normalFoods.length > 0 && (
-                    <View style={[styles.sectionContainer, { paddingHorizontal: 20 }]}>
-                        <Text style={styles.sectionTitle}>MORE TO EXPLORE</Text>
-                        {normalFoods.map((food, index) => (
-                            <NormalFoodItem
-                                key={`norm-${index}`}
-                                item={food}
-                                onPress={() => handleFoodPress(food)}
-                            />
-                        ))}
-                    </View>
-                )}
+                        </View>
+                    )}
+                </View>
             </ScrollView>
+
         </View>
     );
 }
-
-const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
     container: {
@@ -156,15 +164,17 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     header: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingTop: Platform.OS === 'ios' ? 60 : 44,
-        paddingHorizontal: 16,
-        paddingBottom: 16,
         backgroundColor: '#FFFFFF',
         borderBottomWidth: 1,
         borderBottomColor: '#f0f0f0',
+        paddingTop: Platform.OS === 'ios' ? 60 : 44,
+        paddingBottom: 16,
+    },
+    headerInner: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 16,
     },
     headerBackBtn: {
         width: 40,
@@ -187,10 +197,22 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         color: AppColors.navy,
     },
-
+    contentWrapper: {
+        width: '100%',
+        maxWidth: 800,
+        alignSelf: 'center',
+    },
+    flex1: {
+        flex: 1,
+    },
     scrollContent: {
         paddingBottom: 100,
         paddingTop: 20,
+    },
+    horizontalScrollContent: {
+        paddingHorizontal: 20,
+        gap: 16,
+        paddingRight: 40,
     },
     sectionContainer: {
         marginBottom: 24,
@@ -204,112 +226,6 @@ const styles = StyleSheet.create({
         marginBottom: 16,
         marginLeft: 20,
     },
-    largeCard: {
-        width: width * 0.8,
-        height: 220,
-        borderRadius: 24,
-        overflow: 'hidden',
-        position: 'relative',
-        backgroundColor: '#ccc',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.15,
-        shadowRadius: 12,
-        elevation: 8,
-    },
-    largeCardImage: {
-        width: '100%',
-        height: '100%',
-        position: 'absolute',
-    },
-    largeCardOverlay: {
-        ...StyleSheet.absoluteFillObject,
-    },
-    largeCardContent: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        padding: 20,
-    },
-    largeCardBadge: {
-        alignSelf: 'flex-start',
-        backgroundColor: AppColors.primary,
-        borderRadius: 8,
-        paddingHorizontal: 10,
-        paddingVertical: 4,
-        marginBottom: 8,
-    },
-    largeCardBadgeText: {
-        color: '#fff',
-        fontSize: 11,
-        fontWeight: '700',
-    },
-    largeCardTitle: {
-        fontSize: 22,
-        fontWeight: '800',
-        color: '#fff',
-        marginBottom: 4,
-        textShadowColor: 'rgba(0,0,0,0.5)',
-        textShadowOffset: { width: 0, height: 1 },
-        textShadowRadius: 4,
-    },
-    largeCardDesc: {
-        fontSize: 13,
-        color: '#eee',
-        marginBottom: 10,
-    },
-    largeCardMeta: {
-        flexDirection: 'row',
-        gap: 8,
-    },
-    metaChip: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        gap: 4,
-        backgroundColor: 'rgba(255,255,255,0.2)',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 8,
-    },
-    metaChipText: {
-        color: '#fff',
-        fontSize: 11,
-        fontWeight: '600',
-    },
-    smallCard: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#FFFFFF',
-        borderRadius: 16,
-        padding: 12,
-        marginBottom: 12,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 8,
-        elevation: 2,
-        gap: 16,
-    },
-    smallCardImage: {
-        width: 64,
-        height: 64,
-        borderRadius: 32,
-        backgroundColor: '#f0f0f0',
-    },
-    smallCardInfo: {
-        flex: 1,
-    },
-    smallCardName: {
-        fontSize: 16,
-        fontWeight: '700',
-        color: AppColors.navy,
-        marginBottom: 4,
-    },
-    smallCardDesc: {
-        fontSize: 13,
-        color: '#777',
-        lineHeight: 18,
-    },
-
     errorText: {
         fontSize: 18,
         color: '#777',
