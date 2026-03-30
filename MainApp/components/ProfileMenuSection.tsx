@@ -28,7 +28,11 @@ const ProfileMenuSection: React.FC<ProfileMenuSectionProps> = ({ title, items, o
                                     <View style={styles.menuIconWrapper}>
                                         <Icon size={20} color={item.iconColor} />
                                     </View>
-                                    <Text style={styles.menuItemLabel}>{item.label}</Text>
+                                    <View style={styles.menuLabelContainer}>
+                                        <Text style={styles.menuItemLabel} numberOfLines={1}>
+                                            {item.label}
+                                        </Text>
+                                    </View>
                                 </View>
                                 <ChevronRight size={18} color="#444" />
                             </TouchableOpacity>
@@ -80,6 +84,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
     },
     menuItemLeft: {
+        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         gap: 14,
@@ -101,6 +106,9 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.12,
         shadowRadius: 6,
         elevation: 4,
+    },
+    menuLabelContainer: {
+        flex: 1,
     },
     menuItemLabel: {
         fontFamily: AppFonts.medium,

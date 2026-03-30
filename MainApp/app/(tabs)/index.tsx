@@ -27,8 +27,11 @@ function EarthModel(props: any) {
   React.useEffect(() => {
     gltf.scene.traverse((child: any) => {
       if (child.isMesh && child.material) {
-        child.material.roughness = 0.1;
-        child.material.metalness = 0.2;
+        child.material.roughness = 0.6;
+        child.material.metalness = 0.1;
+        if (child.material.color) {
+          child.material.color.set('#cccccc');
+        }
       }
     });
   }, [gltf]);
@@ -134,6 +137,7 @@ function AnimatedControls({ target, zooming, onRotationDone, onZoomDone }: Anima
     <OrbitControls
       ref={controlsRef}
       enablePan={false}
+      enableZoom={false}
       autoRotate={!target && !zooming}
       autoRotateSpeed={0.5}
     />
@@ -190,11 +194,11 @@ export default function HomeScreen() {
         <View style={styles.canvasContainer}>
           <Canvas key={canvasKey} camera={{ position: [0, 0, 5], fov: 45 }}>
             <Suspense fallback={null}>
-              <ambientLight intensity={1.5} />
-              <hemisphereLight intensity={2.5} color="#ffffff" groundColor="#000000" />
-              <directionalLight position={[10, 10, 10]} intensity={4} />
-              <pointLight position={[0, 0, 10]} intensity={3} color="#ffffff" />
-              <Stage environment={null} intensity={1.5} shadows={false}>
+              <ambientLight intensity={0.7} />
+              <hemisphereLight intensity={1.2} color="#ffffff" groundColor="#000000" />
+              <directionalLight position={[10, 10, 10]} intensity={5.5} />
+              <pointLight position={[0, 0, 10]} intensity={4} color="#ffffff" />
+              <Stage environment={null} intensity={1} shadows={false}>
                 <EarthModel />
               </Stage>
             </Suspense>

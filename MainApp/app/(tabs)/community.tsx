@@ -1,15 +1,21 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import {
     View,
     Text,
     TouchableOpacity,
     StyleSheet,
     FlatList,
-    Image,
     Platform,
     ActivityIndicator,
 } from 'react-native';
-import { Heart, MessageCircle, Share2, UsersRound, UserPlus, UserCheck, Clock, Globe, Users, Info } from 'lucide-react-native';
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withSpring,
+    withTiming,
+    interpolate,
+} from 'react-native-reanimated';
+import { UsersRound, Globe, Users, Info, CircleHelp } from 'lucide-react-native';
 import { CommunityPost } from '@/types/community';
 import { useCommunity } from '@/hooks/useCommunity';
 import { useFriends } from '@/hooks/useFriends';
@@ -17,7 +23,11 @@ import { useToast } from '@/components/ToastProvider';
 import CommentModal from '@/components/CommentModal';
 import GuestState from '@/components/GuestState';
 import PostCard from '@/components/PostCard';
-import { sharePost } from '@/utils/sharePost';
+import SkeletonPostCard from '@/components/SkeletonPostCard';
+import ConfirmCancelModal from '@/components/ConfirmCancelModal';
+import CommunityInfoModal from '@/components/CommunityInfoModal';
+import SharePostModal from '@/components/SharePostModal';
+import ImageFullscreenModal from '@/components/ImageFullscreenModal';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
 
@@ -28,9 +38,42 @@ type FeedTab = 'global' | 'friends';
 const Page = () => {
     const toast = useToast();
     const { posts, loading, toggleLike, isLoggedIn, currentUserId } = useCommunity();
-    const { friendUserIds, getFriendStatus, sendFriendRequest } = useFriends();
+    const { friendUserIds, getFriendStatus, sendFriendRequest, outgoingRequests, cancelFriendRequest } = useFriends();
     const [commentReviewId, setCommentReviewId] = useState<string | null>(null);
+    const [cancelModalVisible, setCancelModalVisible] = useState(false);
+    const [infoModalVisible, setInfoModalVisible] = useState(false);
+    const [pendingCancelInfo, setPendingCancelInfo] = useState<{ id: string; name: string } | null>(null);
+    const [isCanceling, setIsCanceling] = useState(false);
     const [feedTab, setFeedTab] = useState<FeedTab>('global');
+    const [sharingPost, setSharingPost] = useState<CommunityPost | null>(null);
+    const [selectedFullImage, setSelectedFullImage] = useState<string | null>(null);
+    const activeIndex = useSharedValue(0);
+
+    useEffect(() => {
+        activeIndex.value = withTiming(feedTab === 'global' ? 0 : 1, {
+            duration: 300,
+        });
+    }, [feedTab]);
+
+    const globalTextStyle = useAnimatedStyle(() => {
+        const opacity = interpolate(activeIndex.value, [0, 1], [1, 0.45], 'clamp');
+        const scale = interpolate(activeIndex.value, [0, 1], [1.1, 0.95], 'clamp');
+        return { opacity, transform: [{ scale }] };
+    });
+
+    const friendsTextStyle = useAnimatedStyle(() => {
+        const opacity = interpolate(activeIndex.value, [0, 1], [0.45, 1], 'clamp');
+        const scale = interpolate(activeIndex.value, [0, 1], [0.95, 1.1], 'clamp');
+        return { opacity, transform: [{ scale }] };
+    });
+
+    const indicatorStyle = useAnimatedStyle(() => {
+        const left = interpolate(activeIndex.value, [0, 1], [0, 50], 'clamp');
+        return {
+            left: `${left + 15}%`,
+            width: '25%',
+        };
+    });
 
     const displayPosts = useMemo(() => {
         if (feedTab === 'friends') {
@@ -60,7 +103,11 @@ const Page = () => {
     };
 
     const handleShare = (item: CommunityPost) => {
-        sharePost(item.foodName, item.description);
+        setSharingPost(item);
+    };
+
+    const handleImagePress = (uri: string) => {
+        setSelectedFullImage(uri);
     };
 
     const handleAddFriend = async (post: CommunityPost) => {
@@ -81,6 +128,30 @@ const Page = () => {
         }
     };
 
+    const handleCancelPress = (post: CommunityPost) => {
+        const request = outgoingRequests.find(r => r.requesteeId === post.userId);
+        if (request) {
+            setPendingCancelInfo({ id: request.id, name: post.userName });
+            setCancelModalVisible(true);
+        }
+    };
+
+    const handleConfirmCancel = async () => {
+        if (!pendingCancelInfo) return;
+        setIsCanceling(true);
+        try {
+            await cancelFriendRequest(pendingCancelInfo.id);
+            toast.success('Canceled', `Friend request to ${pendingCancelInfo.name} canceled`);
+            setCancelModalVisible(false);
+        } catch (err) {
+            console.error('[Community] Cancel friend error:', err);
+            toast.error('Error', 'Failed to cancel request');
+        } finally {
+            setIsCanceling(false);
+            setPendingCancelInfo(null);
+        }
+    };
+
     if (!isLoggedIn) {
         return (
             <GuestState
@@ -93,8 +164,28 @@ const Page = () => {
 
     if (loading) {
         return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={AppColors.primary} />
+            <View style={styles.container}>
+                <View style={styles.header}>
+                    <View>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                            <Text style={styles.headerTitle}>Community</Text>
+                            <CircleHelp size={28} color={AppColors.navy} />
+                        </View>
+                        <Text style={styles.headerSubtitle}>
+                            See what others are cooking
+                        </Text>
+                    </View>
+                </View>
+                <View style={styles.liquidContainer}>
+                    <View style={styles.liquidTab}><Text style={styles.liquidText}>Global</Text></View>
+                    <View style={styles.liquidTab}><Text style={styles.liquidText}>Friends</Text></View>
+                </View>
+                <FlatList
+                    data={[1, 2, 3]}
+                    keyExtractor={(i) => i.toString()}
+                    renderItem={() => <SkeletonPostCard />}
+                    contentContainerStyle={styles.feedContent}
+                />
             </View>
         );
     }
@@ -104,50 +195,54 @@ const Page = () => {
             <View style={styles.container}>
                 <View style={styles.header}>
                     <View>
-                        <Text style={styles.headerTitle}>Community</Text>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                            <Text style={styles.headerTitle}>Community</Text>
+                            <TouchableOpacity
+                                onPress={() => setInfoModalVisible(true)}
+                                activeOpacity={0.6}
+                                style={{ paddingTop: 6 }}
+                            >
+                                <CircleHelp size={28} color={AppColors.navy} />
+                            </TouchableOpacity>
+                        </View>
                         <Text style={styles.headerSubtitle}>
                             See what others are cooking
                         </Text>
                     </View>
                 </View>
 
-                <View style={styles.feedTabsContainer}>
+                <View style={styles.liquidContainer}>
                     <TouchableOpacity
-                        style={[styles.feedTab, feedTab === 'global' && styles.feedTabActive]}
+                        style={styles.liquidTab}
                         onPress={() => setFeedTab('global')}
-                        activeOpacity={0.7}
+                        activeOpacity={0.6}
                     >
-                        <Globe
-                            size={16}
-                            color={feedTab === 'global' ? '#fff' : AppColors.navy}
-                        />
-                        <Text
-                            style={[
-                                styles.feedTabText,
-                                feedTab === 'global' && styles.feedTabTextActive,
-                            ]}
-                        >
-                            Global
-                        </Text>
+                        <Animated.View style={[styles.tabInner, globalTextStyle]}>
+                            <Globe
+                                size={20}
+                                color={AppColors.navy}
+                                style={{ marginRight: 6 }}
+                            />
+                            <Text style={styles.liquidText}>Global</Text>
+                        </Animated.View>
                     </TouchableOpacity>
+
                     <TouchableOpacity
-                        style={[styles.feedTab, feedTab === 'friends' && styles.feedTabActive]}
+                        style={styles.liquidTab}
                         onPress={() => setFeedTab('friends')}
-                        activeOpacity={0.7}
+                        activeOpacity={0.6}
                     >
-                        <Users
-                            size={16}
-                            color={feedTab === 'friends' ? '#fff' : AppColors.navy}
-                        />
-                        <Text
-                            style={[
-                                styles.feedTabText,
-                                feedTab === 'friends' && styles.feedTabTextActive,
-                            ]}
-                        >
-                            My Friends
-                        </Text>
+                        <Animated.View style={[styles.tabInner, friendsTextStyle]}>
+                            <Users
+                                size={20}
+                                color={AppColors.navy}
+                                style={{ marginRight: 6 }}
+                            />
+                            <Text style={styles.liquidText}>Friends</Text>
+                        </Animated.View>
                     </TouchableOpacity>
+
+                    <Animated.View style={[styles.liquidIndicator, indicatorStyle]} />
                 </View>
 
                 {displayPosts.length === 0 ? (
@@ -180,9 +275,11 @@ const Page = () => {
                                 onLike={() => handleLike(item.id)}
                                 onComment={() => handleComment(item.id)}
                                 onShare={() => handleShare(item)}
+                                onImagePress={handleImagePress}
                                 isLiked={!!(currentUserId && item.likedBy?.includes(currentUserId))}
                                 onAddFriend={() => handleAddFriend(item)}
                                 friendStatus={getFriendStatus(item.userId)}
+                                onCancelFriend={() => handleCancelPress(item)}
                                 isOwnPost={item.userId === currentUserId}
                             />
                         )}
@@ -196,6 +293,31 @@ const Page = () => {
                     visible={!!commentReviewId}
                     reviewId={commentReviewId || ''}
                     onClose={() => setCommentReviewId(null)}
+                />
+
+                <ConfirmCancelModal
+                    visible={cancelModalVisible}
+                    onClose={() => setCancelModalVisible(false)}
+                    onConfirm={handleConfirmCancel}
+                    userName={pendingCancelInfo?.name || ''}
+                    loading={isCanceling}
+                />
+
+                <CommunityInfoModal
+                    visible={infoModalVisible}
+                    onClose={() => setInfoModalVisible(false)}
+                />
+
+                <SharePostModal
+                    visible={!!sharingPost}
+                    item={sharingPost}
+                    onClose={() => setSharingPost(null)}
+                />
+
+                <ImageFullscreenModal
+                    visible={!!selectedFullImage}
+                    imageUri={selectedFullImage}
+                    onClose={() => setSelectedFullImage(null)}
                 />
             </View>
         </>
@@ -243,38 +365,45 @@ const styles = StyleSheet.create({
         marginTop: 2,
     },
 
-    feedTabsContainer: {
+    liquidContainer: {
         flexDirection: 'row',
-        marginHorizontal: 24,
-        backgroundColor: '#fff',
-        borderRadius: 14,
+        marginHorizontal: 40,
+        backgroundColor: 'rgba(255, 255, 255, 0.4)',
+        borderRadius: 24,
         padding: 4,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 8,
-        elevation: 3,
-        marginBottom: 8,
+        borderWidth: 1,
+        borderColor: 'rgba(29, 53, 87, 0.08)',
+        marginBottom: 16,
+        position: 'relative',
+        height: 56,
+        alignItems: 'center',
     },
-    feedTab: {
+    liquidTab: {
         flex: 1,
+        height: '100%',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    tabInner: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 10,
-        borderRadius: 12,
-        gap: 6,
     },
-    feedTabActive: {
-        backgroundColor: AppColors.navy,
-    },
-    feedTabText: {
-        fontFamily: AppFonts.semiBold,
-        fontSize: 14,
+    liquidText: {
+        fontFamily: AppFonts.bold,
+        fontSize: 15,
         color: AppColors.navy,
     },
-    feedTabTextActive: {
-        color: '#fff',
+    liquidIndicator: {
+        position: 'absolute',
+        bottom: 8,
+        height: 4,
+        backgroundColor: AppColors.primary,
+        borderRadius: 2,
+        shadowColor: AppColors.primary,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.5,
+        shadowRadius: 6,
+        elevation: 4,
     },
 
     emptyContainer: {

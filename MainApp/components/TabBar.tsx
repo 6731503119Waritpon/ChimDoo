@@ -31,9 +31,10 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
 
   useEffect(() => {
     tabPositionX.value = withSpring(buttonWidth * state.index, {
-      damping: 18,
+      damping: 24,
       stiffness: 150,
       mass: 0.8,
+      overshootClamping: true,
     });
   }, [state.index, buttonWidth]);
 

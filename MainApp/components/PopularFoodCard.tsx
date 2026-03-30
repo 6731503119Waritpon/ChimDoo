@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Dimensions } from 'react-native';
-import { Clock, Flame, Soup } from 'lucide-react-native';
+import { Check, CircleCheckBig, Clock, Drumstick, Flame, Soup } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
@@ -11,9 +11,10 @@ interface PopularFoodCardProps {
     item: any;
     onPress: () => void;
     badgeLabel?: string;
+    isTasted?: boolean;
 }
 
-export default function PopularFoodCard({ item, onPress, badgeLabel = 'Popular' }: PopularFoodCardProps) {
+export default function PopularFoodCard({ item, onPress, badgeLabel = 'Popular', isTasted }: PopularFoodCardProps) {
     return (
         <TouchableOpacity style={styles.largeCard} activeOpacity={0.9} onPress={onPress}>
             <Image source={{ uri: item.image }} style={styles.largeCardImage} />
@@ -23,6 +24,12 @@ export default function PopularFoodCard({ item, onPress, badgeLabel = 'Popular' 
                 end={{ x: 0.5, y: 1 }}
                 style={styles.largeCardOverlay}
             />
+
+            {isTasted && (
+                <View style={styles.tastedBadge}>
+                    <Text style={styles.tastedBadgeText}>Chim <CircleCheckBig size={12} color="#fff" /></Text>
+                </View>
+            )}
 
             <View style={styles.largeCardContent}>
                 <View style={[
@@ -92,4 +99,24 @@ const styles = StyleSheet.create({
         paddingVertical: 4, borderRadius: 8,
     },
     metaChipText: { color: '#fff', fontSize: 11, fontFamily: AppFonts.semiBold },
+    tastedBadge: {
+        position: 'absolute',
+        top: 14,
+        right: 14,
+        backgroundColor: AppColors.success,
+        paddingHorizontal: 12,
+        paddingVertical: 5,
+        borderRadius: 10,
+        zIndex: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 4,
+    },
+    tastedBadgeText: {
+        color: '#fff',
+        fontSize: 12,
+        fontFamily: AppFonts.bold,
+    },
 });

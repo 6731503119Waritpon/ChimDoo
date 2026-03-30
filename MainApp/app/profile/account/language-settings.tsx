@@ -6,8 +6,6 @@ import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
 
 const LanguageSettings = () => {
-    const [isModalVisible, setModalVisible] = useState(false);
-
     return (
         <View style={styles.container}>
             <Stack.Screen options={{ title: 'Language', headerBackTitle: 'Back' }} />
@@ -31,14 +29,6 @@ const LanguageSettings = () => {
                 <Text style={styles.subtitle}>
                     Currently, ChimDoo is only available in English. We are working on adding more languages!
                 </Text>
-
-                <TouchableOpacity
-                    style={styles.button}
-                    onPress={() => setModalVisible(true)}
-                    activeOpacity={0.8}
-                >
-                    <Text style={styles.buttonText}>Select Language</Text>
-                </TouchableOpacity>
             </View>
         </View>
     );
@@ -80,24 +70,6 @@ const styles = StyleSheet.create({
         lineHeight: 24,
         marginBottom: 32,
         paddingHorizontal: 20,
-    },
-    button: {
-        backgroundColor: AppColors.primary,
-        paddingVertical: 16,
-        paddingHorizontal: 32,
-        borderRadius: 14,
-        shadowColor: AppColors.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.2,
-        shadowRadius: 8,
-        elevation: 3,
-        width: '100%',
-        alignItems: 'center',
-    },
-    buttonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontFamily: AppFonts.bold,
     },
     header: {
             flexDirection: 'row',

@@ -283,6 +283,15 @@ export const useFriends = () => {
         [user]
     );
 
+    const cancelFriendRequest = useCallback(
+        async (friendshipId: string) => {
+            if (!user) return;
+            const docRef = doc(db, Collections.friendships, friendshipId);
+            await deleteDoc(docRef);
+        },
+        [user]
+    );
+
     return {
         loading,
         friendsList,
@@ -295,6 +304,7 @@ export const useFriends = () => {
         acceptFriendRequest,
         rejectFriendRequest,
         removeFriend,
+        cancelFriendRequest,
     };
 };
 

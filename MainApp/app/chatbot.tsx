@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity, StyleSheet,
-    KeyboardAvoidingView, Platform, FlatList, ActivityIndicator
+    KeyboardAvoidingView, Platform, FlatList, ActivityIndicator,
+    ScrollView
 } from 'react-native';
 import { useRouter, Stack } from 'expo-router';
 import { ChevronLeft, Send, Sparkles } from 'lucide-react-native';
@@ -12,6 +13,13 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { db } from '@/firebaseConfig';
 import { doc, getDoc } from 'firebase/firestore';
 
+const DEFAULT_SUGGESTIONS = [
+    "What's good to eat today? \nวันนี้กินอะไรดี",
+    "What can I ask you? \nฉันสามารถถามเรื่องอะไรได้บ้าง",
+    "Recommend popular dishes this week \nแนะนำเมนูยอดฮิตประจำสัปดาห์",
+    "Help design a breakfast menu \nช่วยออกแบบเมนูอาหารเช้าหน่อย"
+];
+
 export default function ChatbotScreen() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
@@ -20,6 +28,7 @@ export default function ChatbotScreen() {
     const [messages, setMessages] = useState<Message[]>([]);
     const [inputText, setInputText] = useState('');
     const [loading, setLoading] = useState(false);
+    const [suggestedPrompts, setSuggestedPrompts] = useState<string[]>(DEFAULT_SUGGESTIONS);
 
     const flatListRef = useRef<FlatList>(null);
 
@@ -43,6 +52,7 @@ export default function ChatbotScreen() {
                     const data = aiSettingsSnap.data();
                     if (data.initialMessage) initMessageText = data.initialMessage;
                     if (data.systemInstruction) sysInstruction = data.systemInstruction;
+                    if (Array.isArray(data.suggestions)) setSuggestedPrompts(data.suggestions);
                 }
 
                 initOrRestoreChat(sysInstruction, initMessageText);
@@ -60,8 +70,8 @@ export default function ChatbotScreen() {
         initChat();
     }, []);
 
-    const sendMessage = async () => {
-        const text = inputText.trim();
+    const sendMessage = async (overrideText?: string) => {
+        const text = (overrideText || inputText).trim();
         if (!text || loading) return;
 
         const userMsg: Message = { id: Date.now().toString(), text, isUser: true };
@@ -93,6 +103,10 @@ export default function ChatbotScreen() {
         }
     };
 
+    const handleSuggestion = (prompt: string) => {
+        sendMessage(prompt);
+    };
+
     const renderMessage = ({ item }: { item: Message }) => {
         const isUser = item.isUser;
         return (
@@ -111,14 +125,16 @@ export default function ChatbotScreen() {
         );
     };
 
+    const showSuggestions = messages.length <= 1 && !loading;
+
     return (
-        <View style={[styles.root, { paddingTop: insets.top }]}>
+        <View style={styles.root}>
             <Stack.Screen options={{ headerShown: false }} />
             <KeyboardAvoidingView
                 style={styles.keyboardView}
                 behavior={Platform.OS === 'ios' ? 'padding' : undefined}
             >
-                <View style={styles.header}>
+                <View style={[styles.header, { paddingTop: insets.top + 8 }]}>
                     <TouchableOpacity style={styles.backBtn} onPress={() => router.back()}>
                         <ChevronLeft size={28} color={AppColors.navy} />
                     </TouchableOpacity>
@@ -142,7 +158,7 @@ export default function ChatbotScreen() {
                             keyExtractor={item => item.id}
                             renderItem={renderMessage}
                             contentContainerStyle={styles.chatContainer}
-                            onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: false })}
+                            onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
                             onLayout={() => flatListRef.current?.scrollToEnd({ animated: false })}
                         />
 
@@ -150,6 +166,27 @@ export default function ChatbotScreen() {
                             <View style={styles.typingIndicator}>
                                 <ActivityIndicator size="small" color={AppColors.primary} />
                                 <Text style={styles.typingText}>Chef is thinking...</Text>
+                            </View>
+                        )}
+
+                        {showSuggestions && (
+                            <View style={styles.suggestionsWrapper}>
+                                <ScrollView
+                                    horizontal
+                                    showsHorizontalScrollIndicator={false}
+                                    contentContainerStyle={styles.suggestionsScrollContent}
+                                >
+                                    {suggestedPrompts.map((prompt, idx) => (
+                                        <TouchableOpacity
+                                            key={idx}
+                                            style={styles.suggestionChip}
+                                            onPress={() => handleSuggestion(prompt)}
+                                            activeOpacity={0.7}
+                                        >
+                                            <Text style={styles.suggestionText}>{prompt}</Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </ScrollView>
                             </View>
                         )}
 
@@ -166,7 +203,7 @@ export default function ChatbotScreen() {
                                 />
                                 <TouchableOpacity
                                     style={[styles.sendBtn, !inputText.trim() && styles.sendBtnDisabled]}
-                                    onPress={sendMessage}
+                                    onPress={() => sendMessage()}
                                     disabled={!inputText.trim() || loading}
                                 >
                                     <Send size={18} color="#fff" />
@@ -188,7 +225,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: 16,
-        paddingVertical: 12,
+        paddingBottom: 12,
         backgroundColor: '#fff',
         borderBottomWidth: 1,
         borderBottomColor: '#eee',
@@ -208,11 +245,11 @@ const styles = StyleSheet.create({
 
     chatContainer: { padding: 16, paddingBottom: 24 },
 
-    messageWrapper: { 
-        flexDirection: 'row', 
-        marginBottom: 16, 
-        alignItems: 'flex-end', 
-        maxWidth: Platform.OS === 'web' ? '70%' : '88%' 
+    messageWrapper: {
+        flexDirection: 'row',
+        marginBottom: 16,
+        alignItems: 'flex-end',
+        maxWidth: Platform.OS === 'web' ? '70%' : '88%'
     },
 
     messageWrapperUser: { alignSelf: 'flex-end', justifyContent: 'flex-end' },
@@ -225,9 +262,9 @@ const styles = StyleSheet.create({
         marginRight: 8,
     },
 
-    messageBubble: { 
-        paddingHorizontal: 16, 
-        paddingVertical: 12, 
+    messageBubble: {
+        paddingHorizontal: 16,
+        paddingVertical: 12,
         borderRadius: 20,
         flexShrink: 1,
     },
@@ -242,16 +279,37 @@ const styles = StyleSheet.create({
         borderWidth: 1, borderColor: '#eee',
     },
 
-    messageText: { 
-        fontFamily: AppFonts.regular, 
-        fontSize: 15, 
-        lineHeight: 22 
+    messageText: {
+        fontFamily: AppFonts.regular,
+        fontSize: 15,
+        lineHeight: 22
     },
     messageTextUser: { color: '#fff' },
     messageTextAI: { color: AppColors.navy },
 
     typingIndicator: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 24, paddingBottom: 16 },
     typingText: { fontFamily: AppFonts.regular, fontSize: 13, color: '#888', fontStyle: 'italic' },
+
+    suggestionsWrapper: { paddingVertical: 12 },
+    suggestionsScrollContent: { paddingHorizontal: 16, gap: 10 },
+    suggestionChip: {
+        backgroundColor: '#fff',
+        paddingHorizontal: 18,
+        paddingVertical: 10,
+        borderRadius: 20,
+        borderWidth: 1.5,
+        borderColor: 'rgba(230, 57, 70, 0.15)',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 5,
+        elevation: 2,
+    },
+    suggestionText: {
+        fontFamily: AppFonts.semiBold,
+        fontSize: 14,
+        color: AppColors.primary,
+    },
 
     inputContainer: {
         backgroundColor: '#fff',

@@ -18,14 +18,15 @@ const TabBarButton = ({ onPress, onLongPress, isFocused, label, routeName, color
 
     useEffect(() => {
         scale.value = withSpring(isFocused ? 1 : 0, {
-            damping: 14,
+            damping: 24,
             stiffness: 160,
+            overshootClamping: true,
         });
     }, [scale, isFocused]);
 
     const animatedIconStyle = useAnimatedStyle(() => {
-        const scaleValue = interpolate(scale.value, [0, 1], [1, 1.15]);
-        const top = interpolate(scale.value, [0, 1], [0, 7]);
+        const scaleValue = interpolate(scale.value, [0, 1], [1, 1.15], 'clamp');
+        const top = interpolate(scale.value, [0, 1], [0, 7], 'clamp');
         return {
             transform: [{ scale: scaleValue }],
             top,
@@ -33,7 +34,7 @@ const TabBarButton = ({ onPress, onLongPress, isFocused, label, routeName, color
     });
 
     const animatedTextStyle = useAnimatedStyle(() => {
-        const opacity = interpolate(scale.value, [0, 1], [1, 0]);
+        const opacity = interpolate(scale.value, [0, 1], [1, 0], 'clamp');
         return {
             opacity,
         };
@@ -78,4 +79,4 @@ const styles = StyleSheet.create({
         fontFamily: AppFonts.semiBold,
         fontSize: 11,
     },
-})
+})

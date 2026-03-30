@@ -16,6 +16,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import CountryFlag from 'react-native-country-flag';
 
 import { useCountryData } from '@/hooks/useCountryData';
+import { useChimDoo } from '@/hooks/useChimDoo';
 import { FoodItem } from '@/types/recipe';
 import { globeCountries } from '@/config/home';
 import { AppColors } from '@/constants/colors';
@@ -29,7 +30,12 @@ export default function CountryPage() {
     const { id } = useLocalSearchParams<{ id: string }>();
     const router = useRouter();
     const { data, loading, error } = useCountryData(id ?? '');
+    const { chimDooList } = useChimDoo();
     const isoCode = globeCountries.find((c) => c.id === id)?.isoCode ?? '';
+
+    const tastedNames = useMemo(() => {
+        return new Set(chimDooList.map(item => item.name.toLowerCase()));
+    }, [chimDooList]);
 
     const { popularFoods, recommendFoods, normalFoods } = useMemo(() => {
         if (!data?.foods) return { popularFoods: [], recommendFoods: [], normalFoods: [] };
@@ -109,6 +115,7 @@ export default function CountryPage() {
                                         key={`pop-${index}`}
                                         item={food}
                                         onPress={() => handleFoodPress(food)}
+                                        isTasted={tastedNames.has(food.name.toLowerCase())}
                                     />
                                 ))}
                             </ScrollView>
@@ -129,6 +136,7 @@ export default function CountryPage() {
                                         item={food}
                                         onPress={() => handleFoodPress(food)}
                                         badgeLabel="Recommend"
+                                        isTasted={tastedNames.has(food.name.toLowerCase())}
                                     />
                                 ))}
                             </ScrollView>
@@ -143,6 +151,7 @@ export default function CountryPage() {
                                     key={`norm-${index}`}
                                     item={food}
                                     onPress={() => handleFoodPress(food)}
+                                    isTasted={tastedNames.has(food.name.toLowerCase())}
                                 />
                             ))}
                         </View>

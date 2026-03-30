@@ -24,6 +24,7 @@ import LogoutModal from '@/components/LogoutModal';
 import AppVersionModal from '@/components/AppVersionModal';
 import GuestState from '@/components/GuestState';
 import ProfileMenuSection from '@/components/ProfileMenuSection';
+import SkeletonProfile from '@/components/SkeletonProfile';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { Collections } from '@/constants/collections';
@@ -76,11 +77,7 @@ const Page = () => {
     };
 
     if (loading) {
-        return (
-            <View style={[styles.container, styles.centerContent]}>
-                <ActivityIndicator size="large" color="#E63946" />
-            </View>
-        );
+        return <SkeletonProfile />;
     }
 
     if (!user) {

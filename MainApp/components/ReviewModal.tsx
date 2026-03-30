@@ -134,7 +134,7 @@ const ReviewModal: React.FC<Props> = ({ visible, foodName, onClose, onSubmit }) 
                     />
                 </Animated.View>
 
-                <Animated.View 
+                <Animated.View
                     style={[
                         styles.modal,
                         { transform: [{ translateY: slideAnim }] }

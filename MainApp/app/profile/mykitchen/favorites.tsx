@@ -3,11 +3,11 @@ import {
     View,
     Text,
     StyleSheet,
-    TouchableOpacity,
     Platform,
     FlatList,
     Image,
     ActivityIndicator,
+    TouchableOpacity,
 } from 'react-native';
 import { router, Stack } from 'expo-router';
 import { ChevronLeft, Heart } from 'lucide-react-native';
@@ -15,26 +15,13 @@ import { useCommunity } from '@/hooks/useCommunity';
 import { CommunityPost } from '@/types/community';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
-
-const formatTime = (timestamp: any): string => {
-    if (!timestamp?.toDate) return '';
-    const now = new Date();
-    const date = timestamp.toDate();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    if (diffMins < 1) return 'just now';
-    if (diffMins < 60) return `${diffMins}m ago`;
-    const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24) return `${diffHours}h ago`;
-    const diffDays = Math.floor(diffHours / 24);
-    return `${diffDays}d ago`;
-};
+import { formatTimestamp } from '@/utils/formatTime';
 
 const FavoriteCard = ({ item }: { item: CommunityPost }) => (
     <View style={styles.card}>
         <Image source={{ uri: item.image }} style={styles.cardImage} />
         <View style={styles.cardContent}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 6, marginBottom: 4 }}>
+            <View style={styles.cardHeader}>
                 <Text style={styles.cardFoodName} numberOfLines={1}>
                     {item.foodName}
                 </Text>
@@ -44,10 +31,12 @@ const FavoriteCard = ({ item }: { item: CommunityPost }) => (
                     </View>
                 )}
             </View>
-            <Text style={styles.cardDescription} numberOfLines={2}>{item.description}</Text>
+            <Text style={styles.cardDescription} numberOfLines={2}>
+                {item.description}
+            </Text>
             <View style={styles.cardMeta}>
                 <Text style={styles.cardBy}>by {item.userName}</Text>
-                <Text style={styles.cardTime}>{formatTime(item.createdAt)}</Text>
+                <Text style={styles.cardTime}>{formatTimestamp(item.createdAt)}</Text>
             </View>
         </View>
     </View>
@@ -65,10 +54,10 @@ const Favorites = () => {
                     style={styles.backButton}
                     onPress={() => router.back()}
                 >
-                    <ChevronLeft size={28} color="#fff" />
+                    <ChevronLeft size={26} color="#fff" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Favorites</Text>
-                <View style={{ width: 40 }} />
+                <View style={{ width: 44 }} />
             </View>
 
             {loading ? (
@@ -78,11 +67,11 @@ const Favorites = () => {
             ) : favorites.length === 0 ? (
                 <View style={styles.centerContent}>
                     <View style={styles.iconWrapper}>
-                        <Heart size={48} color={AppColors.primary} />
+                        <Heart size={44} color={AppColors.primary} fill="rgba(230, 57, 70, 0.1)" />
                     </View>
                     <Text style={styles.emptyTitle}>No Favorites Yet</Text>
                     <Text style={styles.emptySubtitle}>
-                        Tap the heart on any community post to save it here!
+                        Posts you like will appear here. Explore the community to discover delicious dishes!
                     </Text>
                 </View>
             ) : (
@@ -110,18 +99,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingTop: Platform.OS === 'ios' ? 60 : 48,
-        paddingHorizontal: 20,
+        paddingHorizontal: 16,
         paddingBottom: 20,
     },
     headerTitle: {
         fontFamily: AppFonts.bold,
-        fontSize: 20,
+        fontSize: 22,
         color: AppColors.navy,
     },
     backButton: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        width: 44,
+        height: 44,
+        borderRadius: 22,
         backgroundColor: AppColors.navy,
         alignItems: 'center',
         justifyContent: 'center',
@@ -130,22 +119,22 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        padding: 24,
+        padding: 40,
     },
     iconWrapper: {
-        width: 96,
-        height: 96,
-        borderRadius: 48,
-        backgroundColor: 'rgba(230, 57, 70, 0.1)',
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        backgroundColor: 'rgba(230, 57, 70, 0.05)',
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 24,
+        marginBottom: 20,
     },
     emptyTitle: {
         fontFamily: AppFonts.bold,
         fontSize: 22,
         color: AppColors.navy,
-        marginBottom: 12,
+        marginBottom: 8,
     },
     emptySubtitle: {
         fontFamily: AppFonts.regular,
@@ -153,44 +142,52 @@ const styles = StyleSheet.create({
         color: '#666',
         textAlign: 'center',
         lineHeight: 22,
-        paddingHorizontal: 20,
+        paddingHorizontal: 10,
     },
     listContent: {
         paddingHorizontal: 16,
-        paddingBottom: 100,
-        gap: 12,
+        paddingBottom: 60,
+        gap: 16,
     },
     card: {
         backgroundColor: '#fff',
-        borderRadius: 16,
-        overflow: 'hidden',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 8,
-        elevation: 3,
+        borderRadius: 20,
         flexDirection: 'row',
+        padding: 12,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
+        elevation: 3,
     },
     cardImage: {
-        width: 100,
-        height: 100,
-        backgroundColor: '#f0f0f0',
+        width: 90,
+        height: 90,
+        borderRadius: 16,
+        backgroundColor: '#f8f9fa',
     },
     cardContent: {
         flex: 1,
-        padding: 12,
+        marginLeft: 16,
         justifyContent: 'center',
+    },
+    cardHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: 8,
+        marginBottom: 4,
     },
     cardFoodName: {
         fontFamily: AppFonts.bold,
-        fontSize: 16,
+        fontSize: 17,
         color: AppColors.navy,
-        flexShrink: 1,
+        maxWidth: '70%',
     },
     countryChip: {
-        backgroundColor: 'rgba(29, 53, 87, 0.1)',
-        paddingHorizontal: 6,
-        paddingVertical: 2,
+        backgroundColor: 'rgba(29, 53, 87, 0.06)',
+        paddingHorizontal: 8,
+        paddingVertical: 3,
         borderRadius: 8,
     },
     countryChipText: {
@@ -203,7 +200,7 @@ const styles = StyleSheet.create({
         fontSize: 13,
         color: '#666',
         lineHeight: 18,
-        marginBottom: 6,
+        marginBottom: 8,
     },
     cardMeta: {
         flexDirection: 'row',
@@ -213,7 +210,7 @@ const styles = StyleSheet.create({
     cardBy: {
         fontFamily: AppFonts.medium,
         fontSize: 12,
-        color: '#aaa',
+        color: '#999',
     },
     cardTime: {
         fontFamily: AppFonts.regular,
