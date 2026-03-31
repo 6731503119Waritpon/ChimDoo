@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
     View,
     Text,
@@ -7,6 +7,7 @@ import {
     FlatList,
     Platform,
     ActivityIndicator,
+    RefreshControl,
 } from 'react-native';
 import Animated, {
     useSharedValue,
@@ -23,6 +24,7 @@ import { useToast } from '@/components/ToastProvider';
 import CommentModal from '@/components/CommentModal';
 import GuestState from '@/components/GuestState';
 import PostCard from '@/components/PostCard';
+import Pagination from '@/components/Pagination';
 import SkeletonPostCard from '@/components/SkeletonPostCard';
 import ConfirmCancelModal from '@/components/ConfirmCancelModal';
 import CommunityInfoModal from '@/components/CommunityInfoModal';
@@ -47,12 +49,21 @@ const Page = () => {
     const [feedTab, setFeedTab] = useState<FeedTab>('global');
     const [sharingPost, setSharingPost] = useState<CommunityPost | null>(null);
     const [selectedFullImage, setSelectedFullImage] = useState<string | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [refreshing, setRefreshing] = useState(false);
+    const ITEMS_PER_PAGE = 10;
     const activeIndex = useSharedValue(0);
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setTimeout(() => setRefreshing(false), 1200);
+    }, []);
 
     useEffect(() => {
         activeIndex.value = withTiming(feedTab === 'global' ? 0 : 1, {
             duration: 300,
         });
+        setCurrentPage(1);
     }, [feedTab]);
 
     const globalTextStyle = useAnimatedStyle(() => {
@@ -81,6 +92,13 @@ const Page = () => {
         }
         return posts;
     }, [posts, feedTab, friendUserIds]);
+
+    const totalItems = displayPosts.length;
+    
+    const paginatedPosts = useMemo(() => {
+        const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+        return displayPosts.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    }, [displayPosts, currentPage]);
 
     const handleLike = async (reviewId: string) => {
         if (!isLoggedIn) {
@@ -267,7 +285,15 @@ const Page = () => {
                     </View>
                 ) : (
                     <FlatList
-                        data={displayPosts}
+                        data={paginatedPosts}
+                        refreshControl={
+                            <RefreshControl 
+                                refreshing={refreshing} 
+                                onRefresh={onRefresh} 
+                                colors={[AppColors.primary]} 
+                                tintColor={AppColors.primary} 
+                            />
+                        }
                         keyExtractor={(item) => item.id}
                         renderItem={({ item }) => (
                             <PostCard
@@ -286,6 +312,18 @@ const Page = () => {
                         contentContainerStyle={styles.feedContent}
                         showsVerticalScrollIndicator={false}
                         ItemSeparatorComponent={() => <View style={styles.separator} />}
+                        ListFooterComponent={
+                            totalItems > 0 ? (
+                                <View style={styles.paginationWrapper}>
+                                    <Pagination
+                                        currentPage={currentPage}
+                                        totalItems={totalItems}
+                                        itemsPerPage={ITEMS_PER_PAGE}
+                                        onPageChange={(page) => setCurrentPage(page)}
+                                    />
+                                </View>
+                            ) : null
+                        }
                     />
                 )}
 
@@ -428,9 +466,14 @@ const styles = StyleSheet.create({
 
     feedContent: {
         paddingTop: 8,
-        paddingBottom: 120,
+        paddingBottom: 160,
     },
     separator: {
         height: 10,
+    },
+    paginationWrapper: {
+        marginTop: 6,
+        marginBottom: 40,
+        paddingHorizontal: 20,
     },
 });

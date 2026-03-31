@@ -1,57 +1,37 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import {
-    View, Text, Image, StyleSheet, ScrollView, TouchableOpacity,
-    Platform, Alert, ActivityIndicator, Animated, Dimensions,
+    View, Text, StyleSheet, TouchableOpacity,
+    Platform, Alert, ActivityIndicator, Dimensions,
 } from 'react-native';
+import SharedRecipeImage from '../../components/SharedRecipeImage';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
-import { ArrowLeft, Clock, Flame, Utensils, UtensilsCrossed, Check, Star, ChefHat, CookingPot, Soup, HandPlatter } from 'lucide-react-native';
+import {
+    ArrowLeft, Clock, Soup, HandPlatter,
+    CookingPot, ChefHat, Check, Star,
+    Plus, Minus, Play, UtensilsCrossed
+} from 'lucide-react-native';
+import Animated, {
+    useSharedValue, useAnimatedStyle, useAnimatedScrollHandler,
+    interpolate, Extrapolation, FadeInDown, FadeIn
+} from 'react-native-reanimated';
+
 import { FoodItem } from '@/types/recipe';
 import { useChimDoo } from '@/hooks/useChimDoo';
 import { useCommunity } from '@/hooks/useCommunity';
 import { useToast } from '@/components/ToastProvider';
 import ChimDooRequiredModal from '@/components/ChimDooRequiredModal';
 import ReviewModal from '@/components/ReviewModal';
+import CookingModeModal from '@/components/CookingModeModal';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
+import { getPalette } from '@/utils/paletteEngine';
 
-const HERO_H = 340;
-const RADIUS = 28;
+const { width } = Dimensions.get('window');
+const HERO_H = 400;
+const HEADER_MIN_H = Platform.OS === 'ios' ? 100 : 80;
 const IOS = Platform.OS === 'ios';
-
-function MetaCard({ icon, value, label }: { icon: React.ReactNode; value?: string; label: string }) {
-    return (
-        <View style={s.metaCard}>
-            <View style={s.metaIconBg}>{icon}</View>
-            <Text style={s.metaValue}>{value || '—'}</Text>
-            <Text style={s.metaLabel}>{label}</Text>
-        </View>
-    );
-}
-
-function IngredientRow({ text, alt }: { text: string; alt: boolean }) {
-    return (
-        <View style={[s.ingredientRow, alt && s.ingredientRowAlt]}>
-            <View style={s.bullet}><View style={s.bulletInner} /></View>
-            <Text style={s.ingredientText}>{text}</Text>
-        </View>
-    );
-}
-
-function StepItem({ index, text, isLast }: { index: number; text: string; isLast: boolean }) {
-    return (
-        <View style={s.step}>
-            {!isLast && <View style={s.stepLine} />}
-            <LinearGradient colors={[AppColors.primary, '#C62828']} style={s.stepBadge}>
-                <Text style={s.stepNum}>{index + 1}</Text>
-            </LinearGradient>
-            <View style={s.stepCard}>
-                <Text style={s.stepText}>{text}</Text>
-            </View>
-        </View>
-    );
-}
 
 export default function RecipePage() {
     const router = useRouter();
@@ -60,48 +40,63 @@ export default function RecipePage() {
 
     const food: FoodItem = params.food ? JSON.parse(params.food as string) : null;
     const category = (params.category as string) || '';
+    const palette = useMemo(() => getPalette(category, food?.name), [category, food]);
 
     const { isChimDoo, loading, toggleChimDoo, isLoggedIn } = useChimDoo(food?.name);
     const { addReview, hasReviewed } = useCommunity();
 
+    const [servings, setServings] = useState(4);
+    const [checkedIngredients, setCheckedIngredients] = useState<Record<number, boolean>>({});
     const [showChimDooRequired, setShowChimDooRequired] = useState(false);
     const [showReviewModal, setShowReviewModal] = useState(false);
+    const [showCookingMode, setShowCookingMode] = useState(false);
 
-    const fadeAnim = useRef(new Animated.Value(0)).current;
-    const slideAnim = useRef(new Animated.Value(24)).current;
+    const scrollY = useSharedValue(0);
 
-    useEffect(() => {
-        Animated.parallel([
-            Animated.timing(fadeAnim, { toValue: 1, duration: 500, useNativeDriver: true }),
-            Animated.timing(slideAnim, { toValue: 0, duration: 500, useNativeDriver: true }),
-        ]).start();
-    }, []);
+    const onScroll = useAnimatedScrollHandler((event) => {
+        scrollY.value = event.contentOffset.y;
+    });
 
-    const requireLogin = (msg: string, cb: () => void) => {
-        if (isLoggedIn) return false;
-        Alert.alert('Login Required', msg, [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Log In', onPress: cb },
-        ]);
-        return true;
-    };
+    const headerStyle = useAnimatedStyle(() => {
+        const opacity = interpolate(scrollY.value, [HERO_H - 150, HERO_H - 100], [0, 1], Extrapolation.CLAMP);
+        return { opacity, backgroundColor: 'rgba(255,255,255,0.95)' };
+    });
+
+    const heroImageStyle = useAnimatedStyle(() => {
+        const scale = interpolate(scrollY.value, [-100, 0], [1.3, 1], Extrapolation.CLAMP);
+        const translateY = interpolate(scrollY.value, [0, HERO_H], [0, -HERO_H / 2], Extrapolation.CLAMP);
+        return { transform: [{ scale }, { translateY }] };
+    });
+
+    const titleStyle = useAnimatedStyle(() => {
+        const translateY = interpolate(scrollY.value, [0, HERO_H - 100], [0, -40], Extrapolation.CLAMP);
+        const scale = interpolate(scrollY.value, [0, HERO_H - 100], [1, 0.8], Extrapolation.CLAMP);
+        const opacity = interpolate(scrollY.value, [HERO_H - 120, HERO_H - 80], [1, 0], Extrapolation.CLAMP);
+        return { transform: [{ translateY }, { scale }], opacity };
+    });
 
     const handleChimDoo = async () => {
-        if (requireLogin('Please log in to save your Chim Doo recipes!', () => router.push('/auth/login'))) return;
+        if (!isLoggedIn) {
+            Alert.alert('Login Required', 'Please log in to save recipes!', [
+                { text: 'Cancel', style: 'cancel' },
+                { text: 'Log In', onPress: () => router.push('/auth/login') },
+            ]);
+            return;
+        }
         if (!food) return;
         try {
             const saved = await toggleChimDoo(food, category);
-            if (saved) toast.success('Chim Doo!', `${food.name} has been added to your list!`);
+            if (saved) toast.success('Chim Doo!', `${food.name} added to your list!`);
         } catch {
-            toast.error('Error', 'Something went wrong. Please try again.');
+            toast.error('Error', 'Something went wrong.');
         }
     };
 
     const handleReviewPress = () => {
-        if (requireLogin('Please log in to write a review!', () => router.push('/auth/login'))) return;
+        if (!isLoggedIn) { router.push('/auth/login'); return; }
         if (!isChimDoo) { setShowChimDooRequired(true); return; }
         if (food && hasReviewed(food.name)) {
-            toast.info('Already Reviewed', 'You already reviewed this dish!');
+            toast.info('Already Reviewed', 'Check community feed!');
             router.push('/(tabs)/community');
             return;
         }
@@ -121,183 +116,247 @@ export default function RecipePage() {
 
     if (!food) return null;
 
-    const tasteDisplay = Array.isArray(food.taste)
-        ? food.taste.reduce((acc, curr, i) => {
-            const separator = (i > 0 && i % 2 === 0) ? '\n' : (i === 0 ? '' : ', ');
-            return acc + separator + curr;
-        }, '')
-        : food.taste;
-
-    const ingredientCount = food.ingredients?.length || 0;
+    const parseAmount = (text: string) => {
+        const match = text.match(/([0-9./]+)/);
+        if (!match) return { num: null, rest: text };
+        const numStr = match[0];
+        let num = 0;
+        if (numStr.includes('/')) {
+            const [n, d] = numStr.split('/').map(Number);
+            num = n / d;
+        } else {
+            num = Number(numStr);
+        }
+        return { num, rest: text.replace(numStr, '').trim() };
+    };
 
     return (
         <View style={s.root}>
-            <ScrollView showsVerticalScrollIndicator={false} bounces={false}>
-                <View style={s.hero}>
-                    <Image source={{ uri: food.image }} style={s.heroImg} resizeMode="cover" />
-                    <LinearGradient
-                        colors={['transparent', 'rgba(0,0,0,0.15)', 'rgba(0,0,0,0.7)']}
-                        locations={[0, 0.4, 1]}
-                        style={StyleSheet.absoluteFillObject}
-                    />
-                    <Text style={s.heroTitle}>{food.name}</Text>
-                </View>
-                <Animated.View style={[s.content, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}>
-                    <Text style={s.desc}>{food.description}</Text>
-
-                    <View style={s.metaRow}>
-                        <MetaCard icon={<Clock size={20} color={AppColors.primary} />} value={food.prepTime} label="Time" />
-                        <MetaCard icon={<Soup size={20} color={AppColors.warning} />} value={tasteDisplay} label="Taste" />
-                        <MetaCard icon={<HandPlatter size={20} color={AppColors.navy} />} value={food.servings} label="Serving" />
-                    </View>
-                    <View style={s.section}>
-                        <View style={s.sectionHead}>
-                            <View style={s.sectionTitleRow}>
-                                <CookingPot size={22} color={AppColors.navy} />
-                                <Text style={s.sectionTitle}>Ingredients</Text>
-                            </View>
-                            {ingredientCount > 0 && (
-                                <View style={s.badge}><Text style={s.badgeText}>{ingredientCount}</Text></View>
-                            )}
-                        </View>
-                        {food.ingredients?.map((item, i) => (
-                            <IngredientRow key={i} text={item} alt={i % 2 === 0} />
-                        )) || <Text style={s.empty}>No ingredients info</Text>}
-                    </View>
-                    <View style={s.section}>
-                        <View style={s.sectionHead}>
-                            <View style={s.sectionTitleRow}>
-                                <ChefHat size={22} color={AppColors.navy} />
-                                <Text style={s.sectionTitle}>Instructions</Text>
-                            </View>
-                        </View>
-                        {food.instructions?.map((step, i) => (
-                            <StepItem key={i} index={i} text={step} isLast={i === (food.instructions!.length - 1)} />
-                        )) || <Text style={s.empty}>No instructions info</Text>}
-                    </View>
-
-                    <View style={{ height: 100 }} />
-                </Animated.View>
-            </ScrollView>
-
+            <Animated.View style={[s.stickyHeader, headerStyle]}>
+                <Text style={s.headerTitleText} numberOfLines={1}>{food.name}</Text>
+            </Animated.View>
             <TouchableOpacity style={s.back} onPress={() => router.back()} activeOpacity={0.7}>
-                <BlurView intensity={30} tint="dark" style={s.backBlur}>
+                <BlurView intensity={20} tint="dark" style={s.backBlur}>
                     <ArrowLeft size={22} color="#fff" />
                 </BlurView>
             </TouchableOpacity>
 
-            <View style={s.bar}>
-                <BlurView intensity={80} tint="light" style={s.barBlur}>
-                    <TouchableOpacity
-                        style={[s.chimBtn, isChimDoo && s.chimBtnDone]}
-                        onPress={handleChimDoo} activeOpacity={0.7} disabled={loading}
-                    >
+            <Animated.ScrollView
+                onScroll={onScroll}
+                scrollEventThrottle={16}
+                showsVerticalScrollIndicator={false}
+                bounces={true}
+                contentContainerStyle={{ paddingBottom: 150 }}
+            >
+                <View style={s.hero}>
+                    <Animated.View style={[s.heroImgWrapper, heroImageStyle]}>
+                        <SharedRecipeImage 
+                            source={{ uri: food.image }} 
+                            style={s.heroImg} 
+                            resizeMode="cover" 
+                            sharedTransitionTag={`recipe-img-${(food as any).id}`}
+                        />
                         <LinearGradient
-                            colors={isChimDoo ? ['#f0f0f0', '#e0e0e0'] : [AppColors.primary, '#C62828']}
-                            start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={s.btnGrad}
-                        >
-                            {loading ? <ActivityIndicator size="small" color="#fff" /> : isChimDoo ? (
-                                <><Check size={20} color={AppColors.navy} /><Text style={s.chimTxtDone}>Tasted!</Text></>
-                            ) : (
-                                <><UtensilsCrossed size={20} color="#fff" /><Text style={s.chimTxt}>Chim Doo</Text></>
-                            )}
-                        </LinearGradient>
+                            colors={['transparent', 'rgba(0,0,0,0.4)', 'rgba(0,0,0,0.8)']}
+                            style={StyleSheet.absoluteFillObject}
+                        />
+                    </Animated.View>
+
+                    <Animated.View style={[s.heroContent, titleStyle]}>
+                        <View style={s.badgeRow}>
+                            <View style={[s.catBadge, { backgroundColor: palette.accent }]}>
+                                <Text style={s.catBadgeText}>{category || 'Recipe'}</Text>
+                            </View>
+                        </View>
+                        <Text style={s.heroTitle}>{food.name}</Text>
+
+                        <View style={s.pillRow}>
+                            <BlurView intensity={20} tint="light" style={s.statPill}>
+                                <Clock size={16} color="#fff" />
+                                <Text style={s.statText}>{food.prepTime}</Text>
+                            </BlurView>
+                            <BlurView intensity={20} tint="light" style={s.statPill}>
+                                <Soup size={16} color="#fff" />
+                                <Text style={s.statText}>{Array.isArray(food.taste) ? food.taste.join(', ') : food.taste}</Text>
+                            </BlurView>
+                        </View>
+                    </Animated.View>
+                </View>
+
+                <View style={s.content}>
+                    <Animated.Text entering={FadeInDown.delay(100)} style={s.desc}>{food.description}</Animated.Text>
+
+                    <Animated.View entering={FadeInDown.delay(200)} style={s.section}>
+                        <View style={s.sectionHead}>
+                            <View style={s.sectionTitleRow}>
+                                <CookingPot size={22} color={palette.primary} />
+                                <Text style={s.sectionTitle}>Ingredients</Text>
+                            </View>
+                            <View style={s.scaler}>
+                                <TouchableOpacity onPress={() => setServings(Math.max(1, servings - 1))} style={s.scaleBtn}>
+                                    <Minus size={16} color={palette.primary} />
+                                </TouchableOpacity>
+                                <Text style={s.scaleVal}>{servings}P</Text>
+                                <TouchableOpacity onPress={() => setServings(servings + 1)} style={s.scaleBtn}>
+                                    <Plus size={16} color={palette.primary} />
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+
+                        {food.ingredients?.map((item, i) => {
+                            const { num, rest } = parseAmount(item);
+                            const scaledNum = num ? (num * (servings / 4)).toFixed(1).replace(/\.0$/, '') : '';
+                            const isChecked = checkedIngredients[i];
+
+                            return (
+                                <TouchableOpacity
+                                    key={i}
+                                    style={[s.ingRow, isChecked && { opacity: 0.5 }]}
+                                    activeOpacity={0.7}
+                                    onPress={() => setCheckedIngredients(prev => ({ ...prev, [i]: !prev[i] }))}
+                                >
+                                    <View style={[s.check, isChecked && { backgroundColor: palette.accent, borderColor: palette.accent }]}>
+                                        {isChecked && <Check size={12} color="#fff" />}
+                                    </View>
+                                    <Text style={[s.ingText, isChecked && s.ingTextChecked]}>
+                                        {scaledNum} {rest}
+                                    </Text>
+                                </TouchableOpacity>
+                            );
+                        })}
+                    </Animated.View>
+
+                    <Animated.View entering={FadeInDown.delay(300)} style={s.section}>
+                        <View style={s.sectionHead}>
+                            <View style={s.sectionTitleRow}>
+                                <ChefHat size={22} color={palette.primary} />
+                                <Text style={s.sectionTitle}>Instructions</Text>
+                            </View>
+                            <TouchableOpacity style={s.playBtn} onPress={() => setShowCookingMode(true)}>
+                                <LinearGradient colors={palette.gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={s.playGrad}>
+                                    <Play size={14} color="#fff" />
+                                    <Text style={s.playTxt}>Start Cooking</Text>
+                                </LinearGradient>
+                            </TouchableOpacity>
+                        </View>
+
+                        {food.instructions?.slice(0, 2).map((step, i) => (
+                            <View key={i} style={s.stepPreview}>
+                                <View style={[s.stepNum, { backgroundColor: palette.secondary }]}>
+                                    <Text style={[s.stepNumTxt, { color: palette.primary }]}>{i + 1}</Text>
+                                </View>
+                                <Text style={s.stepPreviewTxt} numberOfLines={2}>{step}</Text>
+                            </View>
+                        ))}
+                        {food.instructions && food.instructions.length > 2 && (
+                            <TouchableOpacity onPress={() => setShowCookingMode(true)}>
+                                <Text style={[s.moreSteps, { color: palette.primary }]}>+ {food.instructions.length - 2} more steps</Text>
+                            </TouchableOpacity>
+                        )}
+                    </Animated.View>
+                </View>
+            </Animated.ScrollView>
+
+            <View style={s.footer}>
+                <BlurView intensity={80} tint="light" style={s.footerBlur}>
+                    <TouchableOpacity
+                        style={[s.mainBtn, isChimDoo && { backgroundColor: '#F3F4F6' }]}
+                        onPress={handleChimDoo}
+                        disabled={loading}
+                    >
+                        {isChimDoo ? (
+                            <View style={s.btnIn}>
+                                <Check size={20} color={palette.primary} />
+                                <Text style={[s.btnTxt, { color: AppColors.navy }]}>Tasted!</Text>
+                            </View>
+                        ) : (
+                            <LinearGradient colors={palette.gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={s.btnIn}>
+                                <UtensilsCrossed size={20} color="#fff" />
+                                <Text style={[s.btnTxt, { color: '#fff' }]}>Chim Doo</Text>
+                            </LinearGradient>
+                        )}
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={s.revBtn} onPress={handleReviewPress} activeOpacity={0.7}>
-                        <LinearGradient
-                            colors={[AppColors.navy, '#0D253F']}
-                            start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={s.btnGrad}
-                        >
-                            <Star size={18} color="#FFD700" /><Text style={s.revTxt}>Review</Text>
-                        </LinearGradient>
+                    <TouchableOpacity style={s.revBtn} onPress={handleReviewPress}>
+                        <Star
+                            size={20}
+                            color={palette.primary}
+                            fill={hasReviewed(food.name) ? palette.primary : "transparent"}
+                        />
                     </TouchableOpacity>
                 </BlurView>
             </View>
 
             <ChimDooRequiredModal visible={showChimDooRequired} onClose={() => setShowChimDooRequired(false)} />
-            <ReviewModal visible={showReviewModal} foodName={food.name} onClose={() => setShowReviewModal(false)} onSubmit={handleSubmitReview} />
+            <ReviewModal
+                visible={showReviewModal}
+                foodName={food.name}
+                onClose={() => setShowReviewModal(false)}
+                onSubmit={handleSubmitReview}
+            />
+            <CookingModeModal
+                visible={showCookingMode}
+                onClose={() => setShowCookingMode(false)}
+                steps={food.instructions || []}
+                foodName={food.name}
+                foodImage={food.image}
+                palette={palette}
+            />
         </View>
     );
 }
 
 const s = StyleSheet.create({
-    root: { flex: 1, backgroundColor: AppColors.backgroundLight },
+    root: { flex: 1, backgroundColor: '#fff' },
+    back: { position: 'absolute', top: IOS ? 54 : 42, left: 20, zIndex: 40 },
+    backBlur: { width: 44, height: 44, borderRadius: 22, overflow: 'hidden', justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.1)' },
 
-    hero: { height: HERO_H, position: 'relative' },
+    stickyHeader: { position: 'absolute', top: 0, left: 0, right: 0, height: HEADER_MIN_H, zIndex: 30, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 15, borderBottomWidth: 0.5, borderBottomColor: '#f0f0f0' },
+    headerTitleText: { fontFamily: AppFonts.bold, fontSize: 17, color: AppColors.navy, width: '60%', textAlign: 'center' },
+
+    hero: { height: HERO_H, justifyContent: 'flex-end' },
+    heroImgWrapper: { ...StyleSheet.absoluteFillObject, overflow: 'hidden' },
     heroImg: { width: '100%', height: '100%' },
-    heroTitle: {
-        position: 'absolute', bottom: 46, left: 24, right: 24,
-        fontFamily: AppFonts.bold, fontSize: 34, color: '#fff', letterSpacing: -0.5,
-        textShadowColor: 'rgba(0,0,0,0.4)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 12,
-    },
-    back: {
-        position: 'absolute', top: IOS ? 54 : 42, left: 20, zIndex: 20,
-        borderRadius: 22, overflow: 'hidden',
-    },
-    backBlur: {
-        width: 44, height: 44, borderRadius: 22, overflow: 'hidden',
-        justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.25)',
-    },
-    content: {
-        backgroundColor: AppColors.backgroundLight,
-        borderTopLeftRadius: RADIUS, borderTopRightRadius: RADIUS,
-        marginTop: -RADIUS, paddingHorizontal: 22, paddingTop: 28,
-    },
-    desc: { fontFamily: AppFonts.regular, fontSize: 16, color: AppColors.textMuted, lineHeight: 25, marginBottom: 22 },
-    
-    metaRow: { flexDirection: 'row', gap: 10, marginBottom: 28 },
-    metaCard: {
-        flex: 1, backgroundColor: '#fff', borderRadius: 16, paddingVertical: 16, alignItems: 'center',
-        shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 3,
-    },
-    metaIconBg: {
-        width: 42, height: 42, borderRadius: 21,
-        backgroundColor: 'rgba(29,53,87,0.08)', justifyContent: 'center', alignItems: 'center', marginBottom: 10,
-    },
-    metaValue: { fontFamily: AppFonts.bold, fontSize: 13, color: AppColors.textDark, textAlign: 'center', marginBottom: 3, paddingHorizontal: 2 },
-    metaLabel: { fontFamily: AppFonts.medium, fontSize: 12, color: AppColors.textLight },
+    heroContent: { padding: 24, paddingBottom: 40 },
+    badgeRow: { marginBottom: 12 },
+    catBadge: { alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 8 },
+    catBadgeText: { color: '#fff', fontSize: 12, fontFamily: AppFonts.bold, textTransform: 'uppercase' },
+    heroTitle: { color: '#fff', fontSize: 36, fontFamily: AppFonts.bold, marginBottom: 16, letterSpacing: -0.5 },
+    pillRow: { flexDirection: 'row', gap: 10 },
+    statPill: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 100, backgroundColor: 'rgba(255,255,255,0.1)' },
+    statText: { color: '#fff', fontSize: 13, fontFamily: AppFonts.medium },
 
-    section: { marginBottom: 28 },
-    sectionHead: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 },
+    content: { backgroundColor: '#fff', borderTopLeftRadius: 32, borderTopRightRadius: 32, marginTop: -32, padding: 24 },
+    desc: { fontSize: 16, color: AppColors.textMuted, fontFamily: AppFonts.regular, lineHeight: 26, marginBottom: 32 },
+
+    section: { marginBottom: 32 },
+    sectionHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
     sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-    sectionTitle: { fontFamily: AppFonts.bold, fontSize: 22, color: AppColors.navy, letterSpacing: -0.3 },
-    badge: { backgroundColor: AppColors.primary, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4, minWidth: 28, alignItems: 'center' },
-    badgeText: { color: '#fff', fontSize: 13, fontFamily: AppFonts.bold },
+    sectionTitle: { fontSize: 22, fontFamily: AppFonts.bold, color: AppColors.navy },
 
-    ingredientRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 14, paddingHorizontal: 16, borderRadius: 14, marginBottom: 4 },
-    ingredientRowAlt: { backgroundColor: 'rgba(29,53,87,0.04)' },
-    bullet: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: AppColors.primary, justifyContent: 'center', alignItems: 'center', marginRight: 14 },
-    bulletInner: { width: 8, height: 8, borderRadius: 4, backgroundColor: AppColors.primary },
-    ingredientText: { fontFamily: AppFonts.regular, flex: 1, fontSize: 15, color: AppColors.textDark, lineHeight: 22 },
+    scaler: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F3F4F6', borderRadius: 12, padding: 4 },
+    scaleBtn: { width: 32, height: 32, borderRadius: 8, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center' },
+    scaleVal: { paddingHorizontal: 12, fontSize: 14, fontFamily: AppFonts.bold, color: AppColors.navy },
 
-    step: { flexDirection: 'row', marginBottom: 16, position: 'relative' },
-    stepLine: { position: 'absolute', left: 17, top: 38, bottom: -16, width: 2.5, backgroundColor: 'rgba(230,57,70,0.15)', borderRadius: 2 },
-    stepBadge: {
-        width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center',
-        marginRight: 14, marginTop: 2,
-        shadowColor: AppColors.primary, shadowOffset: { width: 0, height: 3 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 4,
-    },
-    stepNum: { fontFamily: AppFonts.bold, color: '#fff', fontSize: 15 },
-    stepCard: {
-        flex: 1, backgroundColor: '#fff', borderRadius: 14, padding: 16,
-        shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 6, elevation: 2,
-    },
-    stepText: { fontFamily: AppFonts.regular, fontSize: 15, color: AppColors.textDark, lineHeight: 23 },
+    ingRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 12 },
+    check: { width: 22, height: 22, borderRadius: 6, borderWidth: 2, borderColor: '#DDD', justifyContent: 'center', alignItems: 'center' },
+    ingText: { fontSize: 15, fontFamily: AppFonts.medium, color: AppColors.textDark, flex: 1 },
+    ingTextChecked: { textDecorationLine: 'line-through', color: '#9CA3AF', opacity: 0.8 },
 
-    empty: { fontFamily: AppFonts.regular, color: AppColors.textLight, fontStyle: 'italic', fontSize: 14, paddingVertical: 8 },
+    playBtn: { borderRadius: 12, overflow: 'hidden' },
+    playGrad: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, paddingVertical: 8 },
+    playTxt: { color: '#fff', fontSize: 13, fontFamily: AppFonts.bold },
 
-    bar: { position: 'absolute', bottom: 0, left: 0, right: 0, overflow: 'hidden' },
-    barBlur: {
-        flexDirection: 'row', gap: 12, alignItems: 'center',
-        paddingHorizontal: 20, paddingTop: 14, paddingBottom: IOS ? 34 : 22,
-        borderTopWidth: 0.5, borderTopColor: 'rgba(0,0,0,0.06)',
-    },
-    chimBtn: { flex: 1, borderRadius: 18, overflow: 'hidden', shadowColor: AppColors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 10, elevation: 6 },
-    chimBtnDone: { shadowColor: '#000', shadowOpacity: 0.08 },
-    btnGrad: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingVertical: 16, paddingHorizontal: 20, borderRadius: 18 },
-    chimTxt: { fontFamily: AppFonts.bold, color: '#fff', fontSize: 18 },
-    chimTxtDone: { fontFamily: AppFonts.bold, color: AppColors.navy, fontSize: 18 },
-    revBtn: { borderRadius: 18, overflow: 'hidden', shadowColor: AppColors.navy, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.25, shadowRadius: 10, elevation: 6 },
-    revTxt: { fontFamily: AppFonts.bold, color: '#fff', fontSize: 16 },
+    stepPreview: { flexDirection: 'row', gap: 14, marginBottom: 16 },
+    stepNum: { width: 28, height: 28, borderRadius: 8, justifyContent: 'center', alignItems: 'center' },
+    stepNumTxt: { fontSize: 14, fontFamily: AppFonts.bold },
+    stepPreviewTxt: { flex: 1, fontSize: 15, color: '#666', fontFamily: AppFonts.regular, lineHeight: 22 },
+    moreSteps: { fontFamily: AppFonts.bold, fontSize: 14, marginLeft: 42 },
+
+    footer: { position: 'absolute', bottom: 0, left: 0, right: 0 },
+    footerBlur: { flexDirection: 'row', gap: 12, paddingHorizontal: 20, paddingTop: 16, paddingBottom: IOS ? 34 : 20, borderTopWidth: 1, borderTopColor: '#F0F0F0' },
+    mainBtn: { flex: 1, borderRadius: 20, overflow: 'hidden' },
+    btnIn: { height: 60, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
+    btnTxt: { fontSize: 18, fontFamily: AppFonts.bold },
+    revBtn: { width: 60, height: 60, borderRadius: 20, backgroundColor: '#F3F4F6', justifyContent: 'center', alignItems: 'center' },
 });

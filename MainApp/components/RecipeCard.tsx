@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import SharedRecipeImage from './SharedRecipeImage';
 import { Clock, Flame, Soup } from 'lucide-react-native';
 import { ChimDooItem } from '@/hooks/useChimDoo';
 import { AppFonts } from '@/constants/theme';
@@ -16,7 +17,11 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ item, onPress }) => {
             activeOpacity={0.7}
             onPress={() => onPress(item)}
         >
-            <Image source={{ uri: item.image }} style={styles.recipeImage} />
+            <SharedRecipeImage 
+                source={{ uri: item.image }} 
+                style={styles.recipeImage} 
+                sharedTransitionTag={`recipe-img-${item.id}`}
+            />
             <View style={styles.recipeOverlay} />
             <View style={styles.recipeContent}>
                 {item.category ? (

@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { Canvas, useFrame } from '@react-three/fiber/native';
 import { useGLTF, OrbitControls, Stage } from '@react-three/drei/native';
-import { ChevronRight } from 'lucide-react-native';
+import { ChevronRight, Sun, CloudSun, Sunset, Moon, SunMoon } from 'lucide-react-native';
 import CountryFlag from 'react-native-country-flag';
 import { useFocusEffect } from 'expo-router';
 
@@ -88,7 +88,7 @@ function AnimatedControls({ target, zooming, onRotationDone, onZoomDone }: Anima
     if (!controlsRef.current) return;
 
     if (rotating.current) {
-      rotProgress.current = Math.min(rotProgress.current + delta * 0.8, 1);
+      rotProgress.current = Math.min(rotProgress.current + delta * 0.8, 1)
       const t = easeInOutCubic(rotProgress.current);
 
       const currentPhi = startAngles.current.phi + (targetAngles.current.phi - startAngles.current.phi) * t;
@@ -163,13 +163,39 @@ export default function HomeScreen() {
     }, [])
   );
 
+  const [greeting, setGreeting] = React.useState('');
+  const [GreetingIcon, setGreetingIcon] = React.useState<React.FC<any> | null>(null);
+
+  React.useEffect(() => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 11) {
+      setGreeting("Good Morning! Let's find breakfast");
+      setGreetingIcon(() => Sun);
+    } else if (hour >= 11 && hour < 16) {
+      setGreeting("Good Afternoon! Time for lunch");
+      setGreetingIcon(() => CloudSun);
+    } else if (hour >= 16 && hour < 22) {
+      setGreeting("Good Evening! What's for dinner?");
+      setGreetingIcon(() => SunMoon);
+    } else {
+      setGreeting("Late Night Cravings? Find a snack");
+      setGreetingIcon(() => Moon);
+    }
+  }, []);
+
   return (
     <>
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={styles.headerCenter}>
-            <Text style={styles.appName}>ChimDoo</Text>
-            <Text style={styles.subtitle}>Choose your place to Chim</Text>
+            <Text style={styles.appName}>
+              <Text style={{ color: AppColors.primary }}>Chim</Text>Doo</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 4 }}>
+              <Text style={[styles.subtitle, { marginTop: 0, marginRight: 6 }]}>
+                {greeting || 'Choose your place to Chim'}
+              </Text>
+              {GreetingIcon && <GreetingIcon size={20} color="#F59E0B" />}
+            </View>
           </View>
         </View>
 
@@ -194,10 +220,11 @@ export default function HomeScreen() {
         <View style={styles.canvasContainer}>
           <Canvas key={canvasKey} camera={{ position: [0, 0, 5], fov: 45 }}>
             <Suspense fallback={null}>
-              <ambientLight intensity={0.7} />
-              <hemisphereLight intensity={1.2} color="#ffffff" groundColor="#000000" />
-              <directionalLight position={[10, 10, 10]} intensity={5.5} />
-              <pointLight position={[0, 0, 10]} intensity={4} color="#ffffff" />
+              <ambientLight intensity={1.5} />
+              <hemisphereLight intensity={1.2} color="#ffffff" groundColor="#ffffff" />
+              <directionalLight position={[10, 10, 10]} intensity={3.5} />
+              <directionalLight position={[-10, -10, -10]} intensity={2.5} color="#e0f2fe" />
+              <pointLight position={[0, 0, 10]} intensity={2} color="#ffffff" />
               <Stage environment={null} intensity={1} shadows={false}>
                 <EarthModel />
               </Stage>

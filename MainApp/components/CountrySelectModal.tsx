@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { View, Text, TouchableOpacity, Modal, FlatList, StyleSheet, Platform, Animated, Dimensions, TextInput } from 'react-native';
-import { X, Search, Globe } from 'lucide-react-native';
+import { X, Search, Globe, Shuffle } from 'lucide-react-native';
 import CountryFlag from 'react-native-country-flag';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
@@ -108,8 +108,26 @@ export default function CountrySelectModal({
         <FlatList
           data={filteredCountries}
           keyExtractor={(item) => item.id}
-
           showsVerticalScrollIndicator={false}
+          ListHeaderComponent={
+            !search.trim() ? (
+              <TouchableOpacity
+                style={styles.countryItem}
+                activeOpacity={0.6}
+                onPress={() => {
+                  const randomCountry = countries[Math.floor(Math.random() * countries.length)];
+                  onSelectCountry(randomCountry);
+                }}
+              >
+                <View style={{ width: 28, alignItems: 'center' }}>
+                  <Shuffle size={20} color={AppColors.primary} />
+                </View>
+                <Text style={[styles.countryName, { color: AppColors.primary, fontFamily: AppFonts.bold }]}>
+                  Random Country
+                </Text>
+              </TouchableOpacity>
+            ) : null
+          }
           renderItem={({ item }) => (
             <TouchableOpacity
               style={[

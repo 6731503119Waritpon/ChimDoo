@@ -9,6 +9,7 @@ import {
     onSnapshot,
     serverTimestamp,
     Timestamp,
+    orderBy,
 } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { useAuth } from './useAuth';
@@ -36,7 +37,8 @@ export const useChimDoo = (foodName?: string) => {
         }
 
         const colRef = collection(db, 'users', user.uid, 'chimDoo');
-        const unsubscribe = onSnapshot(colRef, (snapshot) => {
+        const q = query(colRef, orderBy('chimDooAt', 'desc'));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
             const items = snapshot.docs.map((doc) => ({
                 id: doc.id,
                 ...doc.data(),
