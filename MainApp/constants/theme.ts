@@ -27,13 +27,22 @@ export const Colors = {
   },
 };
 
-export const AppFonts = {
-  light: 'Prompt_300Light',
-  regular: 'Prompt_400Regular',
-  medium: 'Prompt_500Medium',
-  semiBold: 'Prompt_600SemiBold',
-  bold: 'Prompt_700Bold',
-};
+export const AppFonts = Platform.select({
+  web: {
+    light: 'Prompt-Light',
+    regular: 'Prompt-Regular',
+    medium: 'Prompt-Medium',
+    semiBold: 'Prompt-SemiBold',
+    bold: 'Prompt-Bold',
+  },
+  default: {
+    light: 'Prompt_300Light',
+    regular: 'Prompt_400Regular',
+    medium: 'Prompt_500Medium',
+    semiBold: 'Prompt_600SemiBold',
+    bold: 'Prompt_700Bold',
+  },
+});
 
 export const Fonts = Platform.select({
   ios: {
