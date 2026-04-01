@@ -3,6 +3,7 @@ import { collection, getDocs, orderBy, query } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { AppVersion } from '@/types/appContent';
 import { Collections } from '@/constants/collections';
+import { getErrorMessage } from '@/types/firebase';
 
 export type { AppVersion } from '@/types/appContent';
 
@@ -24,9 +25,9 @@ export function useAppVersion() {
                     ...(doc.data() as Omit<AppVersion, 'id'>),
                 }));
                 setVersions(data);
-            } catch (err: any) {
+            } catch (err: unknown) {
                 console.error('[useAppVersion]', err);
-                setError(err.message || 'Failed to load version info');
+                setError(getErrorMessage(err));
             } finally {
                 setLoading(false);
             }

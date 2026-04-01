@@ -22,6 +22,7 @@ import { ArrowLeft } from 'lucide-react-native';
 import { AppFonts } from '@/constants/theme';
 import SecureInput from '@/components/SecureInput';
 import { AppColors } from '@/constants/colors';
+import { getErrorMessage } from '@/types/firebase';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -45,8 +46,8 @@ export default function LoginScreen() {
         try {
             await signIn(email, password);
             router.replace('/(tabs)');
-        } catch (err: any) {
-            toast.error('Login Failed', err.message || 'Please check your credentials');
+        } catch (err: unknown) {
+            toast.error('Login Failed', getErrorMessage(err));
         }
     };
 
@@ -69,8 +70,8 @@ export default function LoginScreen() {
             const credential = GoogleAuthProvider.credential(idToken || null, accessToken || null);
             await signInWithCredential(auth, credential);
             router.replace('/(tabs)');
-        } catch (error: any) {
-            toast.error('Google Login Error', error.message);
+        } catch (error: unknown) {
+            toast.error('Google Login Error', getErrorMessage(error));
         } finally {
             setGoogleLoading(false);
         }
@@ -82,8 +83,8 @@ export default function LoginScreen() {
             if (success) {
                 router.replace('/(tabs)');
             }
-        } catch (error: any) {
-            toast.error('Google Login Error', error.message);
+        } catch (error: unknown) {
+            toast.error('Google Login Error', getErrorMessage(error));
         }
     };
 

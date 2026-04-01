@@ -12,14 +12,14 @@ import {
     Modal,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ChevronLeft, ChevronRight, Bell, UserPlus, Heart, MessageCircle, Star, Trash2 } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight, Bell, UserPlus, Heart, MessageCircle, Star, Trash2, LucideIcon } from 'lucide-react-native';
 import { useNotifications, AppNotification, NotificationType } from '../../../hooks/useNotifications';
 import { useNotificationSettings } from '../../../hooks/useNotificationSettings';
 import { formatRelativeTime } from '../../../utils/formatTime';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
 
-const TYPE_META: Record<NotificationType, { label: string; icon: any; color: string }> = {
+const TYPE_META: Record<NotificationType, { label: string; icon: LucideIcon; color: string }> = {
     friend_request: { label: 'Friend Requests', icon: UserPlus, color: '#3b82f6' },
     like: { label: 'Likes', icon: Heart, color: AppColors.primary },
     comment: { label: 'Comments', icon: MessageCircle, color: '#22c55e' },

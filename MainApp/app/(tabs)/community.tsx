@@ -134,12 +134,13 @@ const Page = () => {
         try {
             await sendFriendRequest(post.userId, post.userName, post.userAvatar);
             toast.success('Request Sent!', `Friend request sent to ${post.userName}`);
-        } catch (err: any) {
-            if (err.message === 'Friend request already exists') {
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : '';
+            if (message === 'Friend request already exists') {
                 toast.info('Already Sent', 'You already sent a request to this person');
             } else {
                 console.error('[Community] Add friend error:', err);
-                toast.error('Error', err?.message || 'Failed to send friend request');
+                toast.error('Error', message || 'Failed to send friend request');
             }
         }
     };

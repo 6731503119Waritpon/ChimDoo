@@ -10,6 +10,7 @@ import {
     subscribeToDocument,
     FirestoreDocument,
 } from '../services/firestore';
+import { getErrorMessage } from '@/types/firebase';
 
 interface UseFirestoreState<T> {
     data: T | null;
@@ -49,11 +50,11 @@ export const useDocument = <T extends FirestoreDocument>(
                     setState((prev) => ({ ...prev, loading: true }));
                     const document = await getDocument<T>(collectionName, docId);
                     setState({ data: document, loading: false, error: null });
-                } catch (error: any) {
+                } catch (error: unknown) {
                     setState({
                         data: null,
                         loading: false,
-                        error: error.message || 'Failed to fetch document',
+                        error: getErrorMessage(error),
                     });
                 }
             };
@@ -91,11 +92,11 @@ export const useCollection = <T extends FirestoreDocument>(
                     setState((prev) => ({ ...prev, loading: true }));
                     const documents = await getDocuments<T>(collectionName, ...queryConstraints);
                     setState({ data: documents, loading: false, error: null });
-                } catch (error: any) {
+                } catch (error: unknown) {
                     setState({
                         data: null,
                         loading: false,
-                        error: error.message || 'Failed to fetch collection',
+                        error: getErrorMessage(error),
                     });
                 }
             };
@@ -118,8 +119,8 @@ export const useFirestoreMutation = (collectionName: string) => {
                 const docRef = await addDocument(collectionName, data);
                 setLoading(false);
                 return docRef.id;
-            } catch (err: any) {
-                setError(err.message || 'Failed to add document');
+            } catch (err: unknown) {
+                setError(getErrorMessage(err));
                 setLoading(false);
                 throw err;
             }
@@ -134,8 +135,8 @@ export const useFirestoreMutation = (collectionName: string) => {
                 setError(null);
                 await updateDocument(collectionName, docId, data);
                 setLoading(false);
-            } catch (err: any) {
-                setError(err.message || 'Failed to update document');
+            } catch (err: unknown) {
+                setError(getErrorMessage(err));
                 setLoading(false);
                 throw err;
             }
@@ -150,8 +151,8 @@ export const useFirestoreMutation = (collectionName: string) => {
                 setError(null);
                 await deleteDocument(collectionName, docId);
                 setLoading(false);
-            } catch (err: any) {
-                setError(err.message || 'Failed to delete document');
+            } catch (err: unknown) {
+                setError(getErrorMessage(err));
                 setLoading(false);
                 throw err;
             }

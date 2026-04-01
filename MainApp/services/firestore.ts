@@ -21,7 +21,7 @@ import { db } from '../firebaseConfig';
 
 export interface FirestoreDocument {
     id: string;
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 export const getDocument = async <T extends FirestoreDocument>(

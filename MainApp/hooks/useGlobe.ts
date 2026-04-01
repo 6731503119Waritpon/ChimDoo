@@ -32,7 +32,7 @@ export const useGlobe = () => {
   const handleZoomDone = useCallback(() => {
     setZooming(false);
     if (selected) {
-      router.push(`/country/${selected.id}` as any);
+      router.push({ pathname: '/country/[id]', params: { id: selected.id } } as never);
     }
   }, [selected, router]);
 

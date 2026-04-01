@@ -2,13 +2,20 @@ import { useState } from 'react';
 import { Platform } from 'react-native';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
 import { auth } from '../firebaseConfig';
+import { isFirebaseError } from '@/types/firebase';
 
-let GoogleSignin: any = null;
+interface GoogleSignInModule {
+    configure: (config: { webClientId?: string }) => void;
+    hasPlayServices: () => Promise<void>;
+    signIn: () => Promise<{ data?: { idToken?: string } }>;
+}
+
+let GoogleSignin: GoogleSignInModule | null = null;
 if (Platform.OS !== 'web') {
     try {
         const googleSignIn = require('@react-native-google-signin/google-signin');
         GoogleSignin = googleSignIn.GoogleSignin;
-        GoogleSignin.configure({
+        GoogleSignin?.configure({
             webClientId: process.env.EXPO_PUBLIC_WEBCLIENT_ID,
         });
     } catch (e) {
@@ -41,8 +48,8 @@ export function useGoogleAuth() {
             const credential = GoogleAuthProvider.credential(idToken);
             await signInWithCredential(auth, credential);
             return true;
-        } catch (error: any) {
-            if (error.code === 'SIGN_IN_CANCELLED') {
+        } catch (error: unknown) {
+            if (isFirebaseError(error) && error.code === 'SIGN_IN_CANCELLED') {
                 return false;
             }
             throw error;

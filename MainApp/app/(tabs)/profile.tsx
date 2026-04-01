@@ -24,6 +24,7 @@ import {
     UserPen,
     LogOut,
 } from 'lucide-react-native';
+import { LucideIcon } from 'lucide-react-native';
 import { ProfileMenuItem } from '@/types/menuProfile';
 import { profileMenuConfig } from '@/config/menuProfile';
 import { useToast } from '@/components/ToastProvider';
@@ -37,6 +38,7 @@ import { db } from '@/firebaseConfig';
 import { Collections } from '@/constants/collections';
 import { AppFonts } from '@/constants/theme';
 import { AppColors } from '@/constants/colors';
+import { getErrorMessage } from '@/types/firebase';
 import ChefStatsBar from '@/components/ChefStatsBar';
 import { useChimDoo } from '@/hooks/useChimDoo';
 import { useCommunity } from '@/hooks/useCommunity';
@@ -47,7 +49,7 @@ const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpaci
 interface GridCardProps {
     label: string;
     value: string;
-    icon: any;
+    icon: LucideIcon;
     color: string;
     onPress: () => void;
     delay?: number;
@@ -140,8 +142,8 @@ const Page = () => {
         try {
             await logOut();
             setShowLogoutModal(false);
-        } catch (err: any) {
-            toast.error('Error', err.message || 'Failed to log out');
+        } catch (err: unknown) {
+            toast.error('Error', getErrorMessage(err));
         } finally {
             setLoggingOut(false);
         }
@@ -153,7 +155,7 @@ const Page = () => {
             return;
         }
         if (item.href) {
-            router.push(item.href as any);
+            router.push(item.href as never);
         }
     };
 
@@ -206,7 +208,7 @@ const Page = () => {
 
                     <TouchableOpacity
                         style={styles.editBadge}
-                        onPress={() => router.push('/profile/account/edit-profile' as any)}
+                        onPress={() => router.push('/profile/account/edit-profile' as never)}
                     >
                         <UserPen size={14} color="#1D3557" />
                         <Text style={styles.editBadgeText}>Edit Profile</Text>

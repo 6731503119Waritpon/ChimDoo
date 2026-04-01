@@ -11,7 +11,7 @@ import {
     Image,
     ScrollView,
 } from 'react-native';
-import { Bell, X, UserPlus, Heart, MessageCircle, Star, CheckCheck } from 'lucide-react-native';
+import { Bell, X, UserPlus, Heart, MessageCircle, Star, CheckCheck, LucideIcon } from 'lucide-react-native';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
 import { useNotifications, AppNotification } from '../hooks/useNotifications';
@@ -25,7 +25,7 @@ const CARD_HEIGHT = 72;
 const PANEL_TOP = Platform.OS === 'ios' ? 100 : 72;
 const MAX_VISIBLE = 4;
 
-const TYPE_ICON: Record<string, { icon: any; color: string }> = {
+const TYPE_ICON: Record<string, { icon: LucideIcon; color: string }> = {
     friend_request: { icon: UserPlus, color: '#3b82f6' },
     like: { icon: Heart, color: AppColors.primary },
     comment: { icon: MessageCircle, color: '#22c55e' },

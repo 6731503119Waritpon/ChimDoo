@@ -4,11 +4,12 @@ import { Check, CircleCheckBig, Clock, Drumstick, Flame, Soup, ChefHat } from 'l
 import { LinearGradient } from 'expo-linear-gradient';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
+import { FoodItem } from '@/types/recipe';
 
 const { width } = Dimensions.get('window');
 
 interface PopularFoodCardProps {
-    item: any;
+    item: FoodItem;
     onPress: () => void;
     badgeLabel?: string;
     isTasted?: boolean;

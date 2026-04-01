@@ -10,7 +10,8 @@ import {
 } from 'react-native';
 import { Canvas, useFrame } from '@react-three/fiber/native';
 import { useGLTF, OrbitControls, Stage } from '@react-three/drei/native';
-import { ChevronRight, Sun, CloudSun, Sunset, Moon, SunMoon } from 'lucide-react-native';
+import { ChevronRight, Sun, CloudSun, Sunset, Moon, SunMoon, LucideIcon } from 'lucide-react-native';
+import * as THREE from 'three';
 import CountryFlag from 'react-native-country-flag';
 import { useFocusEffect } from 'expo-router';
 
@@ -22,15 +23,17 @@ import CountrySelectModal from '@/components/CountrySelectModal';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
 
-function EarthModel(props: any) {
+function EarthModel(props: Record<string, unknown>) {
   const gltf = useGLTF(modelPath);
   React.useEffect(() => {
-    gltf.scene.traverse((child: any) => {
-      if (child.isMesh && child.material) {
-        child.material.roughness = 0.6;
-        child.material.metalness = 0.1;
-        if (child.material.color) {
-          child.material.color.set('#cccccc');
+    gltf.scene.traverse((child: THREE.Object3D) => {
+      const mesh = child as THREE.Mesh;
+      if (mesh.isMesh && mesh.material) {
+        const mat = mesh.material as THREE.MeshStandardMaterial;
+        mat.roughness = 0.6;
+        mat.metalness = 0.1;
+        if (mat.color) {
+          mat.color.set('#cccccc');
         }
       }
     });
@@ -51,7 +54,7 @@ interface AnimatedControlsProps {
 }
 
 function AnimatedControls({ target, zooming, onRotationDone, onZoomDone }: AnimatedControlsProps) {
-  const controlsRef = useRef<any>(null);
+  const controlsRef = useRef<React.ComponentRef<typeof OrbitControls> | null>(null);
 
   const rotating = useRef(false);
   const rotProgress = useRef(0);
@@ -164,7 +167,7 @@ export default function HomeScreen() {
   );
 
   const [greeting, setGreeting] = React.useState('');
-  const [GreetingIcon, setGreetingIcon] = React.useState<React.FC<any> | null>(null);
+  const [GreetingIcon, setGreetingIcon] = React.useState<LucideIcon | null>(null);
 
   React.useEffect(() => {
     const hour = new Date().getHours();

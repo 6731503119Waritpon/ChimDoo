@@ -16,6 +16,7 @@ import { useToast } from '@/components/ToastProvider';
 import { ArrowLeft, Mail, KeyRound, CheckCircle2, RefreshCcw } from 'lucide-react-native';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
+import { getErrorMessage } from '@/types/firebase';
 
 export default function ForgotPasswordScreen() {
     const router = useRouter();
@@ -40,8 +41,8 @@ export default function ForgotPasswordScreen() {
         try {
             await resetPassword(email);
             setEmailSent(true);
-        } catch (err: any) {
-            toast.error('Error', err.message || 'Failed to send reset email');
+        } catch (err: unknown) {
+            toast.error('Error', getErrorMessage(err));
         }
     };
 

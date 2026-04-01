@@ -87,8 +87,9 @@ const MyFriends = () => {
             toast.success('Request Sent!', `Friend request sent to ${friendName}`);
             setEmailInput('');
             setShowAddModal(false);
-        } catch (err: any) {
-            switch (err.message) {
+        } catch (err: unknown) {
+            const message = err instanceof Error ? err.message : '';
+            switch (message) {
                 case 'SELF':
                     toast.info('Oops', 'You cannot add yourself as a friend!');
                     break;
@@ -100,7 +101,7 @@ const MyFriends = () => {
                     break;
                 default:
                     console.error('[MyFriends] Add friend error:', err);
-                    toast.error('Error', err?.message || 'Failed to send friend request');
+                    toast.error('Error', message || 'Failed to send friend request');
             }
         } finally {
             setSending(false);

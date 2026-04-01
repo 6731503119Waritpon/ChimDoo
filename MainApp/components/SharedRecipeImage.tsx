@@ -1,5 +1,5 @@
 import React from 'react';
-import { ImageProps, StyleProp, ImageStyle } from 'react-native';
+import { Image, ImageProps, StyleProp, ImageStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
 
 interface SharedRecipeImageProps extends Omit<ImageProps, 'style'> {
@@ -7,9 +7,11 @@ interface SharedRecipeImageProps extends Omit<ImageProps, 'style'> {
   sharedTransitionTag?: string;
 }
 
+const AnimatedImage = Animated.createAnimatedComponent(Image) as React.ComponentType<
+  ImageProps & { sharedTransitionTag?: string }
+>;
+
 const SharedRecipeImage: React.FC<SharedRecipeImageProps> = ({ sharedTransitionTag, ...props }) => {
-  const AnimatedImage = Animated.Image as any;
-  
   return (
     <AnimatedImage 
       {...props} 

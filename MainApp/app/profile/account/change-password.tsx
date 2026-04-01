@@ -22,6 +22,7 @@ import { useAuth } from '../../../hooks/useAuth';
 import { useToast } from '@/components/ToastProvider';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
+import { isFirebaseError, getErrorMessage } from '@/types/firebase';
 
 export default function ChangePasswordScreen() {
     const router = useRouter();
@@ -113,8 +114,8 @@ export default function ChangePasswordScreen() {
 
             toast.success('Done!', 'Password changed successfully');
             setTimeout(() => router.back(), 1200);
-        } catch (error: any) {
-            const code = error?.code || '';
+        } catch (error: unknown) {
+            const code = isFirebaseError(error) ? error.code : '';
             if (code === 'auth/wrong-password' || code === 'auth/invalid-credential') {
                 toast.error('Wrong password', 'Current password is incorrect');
             } else if (code === 'auth/too-many-requests') {
@@ -122,7 +123,7 @@ export default function ChangePasswordScreen() {
             } else if (code === 'auth/requires-recent-login') {
                 toast.error('Session expired', 'Please log out and log back in, then try again');
             } else {
-                toast.error('Error', error.message || 'Failed to change password');
+                toast.error('Error', getErrorMessage(error));
             }
         } finally {
             setSaving(false);

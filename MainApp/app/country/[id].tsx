@@ -46,7 +46,7 @@ export default function CountryPage() {
         };
     }, [data]);
 
-    const handleFoodPress = (food: any) => {
+    const handleFoodPress = (food: FoodItem) => {
         router.push({
             pathname: '/recipe',
             params: { food: JSON.stringify(food), category: data?.name || '' }

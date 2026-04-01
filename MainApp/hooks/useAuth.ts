@@ -8,6 +8,7 @@ import {
     subscribeToAuthChanges,
     getCurrentUser,
 } from '../services/auth';
+import { getErrorMessage } from '@/types/firebase';
 
 interface AuthState {
     user: User | null;
@@ -47,11 +48,11 @@ export const useAuth = (): UseAuthReturn => {
             try {
                 setState((prev) => ({ ...prev, loading: true, error: null }));
                 await signUp(email, password, displayName);
-            } catch (error: any) {
+            } catch (error: unknown) {
                 setState((prev) => ({
                     ...prev,
                     loading: false,
-                    error: error.message || 'Failed to sign up',
+                    error: getErrorMessage(error),
                 }));
                 throw error;
             }
@@ -63,11 +64,11 @@ export const useAuth = (): UseAuthReturn => {
         try {
             setState((prev) => ({ ...prev, loading: true, error: null }));
             await signIn(email, password);
-        } catch (error: any) {
+        } catch (error: unknown) {
             setState((prev) => ({
                 ...prev,
                 loading: false,
-                error: error.message || 'Failed to sign in',
+                error: getErrorMessage(error),
             }));
             throw error;
         }
@@ -77,11 +78,11 @@ export const useAuth = (): UseAuthReturn => {
         try {
             setState((prev) => ({ ...prev, loading: true, error: null }));
             await logOut();
-        } catch (error: any) {
+        } catch (error: unknown) {
             setState((prev) => ({
                 ...prev,
                 loading: false,
-                error: error.message || 'Failed to log out',
+                error: getErrorMessage(error),
             }));
             throw error;
         }
@@ -92,11 +93,11 @@ export const useAuth = (): UseAuthReturn => {
             setState((prev) => ({ ...prev, loading: true, error: null }));
             await resetPassword(email);
             setState((prev) => ({ ...prev, loading: false }));
-        } catch (error: any) {
+        } catch (error: unknown) {
             setState((prev) => ({
                 ...prev,
                 loading: false,
-                error: error.message || 'Failed to reset password',
+                error: getErrorMessage(error),
             }));
             throw error;
         }

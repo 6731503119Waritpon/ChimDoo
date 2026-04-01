@@ -59,7 +59,7 @@ export default function ContactUsScreen() {
             } else {
                 throw new Error('Script returned error');
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             toast.error('Failed to Send', 'Please try again or contact us directly by email.');
         } finally {
             setSending(false);

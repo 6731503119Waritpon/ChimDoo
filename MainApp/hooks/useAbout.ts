@@ -3,6 +3,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { AboutData } from '@/types/appContent';
 import { Collections } from '@/constants/collections';
+import { getErrorMessage } from '@/types/firebase';
 
 export type { AboutFeature, AboutData } from '@/types/appContent';
 
@@ -20,8 +21,8 @@ export function useAbout() {
                 } else {
                     setError('Content not found');
                 }
-            } catch (err: any) {
-                setError(err.message || 'Failed to load');
+            } catch (err: unknown) {
+                setError(getErrorMessage(err));
             } finally {
                 setLoading(false);
             }

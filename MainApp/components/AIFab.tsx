@@ -15,7 +15,7 @@ export default function AIFab() {
             style={styles.container}
         >
             <TouchableOpacity
-                onPress={() => router.push('/chatbot' as any)}
+                onPress={() => router.push('/chatbot' as never)}
                 activeOpacity={0.8}
                 style={styles.shadow}
             >

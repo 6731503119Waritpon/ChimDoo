@@ -5,10 +5,10 @@ import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring } f
 import { AppFonts } from "@/constants/theme"
 
 interface TabBarButtonProps {
-    onPress: (props: any) => void;
-    onLongPress: (props: any) => void;
+    onPress: () => void;
+    onLongPress: () => void;
     isFocused: boolean;
-    label: any;
+    label: string;
     routeName: string;
     color: string;
 }
@@ -40,7 +40,7 @@ const TabBarButton = ({ onPress, onLongPress, isFocused, label, routeName, color
         };
     });
 
-    const IconComponent = (icon as any)[routeName];
+    const IconComponent = icon[routeName as keyof typeof icon];
 
     return (
         <Pressable

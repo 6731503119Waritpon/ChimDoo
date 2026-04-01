@@ -161,7 +161,7 @@ export default function RecipePage() {
                             source={{ uri: food.image }}
                             style={s.heroImg}
                             resizeMode="cover"
-                            sharedTransitionTag={`recipe-img-${(food as any).id}`}
+                            sharedTransitionTag={`recipe-img-${food.name}`}
                         />
                         <LinearGradient
                             colors={['transparent', 'rgba(0,0,0,0.4)', 'rgba(0,0,0,0.8)']}

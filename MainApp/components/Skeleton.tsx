@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, Animated, Easing, DimensionValue } from 'react-native';
+import { View, StyleSheet, Animated, Easing, DimensionValue, StyleProp, ViewStyle } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 
 interface SkeletonProps {
     width: DimensionValue;
     height: DimensionValue;
     borderRadius?: number;
-    style?: any;
+    style?: StyleProp<ViewStyle>;
 }
 
 const AnimatedLinearGradient = Animated.createAnimatedComponent(LinearGradient);

@@ -3,9 +3,10 @@ import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
 import { Check, CircleCheckBig, Drumstick, ChefHat } from 'lucide-react-native';
+import { FoodItem } from '@/types/recipe';
 
 interface NormalFoodItemProps {
-    item: any;
+    item: FoodItem;
     onPress: () => void;
     isTasted?: boolean;
 }

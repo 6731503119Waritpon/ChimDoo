@@ -203,12 +203,13 @@ export default function ChatbotScreen() {
             globalUIMessages.push(aiMsg);
             setLastNewMessageId(aiMsg.id);
             setMessages([...globalUIMessages]);
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error("Groq Error:", error);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             const apiKeyPreview = process.env.EXPO_PUBLIC_GROQ_API_KEY ? `(Key length: ${process.env.EXPO_PUBLIC_GROQ_API_KEY.length})` : '(Key is EMPTY)';
             const errorMsg: Message = {
                 id: (Date.now() + 1).toString(),
-                text: `Error: ${error.message} ${apiKeyPreview}`,
+                text: `Error: ${errorMessage} ${apiKeyPreview}`,
                 isUser: false,
             };
             globalUIMessages.push(errorMsg);

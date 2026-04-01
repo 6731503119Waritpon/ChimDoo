@@ -93,7 +93,7 @@ export default function EditProfileScreen() {
                 }
             );
         } else {
-            const buttons: any[] = [
+            const buttons: {text: string; style?: 'cancel' | 'destructive'; onPress?: () => void}[] = [
                 { text: 'Cancel', style: 'cancel' },
                 { text: 'Take Photo', onPress: () => pickImage(true) },
                 { text: 'Choose from Gallery', onPress: () => pickImage(false) },
@@ -150,8 +150,9 @@ export default function EditProfileScreen() {
 
             toast.success('Success', 'Profile updated successfully!');
             setTimeout(() => router.back(), 1000);
-        } catch (error: any) {
-            toast.error('Error', error.message || 'Failed to update profile');
+        } catch (error: unknown) {
+            const message = error instanceof Error ? error.message : 'Failed to update profile';
+            toast.error('Error', message);
         } finally {
             setSaving(false);
         }

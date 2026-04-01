@@ -22,6 +22,7 @@ import { ArrowLeft } from 'lucide-react-native';
 import { AppFonts } from '@/constants/theme';
 import SecureInput from '@/components/SecureInput';
 import { AppColors } from '@/constants/colors';
+import { isFirebaseError, getErrorMessage } from '@/types/firebase';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -58,8 +59,8 @@ export default function SignupScreen() {
             const credential = GoogleAuthProvider.credential(idToken || null, accessToken || null);
             await signInWithCredential(auth, credential);
             router.replace('/(tabs)');
-        } catch (error: any) {
-            toast.error('Google Login Error', error.message);
+        } catch (error: unknown) {
+            toast.error('Google Login Error', getErrorMessage(error));
         } finally {
             setGoogleLoading(false);
         }
@@ -71,8 +72,8 @@ export default function SignupScreen() {
             if (success) {
                 router.replace('/(tabs)');
             }
-        } catch (error: any) {
-            toast.error('Google Login Error', error.message);
+        } catch (error: unknown) {
+            toast.error('Google Login Error', getErrorMessage(error));
         }
     };
 
@@ -106,13 +107,13 @@ export default function SignupScreen() {
         try {
             await signUp(email, password, displayName);
             router.replace('/(tabs)');
-        } catch (err: any) {
+        } catch (err: unknown) {
             let errorMessage = 'Please try again';
 
-            if (err.code === 'auth/email-already-in-use') {
+            if (isFirebaseError(err) && err.code === 'auth/email-already-in-use') {
                 errorMessage = 'This email is already registered. Please sign in instead.';
-            } else if (err.message) {
-                errorMessage = err.message;
+            } else {
+                errorMessage = getErrorMessage(err);
             }
 
             toast.error('Signup Failed', errorMessage);

@@ -18,7 +18,7 @@ export function formatRelativeTime(date: Date): string {
  * relative time string.  Falls back to 'just now' when the timestamp is null
  * or doesn't have a `.toDate()` method.
  */
-export function formatTimestamp(timestamp: any): string {
+export function formatTimestamp(timestamp: { toDate: () => Date } | null | undefined): string {
     if (!timestamp?.toDate) return 'just now';
     return formatRelativeTime(timestamp.toDate());
 }

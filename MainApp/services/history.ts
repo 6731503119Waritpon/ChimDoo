@@ -32,7 +32,7 @@ export const addToViewingHistory = async (food: FoodItem, category: string): Pro
         const filteredHistory = currentHistory.filter(item => item.name !== food.name);
         
         const newItem: HistoryItem = {
-            id: (food as any).id || food.name,
+            id: food.name,
             name: food.name,
             image: food.image,
             category: category,
