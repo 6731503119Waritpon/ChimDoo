@@ -6,10 +6,9 @@ import {
     TouchableOpacity,
     StyleSheet,
     ActivityIndicator,
-    KeyboardAvoidingView,
     Platform,
-    ScrollView,
 } from 'react-native';
+import KeyboardAwareView from '@/components/KeyboardAwareView';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, Mail, MessageSquare, User, Send } from 'lucide-react-native';
 import { useAuth } from '../../../hooks/useAuth';
@@ -68,121 +67,115 @@ export default function ContactUsScreen() {
     };
 
     return (
-        <KeyboardAvoidingView
+        <KeyboardAwareView
             style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            contentContainerStyle={styles.scrollContent}
         >
-            <ScrollView
-                contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={false}
-                keyboardShouldPersistTaps="handled"
-            >
-                <View style={styles.header}>
-                    <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-                        <ChevronLeft size={28} color="#fff" />
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Contact Us</Text>
-                    <View style={{ width: 40 }} />
-                </View>
-
-                <View style={styles.banner}>
-                    <View style={styles.bannerIconCircle}>
-                        <Mail size={36} color={AppColors.navy} />
-                    </View>
-                    <Text style={styles.bannerTitle}>Get in Touch</Text>
-                    <Text style={styles.bannerSub}>
-                        Have a question, feedback, or issue? We'd love to hear from you!
-                    </Text>
-                </View>
-
-                <View style={styles.form}>
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Your Name</Text>
-                        <View style={styles.inputRow}>
-                            <User size={18} color="#999" style={styles.inputIcon} />
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Enter your name"
-                                placeholderTextColor="#aaa"
-                                value={name}
-                                onChangeText={setName}
-                                autoCapitalize="words"
-                            />
-                        </View>
-                    </View>
-
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Your Email</Text>
-                        <View style={styles.inputRow}>
-                            <Mail size={18} color="#999" style={styles.inputIcon} />
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Enter your email"
-                                placeholderTextColor="#aaa"
-                                value={email}
-                                onChangeText={setEmail}
-                                keyboardType="email-address"
-                                autoCapitalize="none"
-                            />
-                        </View>
-                    </View>
-
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Subject</Text>
-                        <View style={styles.inputRow}>
-                            <MessageSquare size={18} color="#999" style={styles.inputIcon} />
-                            <TextInput
-                                style={styles.input}
-                                placeholder="What is this about?"
-                                placeholderTextColor="#aaa"
-                                value={subject}
-                                onChangeText={setSubject}
-                            />
-                        </View>
-                    </View>
-
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Message</Text>
-                        <View style={[styles.inputRow, styles.messageRow]}>
-                            <TextInput
-                                style={[styles.input, styles.messageInput]}
-                                placeholder="Write your message here..."
-                                placeholderTextColor="#aaa"
-                                value={message}
-                                onChangeText={setMessage}
-                                multiline
-                                numberOfLines={5}
-                                textAlignVertical="top"
-                            />
-                        </View>
-                        <Text style={styles.charCount}>{message.length} characters</Text>
-                    </View>
-                </View>
-
-                <TouchableOpacity
-                    style={[styles.sendButton, sending && styles.sendButtonDisabled]}
-                    onPress={handleSend}
-                    disabled={sending}
-                    activeOpacity={0.8}
-                >
-                    {sending ? (
-                        <ActivityIndicator color="#fff" />
-                    ) : (
-                        <>
-                            <Send size={18} color="#fff" />
-                            <Text style={styles.sendButtonText}>Send Message</Text>
-                        </>
-                    )}
+            <View style={styles.header}>
+                <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+                    <ChevronLeft size={26} color="#fff" />
                 </TouchableOpacity>
-            </ScrollView>
-        </KeyboardAvoidingView>
+                <Text style={styles.headerTitle}>Contact Us</Text>
+                <View style={{ width: 40 }} />
+            </View>
+
+            <View style={styles.banner}>
+                <View style={styles.bannerIconCircle}>
+                    <Mail size={36} color={AppColors.navy} />
+                </View>
+                <Text style={styles.bannerTitle}>Get in Touch</Text>
+                <Text style={styles.bannerSub}>
+                    Have a question, feedback, or issue? We'd love to hear from you!
+                </Text>
+            </View>
+
+            <View style={styles.form}>
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Your Name</Text>
+                    <View style={styles.inputRow}>
+                        <User size={18} color="#999" style={styles.inputIcon} />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Enter your name"
+                            placeholderTextColor="#aaa"
+                            value={name}
+                            onChangeText={setName}
+                            autoCapitalize="words"
+                        />
+                    </View>
+                </View>
+
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Your Email</Text>
+                    <View style={styles.inputRow}>
+                        <Mail size={18} color="#999" style={styles.inputIcon} />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Enter your email"
+                            placeholderTextColor="#aaa"
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                        />
+                    </View>
+                </View>
+
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Subject</Text>
+                    <View style={styles.inputRow}>
+                        <MessageSquare size={18} color="#999" style={styles.inputIcon} />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="What is this about?"
+                            placeholderTextColor="#aaa"
+                            value={subject}
+                            onChangeText={setSubject}
+                        />
+                    </View>
+                </View>
+
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Message</Text>
+                    <View style={[styles.inputRow, styles.messageRow]}>
+                        <TextInput
+                            style={[styles.input, styles.messageInput]}
+                            placeholder="Write your message here..."
+                            placeholderTextColor="#aaa"
+                            value={message}
+                            onChangeText={setMessage}
+                            multiline
+                            numberOfLines={5}
+                            textAlignVertical="top"
+                        />
+                    </View>
+                    <Text style={styles.charCount}>{message.length} characters</Text>
+                </View>
+            </View>
+
+            <TouchableOpacity
+                style={[styles.sendButton, sending && styles.sendButtonDisabled]}
+                onPress={handleSend}
+                disabled={sending}
+                activeOpacity={0.8}
+            >
+                {sending ? (
+                    <ActivityIndicator color="#fff" />
+                ) : (
+                    <>
+                        <Send size={18} color="#fff" />
+                        <Text style={styles.sendButtonText}>Send Message</Text>
+                    </>
+                )}
+            </TouchableOpacity>
+        </KeyboardAwareView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: AppColors.backgroundLight,
+        backgroundColor: '#FFFFFF',
     },
     scrollContent: {
         flexGrow: 1,
@@ -193,126 +186,113 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingTop: Platform.OS === 'ios' ? 60 : 48,
-        paddingHorizontal: 20,
+        paddingHorizontal: 16,
         paddingBottom: 20,
-        backgroundColor: AppColors.navy,
     },
     backButton: {
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: 'rgba(255,255,255,0.15)',
+        backgroundColor: AppColors.navy,
         alignItems: 'center',
         justifyContent: 'center',
     },
     headerTitle: {
         fontFamily: AppFonts.bold,
-        fontSize: 20,
-        color: '#fff',
+        fontSize: 22,
+        color: AppColors.navy,
     },
     banner: {
         alignItems: 'center',
-        backgroundColor: AppColors.navy,
-        paddingBottom: 36,
+        paddingBottom: 28,
         paddingHorizontal: 32,
     },
     bannerIconCircle: {
         width: 80,
         height: 80,
         borderRadius: 40,
-        backgroundColor: '#fff',
+        backgroundColor: '#FFFFFF',
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.2,
-        shadowRadius: 12,
-        elevation: 8,
+        marginBottom: 20,
+        borderWidth: 1.5,
+        borderColor: '#F1F5F9',
     },
     bannerTitle: {
         fontFamily: AppFonts.bold,
-        fontSize: 20,
-        color: '#fff',
-        marginBottom: 6,
+        fontSize: 24,
+        color: AppColors.navy,
+        marginBottom: 8,
     },
     bannerSub: {
         fontFamily: AppFonts.regular,
-        fontSize: 14,
-        color: 'rgba(255,255,255,0.65)',
+        fontSize: 15,
+        color: '#64748B',
         textAlign: 'center',
-        lineHeight: 20,
+        lineHeight: 22,
     },
     form: {
         paddingHorizontal: 24,
-        paddingTop: 32,
-        gap: 22,
+        paddingTop: 16,
+        gap: 32,
     },
     inputGroup: {
-        gap: 8,
+        gap: 10,
     },
     label: {
         fontFamily: AppFonts.bold,
-        fontSize: 13,
-        color: '#555',
+        fontSize: 10.5,
+        color: '#64748B',
         textTransform: 'uppercase',
-        letterSpacing: 0.8,
+        letterSpacing: 1.5,
+        marginLeft: 4,
     },
     inputRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#fff',
-        borderRadius: 14,
-        borderWidth: 1,
-        borderColor: 'rgba(29, 53, 87, 0.12)',
-        paddingHorizontal: 14,
-        paddingVertical: 4,
-        shadowColor: AppColors.navy,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 6,
-        elevation: 3,
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        borderRadius: 16,
+        borderWidth: 1.5,
+        borderColor: '#F1F5F9',
+        paddingHorizontal: 16,
     },
     messageRow: {
         alignItems: 'flex-start',
-        paddingTop: 12,
-        paddingBottom: 12,
+        paddingTop: 4,
     },
     inputIcon: {
-        marginRight: 10,
+        marginRight: 12,
     },
     input: {
-        fontFamily: AppFonts.regular,
+        fontFamily: AppFonts.bold,
         flex: 1,
         fontSize: 16,
-        paddingVertical: 14,
-        color: '#1a1a1a',
+        paddingVertical: 16,
+        color: AppColors.navy,
     },
     messageInput: {
-        minHeight: 120,
-        paddingVertical: 0,
+        minHeight: 150,
+        textAlignVertical: 'top',
+        paddingTop: 16,
     },
     charCount: {
-        fontFamily: AppFonts.regular,
+        fontFamily: AppFonts.medium,
         fontSize: 12,
-        color: '#aaa',
+        color: '#94A3B8',
         textAlign: 'right',
+        marginTop: 6,
+        marginRight: 4,
     },
     sendButton: {
+        marginHorizontal: 24,
+        marginTop: 48,
+        backgroundColor: AppColors.navy,
+        borderRadius: 20,
+        height: 60,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        gap: 10,
-        marginHorizontal: 24,
-        marginTop: 36,
-        backgroundColor: AppColors.primary,
-        borderRadius: 14,
-        padding: 18,
-        shadowColor: AppColors.primary,
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.3,
-        shadowRadius: 12,
-        elevation: 6,
+        gap: 12,
     },
     sendButtonDisabled: {
         opacity: 0.6,
@@ -321,5 +301,6 @@ const styles = StyleSheet.create({
         fontFamily: AppFonts.bold,
         color: '#fff',
         fontSize: 17,
+        letterSpacing: 1,
     },
 });

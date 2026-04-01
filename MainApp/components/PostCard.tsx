@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Heart, Share2, UserPlus, UserCheck, Clock, UserMinus } from 'lucide-react-native';
-import Animated, { 
-    useSharedValue, 
-    useAnimatedStyle, 
-    withSpring, 
-    withSequence, 
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withSpring,
+    withSequence,
     withDelay,
     withTiming,
     runOnJS
@@ -49,6 +49,7 @@ const PostCard = ({
 
     const heartScale = useSharedValue(0);
     const heartOpacity = useSharedValue(0);
+    const commentAreaScale = useSharedValue(1);
 
     useEffect(() => {
         const unsubscribe = subscribeToComments(item.id, (comments) => {
@@ -60,6 +61,10 @@ const PostCard = ({
     const heartStyle = useAnimatedStyle(() => ({
         transform: [{ scale: heartScale.value }],
         opacity: heartOpacity.value,
+    }));
+
+    const animatedCommentStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: commentAreaScale.value }],
     }));
 
     const triggerHeartAnimation = useCallback(() => {
@@ -94,6 +99,15 @@ const PostCard = ({
 
     const composedGesture = Gesture.Exclusive(doubleTap, singleTap);
 
+    const handleCommentPress = () => {
+        commentAreaScale.value = withSequence(
+            withTiming(0.96, { duration: 100 }),
+            withSpring(1)
+        );
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        onComment();
+    };
+
     const renderFriendButton = () => {
         if (isOwnPost) return null;
 
@@ -112,14 +126,14 @@ const PostCard = ({
                         activeOpacity={0.7}
                     >
                         <UserMinus size={12} color="#f59e0b" />
-                        <Text style={styles.friendBadgePendingText}>Cancel</Text>
+                        <Text style={styles.friendBadgePendingText}>CANCEL</Text>
                     </TouchableOpacity>
                 );
             case 'pending_received':
                 return (
-                    <View style={styles.friendBadgePending}>
+                    <View style={styles.friendBadgeReply}>
                         <Clock size={12} color="#3b82f6" />
-                        <Text style={[styles.friendBadgePendingText, { color: '#3b82f6' }]}>Respond</Text>
+                        <Text style={[styles.friendBadgeReplyText, { color: '#3b82f6' }]}>REPLY</Text>
                     </View>
                 );
             default:
@@ -130,7 +144,7 @@ const PostCard = ({
                         activeOpacity={0.6}
                     >
                         <UserPlus size={14} color={AppColors.navy} />
-                        <Text style={styles.addFriendText}>Add</Text>
+                        <Text style={styles.addFriendText}>ADD</Text>
                     </TouchableOpacity>
                 );
         }
@@ -207,24 +221,26 @@ const PostCard = ({
 
                 <TouchableOpacity
                     style={styles.rightColumn}
-                    onPress={onComment}
-                    activeOpacity={0.7}
+                    onPress={handleCommentPress}
+                    activeOpacity={0.9}
                 >
-                    <Text style={styles.commentCountTitle}>
-                        {item.commentsCount || 0} {item.commentsCount === 1 ? 'Comment' : 'Comments'}
-                    </Text>
-                    <View style={styles.commentsBox}>
-                        {recentComments.length > 0 ? (
-                            recentComments.map((comment) => (
-                                <Text key={comment.id} style={styles.commentPreviewText} numberOfLines={1}>
-                                    <Text style={styles.commentAuthor}>{comment.userName}: </Text>
-                                    {comment.text}
-                                </Text>
-                            ))
-                        ) : (
-                            <Text style={styles.noCommentsText}>No comments yet...</Text>
-                        )}
-                    </View>
+                    <Animated.View style={animatedCommentStyle}>
+                        <Text style={styles.commentCountTitle}>
+                            {item.commentsCount || 0} {item.commentsCount === 1 ? 'COMMENT' : 'COMMENTS'}
+                        </Text>
+                        <View style={styles.commentsBox}>
+                            {recentComments.length > 0 ? (
+                                recentComments.map((comment) => (
+                                    <Text key={comment.id} style={styles.commentPreviewText} numberOfLines={1}>
+                                        <Text style={styles.commentAuthor}>{comment.userName}: </Text>
+                                        {comment.text}
+                                    </Text>
+                                ))
+                            ) : (
+                                <Text style={styles.noCommentsText}>No comments yet...</Text>
+                            )}
+                        </View>
+                    </Animated.View>
                 </TouchableOpacity>
             </View>
         </GestureHandlerRootView>
@@ -252,7 +268,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         padding: 16,
-        paddingBottom: 12,
+        paddingBottom: 14,
         gap: 12,
     },
     postAvatar: {
@@ -260,8 +276,8 @@ const styles = StyleSheet.create({
         height: 44,
         borderRadius: 22,
         backgroundColor: '#f8f8f8',
-        borderWidth: 1.5,
-        borderColor: 'rgba(230, 57, 70, 0.2)',
+        borderWidth: 1,
+        borderColor: '#eee',
     },
     postAvatarPlaceholder: {
         backgroundColor: AppColors.navy,
@@ -278,8 +294,9 @@ const styles = StyleSheet.create({
     },
     postUserName: {
         fontFamily: AppFonts.bold,
-        fontSize: 16,
+        fontSize: 15,
         color: AppColors.navy,
+        letterSpacing: -0.3,
     },
     postMeta: {
         flexDirection: 'row',
@@ -288,32 +305,35 @@ const styles = StyleSheet.create({
         marginTop: 1,
     },
     countryChip: {
-        backgroundColor: 'rgba(230, 57, 70, 0.08)',
+        backgroundColor: '#F8FAFC',
         paddingHorizontal: 8,
         paddingVertical: 2,
         borderRadius: 6,
+        borderWidth: 1,
+        borderColor: '#E2E8F0',
     },
     countryChipText: {
-        fontFamily: AppFonts.semiBold,
-        fontSize: 10,
+        fontFamily: AppFonts.bold,
+        fontSize: 9,
         color: AppColors.primary,
-        textTransform: 'uppercase',
-        letterSpacing: 0.5,
+        letterSpacing: 1,
     },
     postTime: {
-        fontFamily: AppFonts.regular,
-        fontSize: 12,
-        color: '#999',
+        fontFamily: AppFonts.medium,
+        fontSize: 11,
+        color: '#94A3B8',
     },
     imageContainer: {
-        marginHorizontal: 12,
-        borderRadius: 18,
+        marginHorizontal: 16,
+        borderRadius: 20,
         overflow: 'hidden',
         backgroundColor: '#f5f5f5',
         height: 220,
         position: 'relative',
         justifyContent: 'center',
         alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#F1F5F9',
     },
     postImage: {
         width: '100%',
@@ -324,7 +344,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 12,
         right: 12,
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
         paddingHorizontal: 10,
         paddingVertical: 6,
         borderRadius: 12,
@@ -332,15 +352,12 @@ const styles = StyleSheet.create({
     },
     foodBadgeText: {
         fontFamily: AppFonts.bold,
-        fontSize: 12,
-        color: AppColors.primary,
+        fontSize: 11,
+        color: AppColors.navy,
+        letterSpacing: 0.5,
     },
     heartOverlay: {
         zIndex: 2,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 10,
     },
     bottomRow: {
         flexDirection: 'row',
@@ -355,7 +372,7 @@ const styles = StyleSheet.create({
     postActionsLeft: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 28,
+        gap: 20,
         marginBottom: 12,
     },
     actionButton: {
@@ -374,8 +391,8 @@ const styles = StyleSheet.create({
     captionText: {
         fontFamily: AppFonts.regular,
         fontSize: 13,
-        color: '#555',
-        lineHeight: 18,
+        color: '#475569',
+        lineHeight: 20,
     },
     verticalDivider: {
         width: 1.2,
@@ -394,15 +411,14 @@ const styles = StyleSheet.create({
         padding: 8,
         marginTop: 4,
         borderWidth: 1,
-        borderColor: 'rgba(0,0,0,0.03)',
+        borderColor: '#F1F5F9',
     },
     commentCountTitle: {
         fontFamily: AppFonts.bold,
         fontSize: 10,
-        color: '#aaa',
-        textTransform: 'uppercase',
+        color: '#94A3B8',
+        letterSpacing: 1.2,
         marginBottom: 4,
-        letterSpacing: 0.5,
     },
     commentPreviewText: {
         fontFamily: AppFonts.regular,
@@ -416,45 +432,70 @@ const styles = StyleSheet.create({
         color: AppColors.navy,
     },
     noCommentsText: {
-        fontFamily: AppFonts.regular,
+        fontFamily: AppFonts.medium,
         fontSize: 11,
-        color: '#ccc',
+        color: '#CBD5E1',
         fontStyle: 'italic',
     },
     addFriendButton: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 4,
-        backgroundColor: 'rgba(29, 53, 87, 0.08)',
-        paddingHorizontal: 10,
-        paddingVertical: 6,
-        borderRadius: 20,
+        gap: 6,
+        backgroundColor: '#F8FAFC',
+        paddingHorizontal: 12,
+        paddingVertical: 8,
+        borderRadius: 14,
+        borderWidth: 1.2,
+        borderColor: AppColors.navy,
     },
     addFriendText: {
-        fontFamily: AppFonts.semiBold,
-        fontSize: 12,
+        fontFamily: AppFonts.bold,
+        fontSize: 9,
         color: AppColors.navy,
+        letterSpacing: 1,
     },
     friendBadge: {
         width: 32,
         height: 32,
         borderRadius: 16,
-        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+        backgroundColor: '#F0FDF4',
         alignItems: 'center',
         justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: '#DCFCE7',
     },
     friendBadgePending: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 4,
-        backgroundColor: 'rgba(245, 158, 11, 0.1)',
-        paddingHorizontal: 8,
-        paddingVertical: 5,
-        borderRadius: 20,
+        gap: 6,
+        backgroundColor: '#FFFBEB',
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 14,
+        borderWidth: 1,
+        borderColor: '#FEF3C7',
     },
     friendBadgePendingText: {
-        fontFamily: AppFonts.semiBold,
-        fontSize: 11,
-        color: '#f59e0b',
+        fontFamily: AppFonts.bold,
+        fontSize: 9,
+        color: '#D97706',
+        letterSpacing: 0.8,
+    },
+    friendBadgeReply: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        backgroundColor: '#f7fbffff',
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 14,
+        borderWidth: 1,
+        borderColor: '#c7e8feff',
+    },
+    friendBadgeReplyText: {
+        fontFamily: AppFonts.bold,
+        fontSize: 9,
+        color: '#3b82f6',
+        letterSpacing: 0.8,
     },
 });

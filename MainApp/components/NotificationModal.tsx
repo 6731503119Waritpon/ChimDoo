@@ -46,11 +46,10 @@ export default function NotificationModal({ visible, onClose }: Props) {
 
     useEffect(() => {
         if (visible) {
-            Animated.spring(slideAnim, {
+            Animated.timing(slideAnim, {
                 toValue: 0,
+                duration: 300,
                 useNativeDriver: true,
-                bounciness: 5,
-                speed: 14,
             }).start();
         } else {
             Animated.timing(slideAnim, {

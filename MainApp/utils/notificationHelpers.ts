@@ -1,6 +1,6 @@
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, serverTimestamp, getDoc, doc } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
-import { NotificationType } from '@/types/notification';
+import { NotificationType, NotificationSettings } from '@/types/notification';
 import { Collections } from '@/constants/collections';
 
 interface CreateNotifOptions {
@@ -16,6 +16,16 @@ interface CreateNotifOptions {
 
 export async function createNotification(opts: CreateNotifOptions): Promise<void> {
     try {
+        const settingsRef = doc(db, Collections.notificationSettings, opts.targetUserId);
+        const settingsSnap = await getDoc(settingsRef);
+
+        if (settingsSnap.exists()) {
+            const settings = settingsSnap.data() as NotificationSettings;
+            if (settings[opts.type] === false) {
+                return;
+            }
+        }
+
         await addDoc(collection(db, Collections.notifications, opts.targetUserId, 'items'), {
             type: opts.type,
             title: opts.title,

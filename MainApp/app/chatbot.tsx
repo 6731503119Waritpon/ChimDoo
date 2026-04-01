@@ -2,16 +2,122 @@ import React, { useState, useRef, useEffect } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity, StyleSheet,
     KeyboardAvoidingView, Platform, FlatList, ActivityIndicator,
-    ScrollView
+    ScrollView, TouchableWithoutFeedback, Keyboard
 } from 'react-native';
-import { useRouter, Stack } from 'expo-router';
-import { ChevronLeft, Send, Sparkles } from 'lucide-react-native';
+import { useRouter, Stack, useFocusEffect } from 'expo-router';
+import { ChevronLeft, Send, ChefHat } from 'lucide-react-native';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
 import { initOrRestoreChat, sendMessageToGroq, globalUIMessages, Message } from '@/services/groq';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { db } from '@/firebaseConfig';
 import { doc, getDoc } from 'firebase/firestore';
+import Animated, {
+    FadeInLeft,
+    FadeInRight,
+    withRepeat,
+    withSequence,
+    withTiming,
+    useSharedValue,
+    useAnimatedStyle,
+    Layout
+} from 'react-native-reanimated';
+
+const BouncingDots = () => {
+    const dot1 = useSharedValue(0);
+    const dot2 = useSharedValue(0);
+    const dot3 = useSharedValue(0);
+
+    useEffect(() => {
+        const animate = (v: { value: number }, _delay: number) => {
+            v.value = withRepeat(
+                withSequence(
+                    withTiming(-6, { duration: 400 }),
+                    withTiming(0, { duration: 400 })
+                ),
+                -1,
+                true
+            );
+        };
+        animate(dot1, 0);
+        setTimeout(() => animate(dot2, 0), 200);
+        setTimeout(() => animate(dot3, 0), 400);
+    }, []);
+
+    const s1 = useAnimatedStyle(() => ({ transform: [{ translateY: dot1.value }] }));
+    const s2 = useAnimatedStyle(() => ({ transform: [{ translateY: dot2.value }] }));
+    const s3 = useAnimatedStyle(() => ({ transform: [{ translateY: dot3.value }] }));
+
+    return (
+        <View style={styles.dotsWrapper}>
+            <Animated.View style={[styles.dot, s1]} />
+            <Animated.View style={[styles.dot, s2]} />
+            <Animated.View style={[styles.dot, s3]} />
+        </View>
+    );
+};
+
+const isLeadingVowel = (char: string) => {
+    if (!char) return false;
+    const code = char.charCodeAt(0);
+    return code >= 0x0E40 && code <= 0x0E44;
+};
+
+const isCombiningMark = (char: string) => {
+    if (!char) return false;
+    const code = char.charCodeAt(0);
+    return (code === 0x0E31) || (code >= 0x0E34 && code <= 0x0E3A) || (code >= 0x0E47 && code <= 0x0E4E);
+};
+
+const segmentThaiText = (text: string) => {
+    const segments: string[] = [];
+    let i = 0;
+    while (i < text.length) {
+        let cluster = text[i];
+        i++;
+        if (isLeadingVowel(cluster) && i < text.length) {
+            cluster += text[i];
+            i++;
+        }
+        while (i < text.length && isCombiningMark(text[i])) {
+            cluster += text[i];
+            i++;
+        }
+        segments.push(cluster);
+    }
+    return segments;
+};
+
+const TypewriterText = ({ text, isLatest }: { text: string; isLatest: boolean }) => {
+    const [displayedText, setDisplayedText] = useState(isLatest ? '' : text);
+
+    useEffect(() => {
+        if (!isLatest || displayedText === text) {
+            if (!isLatest && displayedText !== text) {
+                setDisplayedText(text);
+            }
+            return;
+        }
+
+        const segments = segmentThaiText(text);
+        let index = segmentThaiText(displayedText).length;
+        let currentString = displayedText;
+
+        const interval = setInterval(() => {
+            if (index < segments.length) {
+                currentString += segments[index];
+                setDisplayedText(currentString);
+                index++;
+            } else {
+                clearInterval(interval);
+            }
+        }, 30);
+
+        return () => clearInterval(interval);
+    }, [text, isLatest]);
+
+    return <Text style={styles.messageTextAI}>{displayedText}</Text>;
+};
 
 const DEFAULT_SUGGESTIONS = [
     "What's good to eat today? \nวันนี้กินอะไรดี",
@@ -29,9 +135,17 @@ export default function ChatbotScreen() {
     const [inputText, setInputText] = useState('');
     const [loading, setLoading] = useState(false);
     const [suggestedPrompts, setSuggestedPrompts] = useState<string[]>(DEFAULT_SUGGESTIONS);
+    const [lastNewMessageId, setLastNewMessageId] = useState<string | null>(null);
 
     const flatListRef = useRef<FlatList>(null);
 
+    useFocusEffect(
+        React.useCallback(() => {
+            return () => {
+                setLastNewMessageId(null);
+            };
+        }, [])
+    );
     useEffect(() => {
         const initChat = async () => {
             try {
@@ -87,6 +201,7 @@ export default function ChatbotScreen() {
 
             const aiMsg: Message = { id: (Date.now() + 1).toString(), text: responseText, isUser: false };
             globalUIMessages.push(aiMsg);
+            setLastNewMessageId(aiMsg.id);
             setMessages([...globalUIMessages]);
         } catch (error: any) {
             console.error("Groq Error:", error);
@@ -107,21 +222,31 @@ export default function ChatbotScreen() {
         sendMessage(prompt);
     };
 
-    const renderMessage = ({ item }: { item: Message }) => {
+    const renderMessage = ({ item, index }: { item: Message, index: number }) => {
         const isUser = item.isUser;
+        const isNew = item.id === lastNewMessageId;
+        const isLatestAI = !isUser && isNew;
+
         return (
-            <View style={[styles.messageWrapper, isUser ? styles.messageWrapperUser : styles.messageWrapperAI]}>
+            <Animated.View
+                entering={isNew ? (isUser ? FadeInRight.springify().damping(18) : FadeInLeft.springify().damping(18)) : undefined}
+                style={[styles.messageWrapper, isUser ? styles.messageWrapperUser : styles.messageWrapperAI]}
+            >
                 {!isUser && (
                     <View style={styles.aiAvatar}>
-                        <Sparkles size={14} color="#fff" />
+                        <ChefHat size={14} color="#fff" />
                     </View>
                 )}
                 <View style={[styles.messageBubble, isUser ? styles.messageUser : styles.messageAI]}>
-                    <Text style={[styles.messageText, isUser ? styles.messageTextUser : styles.messageTextAI]}>
-                        {item.text}
-                    </Text>
+                    {isUser ? (
+                        <Text style={[styles.messageText, styles.messageTextUser]}>
+                            {item.text}
+                        </Text>
+                    ) : (
+                        <TypewriterText text={item.text} isLatest={isLatestAI} />
+                    )}
                 </View>
-            </View>
+            </Animated.View>
         );
     };
 
@@ -139,7 +264,7 @@ export default function ChatbotScreen() {
                         <ChevronLeft size={28} color={AppColors.navy} />
                     </TouchableOpacity>
                     <View style={styles.headerTitleContainer}>
-                        <Sparkles size={20} color={AppColors.primary} />
+                        <ChefHat size={22} color={AppColors.primary} />
                         <Text style={styles.headerTitle}>ChimDoo Chef</Text>
                     </View>
                     <View style={{ width: 40 }} />
@@ -152,20 +277,26 @@ export default function ChatbotScreen() {
                     </View>
                 ) : (
                     <>
-                        <FlatList
-                            ref={flatListRef}
-                            data={messages}
-                            keyExtractor={item => item.id}
-                            renderItem={renderMessage}
-                            contentContainerStyle={styles.chatContainer}
-                            onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
-                            onLayout={() => flatListRef.current?.scrollToEnd({ animated: false })}
-                        />
+                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                            <FlatList
+                                ref={flatListRef}
+                                data={messages}
+                                keyExtractor={item => item.id}
+                                renderItem={renderMessage}
+                                contentContainerStyle={styles.chatContainer}
+                                onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+                                onLayout={() => flatListRef.current?.scrollToEnd({ animated: false })}
+                                keyboardDismissMode="on-drag"
+                            />
+                        </TouchableWithoutFeedback>
 
                         {loading && (
-                            <View style={styles.typingIndicator}>
-                                <ActivityIndicator size="small" color={AppColors.primary} />
-                                <Text style={styles.typingText}>Chef is thinking...</Text>
+                            <View style={styles.typingIndicatorWrapper}>
+                                <View style={styles.aiAvatarSmall}>
+                                    <ChefHat size={10} color="#fff" />
+                                </View>
+                                <BouncingDots />
+                                <Text style={styles.typingText}>Chef is cooking your answer...</Text>
                             </View>
                         )}
 
@@ -241,7 +372,12 @@ const styles = StyleSheet.create({
     headerTitle: { fontFamily: AppFonts.bold, fontSize: 18, color: AppColors.navy },
 
     loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    loadingText: { fontFamily: AppFonts.regular, marginTop: 16, color: '#888', fontSize: 14 },
+    loadingText: {
+        fontFamily: AppFonts.regular,
+        marginTop: 16,
+        color: '#64748B',
+        fontSize: 15
+    },
 
     chatContainer: { padding: 16, paddingBottom: 24 },
 
@@ -285,10 +421,33 @@ const styles = StyleSheet.create({
         lineHeight: 22
     },
     messageTextUser: { color: '#fff' },
-    messageTextAI: { color: AppColors.navy },
+    messageTextAI: {
+        fontFamily: AppFonts.regular,
+        fontSize: 15,
+        lineHeight: 22,
+        color: AppColors.navy
+    },
 
-    typingIndicator: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 24, paddingBottom: 16 },
-    typingText: { fontFamily: AppFonts.regular, fontSize: 13, color: '#888', fontStyle: 'italic' },
+    typingIndicatorWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        paddingHorizontal: 24,
+        paddingBottom: 16
+    },
+    aiAvatarSmall: {
+        width: 20, height: 20, borderRadius: 10,
+        backgroundColor: AppColors.navy,
+        justifyContent: 'center', alignItems: 'center'
+    },
+    typingText: {
+        fontFamily: AppFonts.medium,
+        fontSize: 13,
+        color: '#64748B',
+        marginLeft: 4
+    },
+    dotsWrapper: { flexDirection: 'row', gap: 4, alignItems: 'center' },
+    dot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: AppColors.primary },
 
     suggestionsWrapper: { paddingVertical: 12 },
     suggestionsScrollContent: { paddingHorizontal: 16, gap: 10 },
@@ -298,17 +457,13 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderRadius: 20,
         borderWidth: 1.5,
-        borderColor: 'rgba(230, 57, 70, 0.15)',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 5,
-        elevation: 2,
+        borderColor: '#F1F1F1',
     },
     suggestionText: {
-        fontFamily: AppFonts.semiBold,
-        fontSize: 14,
+        fontFamily: AppFonts.bold,
+        fontSize: 13,
         color: AppColors.primary,
+        letterSpacing: 0.3,
     },
 
     inputContainer: {
@@ -321,12 +476,14 @@ const styles = StyleSheet.create({
     inputWrapper: {
         flexDirection: 'row',
         alignItems: 'flex-end',
-        backgroundColor: '#f1f3f5',
+        backgroundColor: '#f8f9fa',
         borderRadius: 24,
         paddingHorizontal: 16,
-        paddingVertical: 8,
+        paddingVertical: 6,
         minHeight: 50,
         maxHeight: 120,
+        borderWidth: 1,
+        borderColor: '#eee',
     },
     input: {
         fontFamily: AppFonts.regular,
@@ -338,10 +495,10 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     sendBtn: {
-        width: 36, height: 36, borderRadius: 18,
+        width: 38, height: 38, borderRadius: 19,
         backgroundColor: AppColors.primary,
         justifyContent: 'center', alignItems: 'center',
         marginBottom: 4,
     },
-    sendBtnDisabled: { backgroundColor: '#ccc' },
+    sendBtnDisabled: { backgroundColor: '#eee' },
 });

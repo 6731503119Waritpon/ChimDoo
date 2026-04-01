@@ -124,15 +124,14 @@ const MyFriends = () => {
                     style={styles.backButton}
                     onPress={() => router.back()}
                 >
-                    <ChevronLeft size={28} color="#fff" />
+                    <ChevronLeft size={26} color="#fff" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>My Friends</Text>
                 <TouchableOpacity
                     style={styles.addFriendHeaderButton}
                     onPress={() => setShowAddModal(true)}
-                    activeOpacity={0.7}
                 >
-                    <UserPlus size={22} color="#fff" />
+                    <UserPlus size={22} color={AppColors.navy} />
                 </TouchableOpacity>
             </View>
 
@@ -140,11 +139,11 @@ const MyFriends = () => {
                 <TouchableOpacity
                     style={[styles.tab, activeTab === 'friends' && styles.tabActive]}
                     onPress={() => setActiveTab('friends')}
-                    activeOpacity={0.7}
+                    activeOpacity={0.8}
                 >
                     <Users
-                        size={16}
-                        color={activeTab === 'friends' ? '#fff' : AppColors.navy}
+                        size={14}
+                        color={activeTab === 'friends' ? '#FFFFFF' : '#999'}
                     />
                     <Text
                         style={[
@@ -152,17 +151,17 @@ const MyFriends = () => {
                             activeTab === 'friends' && styles.tabTextActive,
                         ]}
                     >
-                        Friends ({friendsList.length})
+                        FRIENDS ({friendsList.length})
                     </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                     style={[styles.tab, activeTab === 'requests' && styles.tabActive]}
                     onPress={() => setActiveTab('requests')}
-                    activeOpacity={0.7}
+                    activeOpacity={0.8}
                 >
                     <Inbox
-                        size={16}
-                        color={activeTab === 'requests' ? '#fff' : AppColors.navy}
+                        size={14}
+                        color={activeTab === 'requests' ? '#FFFFFF' : '#999'}
                     />
                     <Text
                         style={[
@@ -170,7 +169,7 @@ const MyFriends = () => {
                             activeTab === 'requests' && styles.tabTextActive,
                         ]}
                     >
-                        Requests ({incomingRequests.length})
+                        REQUESTS ({incomingRequests.length})
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -228,50 +227,43 @@ export default MyFriends;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: AppColors.backgroundLight,
+        backgroundColor: '#F8F9FA',
     },
     header: {
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingTop: Platform.OS === 'ios' ? 60 : 48,
-        paddingHorizontal: 20,
+        paddingHorizontal: 16,
         paddingBottom: 20,
-    },
-    headerTitle: {
-        fontFamily: AppFonts.bold,
-        fontSize: 20,
-        color: AppColors.navy,
     },
     backButton: {
         width: 40,
         height: 40,
-        borderRadius: 20,
+        borderRadius: 22,
         backgroundColor: AppColors.navy,
         alignItems: 'center',
         justifyContent: 'center',
     },
+    headerTitle: {
+        fontFamily: AppFonts.bold,
+        fontSize: 22,
+        color: AppColors.navy,
+    },
     addFriendHeaderButton: {
         width: 40,
         height: 40,
-        borderRadius: 20,
-        backgroundColor: AppColors.primary,
         alignItems: 'center',
         justifyContent: 'center',
     },
-
     tabsContainer: {
         flexDirection: 'row',
         marginHorizontal: 20,
-        backgroundColor: '#fff',
-        borderRadius: 14,
-        padding: 4,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 8,
-        elevation: 3,
-        marginBottom: 16,
+        marginTop: 20,
+        backgroundColor: '#F3F4F6',
+        borderRadius: 16,
+        padding: 5,
+        marginBottom: 20,
     },
     tab: {
         flex: 1,
@@ -280,30 +272,29 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         paddingVertical: 12,
         borderRadius: 12,
-        gap: 6,
+        gap: 8,
     },
     tabActive: {
         backgroundColor: AppColors.navy,
     },
     tabText: {
-        fontFamily: AppFonts.semiBold,
-        fontSize: 14,
-        color: AppColors.navy,
+        fontFamily: AppFonts.bold,
+        fontSize: 11,
+        color: '#999',
+        letterSpacing: 1.2,
     },
     tabTextActive: {
-        color: '#fff',
+        color: '#FFFFFF',
     },
-
     centerContent: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
         padding: 24,
     },
-
     listContent: {
-        paddingHorizontal: 16,
+        paddingHorizontal: 20,
         paddingBottom: 100,
-        gap: 10,
+        gap: 12,
     },
 });

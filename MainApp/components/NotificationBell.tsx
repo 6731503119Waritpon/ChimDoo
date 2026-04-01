@@ -45,8 +45,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         paddingHorizontal: 3,
-        borderWidth: 1.5,
-        borderColor: '#fff',
     },
     badgeText: {
         fontFamily: AppFonts.bold,

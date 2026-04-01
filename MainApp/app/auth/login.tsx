@@ -9,6 +9,7 @@ import {
     Platform,
     ActivityIndicator,
 } from 'react-native';
+import KeyboardAwareView from '@/components/KeyboardAwareView';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '@/components/ToastProvider';
@@ -98,91 +99,89 @@ export default function LoginScreen() {
     const isGoogleDisabled = Platform.OS === 'web' ? (!request || isGoogleLoading) : isGoogleLoading;
 
     return (
-        <KeyboardAvoidingView
+        <KeyboardAwareView
             style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            contentContainerStyle={styles.content}
         >
-            <View style={styles.content}>
-                <TouchableOpacity
-                    style={styles.backButton}
-                    onPress={() => router.back()}
-                >
-                    <ArrowLeft size={22} color={AppColors.navy} />
-                </TouchableOpacity>
-                <View style={styles.header}>
-                    <Text style={styles.title}>Welcome Back</Text>
-                    <Text style={styles.subtitle}>Sign in to continue</Text>
-                </View>
-
-                <View style={styles.form}>
-                    <View style={styles.inputContainer}>
-                        <Text style={styles.label}>Email</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Enter your email"
-                            placeholderTextColor="#666"
-                            value={email}
-                            onChangeText={setEmail}
-                            keyboardType="email-address"
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                        />
-                    </View>
-
-                    <View style={styles.inputContainer}>
-                        <SecureInput
-                            label="Password"
-                            value={password}
-                            onChangeText={setPassword}
-                            placeholder="Enter your password"
-                        />
-                    </View>
-
-                    <TouchableOpacity
-                        style={styles.forgotPassword}
-                        onPress={() => router.push('/auth/forgot-password')}
-                    >
-                        <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={[styles.button, loading && styles.buttonDisabled]}
-                        onPress={handleLogin}
-                        disabled={loading}
-                    >
-                        {loading ? (
-                            <ActivityIndicator color="#fff" />
-                        ) : (
-                            <Text style={styles.buttonText}>Sign In</Text>
-                        )}
-                    </TouchableOpacity>
-                    <View style={styles.dividerContainer}>
-                        <View style={styles.dividerLine} />
-                        <Text style={styles.dividerText}>OR</Text>
-                        <View style={styles.dividerLine} />
-                    </View>
-
-                    <TouchableOpacity
-                        style={styles.googleButton}
-                        disabled={isGoogleDisabled}
-                        onPress={handleGooglePress}
-                    >
-                        {isGoogleLoading ? (
-                            <ActivityIndicator color="#000" />
-                        ) : (
-                            <Text style={styles.googleButtonText}>Sign in with Google</Text>
-                        )}
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.footer}>
-                    <Text style={styles.footerText}>Don't have an account?</Text>
-                    <TouchableOpacity onPress={() => router.push('/auth/signup')}>
-                        <Text style={styles.signupLink}>Sign Up</Text>
-                    </TouchableOpacity>
-                </View>
+            <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => router.back()}
+            >
+                <ArrowLeft size={22} color={AppColors.navy} />
+            </TouchableOpacity>
+            <View style={styles.header}>
+                <Text style={styles.title}>Welcome Back</Text>
+                <Text style={styles.subtitle}>Sign in to continue</Text>
             </View>
-        </KeyboardAvoidingView>
+
+            <View style={styles.form}>
+                <View style={styles.inputContainer}>
+                    <Text style={styles.label}>Email</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Enter your email"
+                        placeholderTextColor="#666"
+                        value={email}
+                        onChangeText={setEmail}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        autoCorrect={false}
+                    />
+                </View>
+
+                <View style={styles.inputContainer}>
+                    <SecureInput
+                        label="Password"
+                        value={password}
+                        onChangeText={setPassword}
+                        placeholder="Enter your password"
+                    />
+                </View>
+
+                <TouchableOpacity
+                    style={styles.forgotPassword}
+                    onPress={() => router.push('/auth/forgot-password')}
+                >
+                    <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={[styles.button, loading && styles.buttonDisabled]}
+                    onPress={handleLogin}
+                    disabled={loading}
+                >
+                    {loading ? (
+                        <ActivityIndicator color="#fff" />
+                    ) : (
+                        <Text style={styles.buttonText}>Sign In</Text>
+                    )}
+                </TouchableOpacity>
+                <View style={styles.dividerContainer}>
+                    <View style={styles.dividerLine} />
+                    <Text style={styles.dividerText}>OR</Text>
+                    <View style={styles.dividerLine} />
+                </View>
+
+                <TouchableOpacity
+                    style={styles.googleButton}
+                    disabled={isGoogleDisabled}
+                    onPress={handleGooglePress}
+                >
+                    {isGoogleLoading ? (
+                        <ActivityIndicator color="#000" />
+                    ) : (
+                        <Text style={styles.googleButtonText}>Sign in with Google</Text>
+                    )}
+                </TouchableOpacity>
+            </View>
+
+            <View style={styles.footer}>
+                <Text style={styles.footerText}>Don't have an account?</Text>
+                <TouchableOpacity onPress={() => router.push('/auth/signup')}>
+                    <Text style={styles.signupLink}>Sign Up</Text>
+                </TouchableOpacity>
+            </View>
+        </KeyboardAwareView>
     );
 }
 

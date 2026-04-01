@@ -5,16 +5,23 @@ import {
     TouchableOpacity,
     StyleSheet,
     Image,
-    ActivityIndicator,
     ScrollView,
     Platform,
 } from 'react-native';
+import Animated, {
+    useSharedValue,
+    useAnimatedStyle,
+    withSpring,
+    FadeInDown
+} from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
+import { BlurView } from 'expo-blur';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth';
 import {
     UserPen,
-    ChevronRight,
     LogOut,
 } from 'lucide-react-native';
 import { ProfileMenuItem } from '@/types/menuProfile';
@@ -29,16 +36,90 @@ import { doc, getDoc } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
 import { Collections } from '@/constants/collections';
 import { AppFonts } from '@/constants/theme';
+import { AppColors } from '@/constants/colors';
+import ChefStatsBar from '@/components/ChefStatsBar';
+import { useChimDoo } from '@/hooks/useChimDoo';
+import { useCommunity } from '@/hooks/useCommunity';
+import { Heart, MessageCircleMore, Users, Star, ArrowRight, Clock } from 'lucide-react-native';
+
+const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
+
+interface GridCardProps {
+    label: string;
+    value: string;
+    icon: any;
+    color: string;
+    onPress: () => void;
+    delay?: number;
+}
+
+const DashboardGridCard: React.FC<GridCardProps> = ({
+    label,
+    value,
+    icon: Icon,
+    color,
+    onPress,
+    delay = 0
+}) => {
+    const scale = useSharedValue(1);
+
+    const animatedStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: scale.value }],
+    }));
+
+    const handlePressIn = () => {
+        scale.value = withSpring(0.96);
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    };
+
+    const handlePressOut = () => {
+        scale.value = withSpring(1);
+    };
+
+    return (
+        <Animated.View
+            entering={FadeInDown.delay(delay).duration(400)}
+            style={styles.gridCardWrapper}
+        >
+            <AnimatedTouchableOpacity
+                onPressIn={handlePressIn}
+                onPressOut={handlePressOut}
+                onPress={onPress}
+                activeOpacity={1}
+                style={[styles.gridCardInner, animatedStyle]}
+            >
+                <View style={styles.gridCard}>
+                    <View style={[styles.badgeDot, { backgroundColor: color }]} />
+
+                    <View style={styles.gridCardHeader}>
+                        <Icon size={24} color={color} />
+                    </View>
+
+                    <View style={styles.gridCardFooter}>
+                        <Text style={styles.gridCardLabel}>{label.toUpperCase()}</Text>
+                        <Text style={styles.gridCardValue}>{value}</Text>
+                    </View>
+                </View>
+            </AnimatedTouchableOpacity>
+        </Animated.View>
+    );
+};
 
 const Page = () => {
     const router = useRouter();
     const { user, loading, logOut } = useAuth();
     const toast = useToast();
+    const { chimDooList } = useChimDoo();
+    const { getUserReviews } = useCommunity();
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [loggingOut, setLoggingOut] = useState(false);
     const [showVersionModal, setShowVersionModal] = useState(false);
     const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
     const [displayName, setDisplayName] = useState(user?.displayName || '');
+
+    const totalDishes = chimDooList.length;
+    const totalCountries = new Set(chimDooList.map(item => item.category)).size;
+    const totalReviews = getUserReviews().length;
 
     useFocusEffect(
         useCallback(() => {
@@ -133,14 +214,58 @@ const Page = () => {
                 </View>
             </View>
 
-            {profileMenuConfig.map((section) =>
-                <ProfileMenuSection
-                    key={section.section}
-                    title={section.section}
-                    items={section.items}
-                    onPress={handleMenuPress}
-                />
-            )}
+            <View style={styles.statsWrapper}>
+                <ChefStatsBar totalDishes={totalDishes} totalCountries={totalCountries} />
+            </View>
+
+            <View style={styles.dashboardSection}>
+                <Text style={styles.sectionTitle}>My Kitchen</Text>
+                <View style={styles.gridContainer}>
+                    <DashboardGridCard
+                        label="Favorites"
+                        value="Review All"
+                        icon={Heart}
+                        color="#E63946"
+                        delay={100}
+                        onPress={() => router.push('/profile/mykitchen/favorites')}
+                    />
+                    <DashboardGridCard
+                        label="My Reviews"
+                        value={`${totalReviews} Posts`}
+                        icon={MessageCircleMore}
+                        color="#3b82f6"
+                        delay={200}
+                        onPress={() => router.push('/profile/mykitchen/my-reviews')}
+                    />
+                    <DashboardGridCard
+                        label="Friends"
+                        value="Explore"
+                        icon={Users}
+                        color="#22c55e"
+                        delay={300}
+                        onPress={() => router.push('/profile/mykitchen/my-friends')}
+                    />
+                    <DashboardGridCard
+                        label="History"
+                        value="Recently Viewed"
+                        icon={Clock}
+                        color="#8E9AAF" /* Muted Indigo/Slate */
+                        delay={400}
+                        onPress={() => router.push('/profile/mykitchen/history')}
+                    />
+                </View>
+            </View>
+
+            {profileMenuConfig
+                .filter(section => section.section !== 'My Kitchen')
+                .map((section) =>
+                    <ProfileMenuSection
+                        key={section.section}
+                        title={section.section}
+                        items={section.items}
+                        onPress={handleMenuPress}
+                    />
+                )}
 
             <TouchableOpacity
                 style={styles.logoutButton}
@@ -259,14 +384,18 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 6,
-        backgroundColor: '#dad8d8ff',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
+        backgroundColor: 'rgba(29, 53, 87, 0.05)', // Subtle Navy Tint
+        paddingHorizontal: 14,
+        paddingVertical: 7,
         borderRadius: 20,
+        borderWidth: 1,
+        borderColor: 'rgba(29, 53, 87, 0.08)',
     },
     editBadgeText: {
-        fontFamily: AppFonts.semiBold,
-        fontSize: 13,
+        fontFamily: AppFonts.bold,
+        fontSize: 12,
+        color: AppColors.navy,
+        letterSpacing: 0.3,
     },
 
     logoutButton: {
@@ -286,5 +415,68 @@ const styles = StyleSheet.create({
         fontFamily: AppFonts.bold,
         color: '#ef4444',
         fontSize: 16,
+    },
+    statsWrapper: {
+        marginTop: 10,
+    },
+    dashboardSection: {
+        marginTop: 2,
+        paddingHorizontal: 20,
+    },
+    sectionTitle: {
+        fontFamily: AppFonts.bold,
+        fontSize: 18,
+        color: AppColors.navy,
+        marginBottom: 12,
+        marginLeft: 4,
+    },
+    gridContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        gap: 12,
+    },
+    gridCardWrapper: {
+        width: '48.2%',
+        borderRadius: 20,
+    },
+    gridCardInner: {
+        flex: 1,
+    },
+    gridCard: {
+        backgroundColor: '#FFFFFF',
+        padding: 20,
+        borderRadius: 20,
+        borderWidth: 1.5,
+        borderColor: '#F1F1F1',
+        minHeight: 140,
+        justifyContent: 'space-between',
+        overflow: 'hidden',
+    },
+    gridCardHeader: {
+        alignItems: 'flex-start',
+    },
+    badgeDot: {
+        position: 'absolute',
+        top: 20,
+        right: 20,
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+    },
+    gridCardFooter: {
+        marginTop: 8,
+    },
+    gridCardLabel: {
+        fontFamily: AppFonts.bold,
+        fontSize: 11,
+        color: '#999',
+        letterSpacing: 1.2,
+        marginBottom: 4,
+    },
+    gridCardValue: {
+        fontFamily: AppFonts.bold,
+        fontSize: 18,
+        color: AppColors.navy,
     },
 });

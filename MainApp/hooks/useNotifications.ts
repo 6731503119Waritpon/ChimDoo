@@ -12,8 +12,6 @@ import { db } from '@/firebaseConfig';
 import { useAuth } from './useAuth';
 import { AppNotification } from '@/types/notification';
 import { Collections } from '@/constants/collections';
-
-// Re-export types so existing consumers still work
 export type { NotificationType, AppNotification } from '@/types/notification';
 
 export function useNotifications() {
@@ -75,5 +73,12 @@ export function useNotifications() {
 
     const unreadCount = notifications.filter((n) => !n.read).length;
 
-    return { notifications, unreadCount, loading, markAsRead, markAllRead, deleteNotification };
+    return { 
+        notifications, 
+        unreadCount, 
+        loading, 
+        markAsRead, 
+        markAllRead, 
+        deleteNotification 
+    };
 }

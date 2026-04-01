@@ -18,6 +18,7 @@ import { useToast } from '@/components/ToastProvider';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
 import { formatTimestamp } from '@/utils/formatTime';
+import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
 
 const ReviewCard = ({
     item,
@@ -79,6 +80,10 @@ const MyReviews = () => {
     const toast = useToast();
     const { getUserReviews, deleteReview, loading } = useCommunity();
     const [reviews, setReviews] = useState<CommunityPost[]>([]);
+    
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deletingReview, setDeletingReview] = useState<CommunityPost | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const refreshReviews = useCallback(() => {
         setReviews(getUserReviews());
@@ -91,26 +96,27 @@ const MyReviews = () => {
     );
 
     const handleDelete = (reviewId: string) => {
-        Alert.alert(
-            'Delete Review',
-            'Are you sure you want to delete this review?',
-            [
-                { text: 'Cancel', style: 'cancel' },
-                {
-                    text: 'Delete',
-                    style: 'destructive',
-                    onPress: async () => {
-                        try {
-                            await deleteReview(reviewId);
-                            setReviews((prev) => prev.filter((r) => r.id !== reviewId));
-                            toast.success('Deleted', 'Your review has been removed.');
-                        } catch (err) {
-                            toast.error('Error', 'Failed to delete review.');
-                        }
-                    },
-                },
-            ]
-        );
+        const review = reviews.find(r => r.id === reviewId);
+        if (review) {
+            setDeletingReview(review);
+            setShowDeleteModal(true);
+        }
+    };
+
+    const onConfirmDelete = async () => {
+        if (!deletingReview) return;
+        
+        setIsDeleting(true);
+        try {
+            await deleteReview(deletingReview.id);
+            setReviews((prev) => prev.filter((r) => r.id !== deletingReview.id));
+            toast.success('ลบรีวิวแล้ว', 'รีวิวของคุณถูกลบออกจากระบบแล้ว');
+            setShowDeleteModal(false);
+        } catch (err) {
+            toast.error('เกิดข้อผิดพลาด', 'ไม่สามารถลบรีวิวได้ในขณะนี้');
+        } finally {
+            setIsDeleting(false);
+        }
     };
 
     return (
@@ -121,7 +127,7 @@ const MyReviews = () => {
                     style={styles.backButton}
                     onPress={() => router.back()}
                 >
-                    <ChevronLeft size={28} color="#fff" />
+                    <ChevronLeft size={26} color="#fff" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>My Reviews</Text>
                 <View style={{ width: 44 }} />
@@ -159,6 +165,14 @@ const MyReviews = () => {
                     showsVerticalScrollIndicator={false}
                 />
             )}
+
+            <ConfirmDeleteModal
+                visible={showDeleteModal}
+                foodName={deletingReview?.foodName || ''}
+                onClose={() => setShowDeleteModal(false)}
+                onConfirm={onConfirmDelete}
+                loading={isDeleting}
+            />
         </View>
     );
 };
@@ -175,7 +189,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingTop: Platform.OS === 'ios' ? 60 : 48,
-        paddingHorizontal: 20,
+        paddingHorizontal: 16,
         paddingBottom: 20,
     },
     headerTitle: {
@@ -184,8 +198,8 @@ const styles = StyleSheet.create({
         color: AppColors.navy,
     },
     backButton: {
-        width: 44,
-        height: 44,
+        width: 40,
+        height: 40,
         borderRadius: 22,
         backgroundColor: AppColors.navy,
         alignItems: 'center',
@@ -246,19 +260,16 @@ const styles = StyleSheet.create({
     },
     card: {
         backgroundColor: '#fff',
-        borderRadius: 20,
+        borderRadius: 24,
         flexDirection: 'row',
-        padding: 12,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.05,
-        shadowRadius: 10,
-        elevation: 3,
+        padding: 14,
+        borderWidth: 1.5,
+        borderColor: '#F1F5F9',
     },
     cardImage: {
         width: 110,
         height: 110,
-        borderRadius: 16,
+        borderRadius: 18,
         backgroundColor: '#f8f9fa',
     },
     cardContent: {
@@ -282,9 +293,9 @@ const styles = StyleSheet.create({
         marginBottom: 4,
     },
     countryChip: {
-        backgroundColor: 'rgba(230, 57, 70, 0.06)',
+        backgroundColor: 'rgba(230, 57, 70, 0.05)',
         paddingHorizontal: 8,
-        paddingVertical: 2,
+        paddingVertical: 3,
         borderRadius: 8,
         alignSelf: 'flex-start',
     },
@@ -292,19 +303,23 @@ const styles = StyleSheet.create({
         fontFamily: AppFonts.semiBold,
         fontSize: 10,
         color: AppColors.primary,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
     },
     deleteButton: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
+        width: 36,
+        height: 36,
+        borderRadius: 18,
         backgroundColor: 'rgba(230, 57, 70, 0.05)',
         alignItems: 'center',
         justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: '#FEE2E2',
     },
     cardDescription: {
         fontFamily: AppFonts.regular,
         fontSize: 13,
-        color: '#666',
+        color: '#64748B',
         lineHeight: 18,
         marginVertical: 4,
     },
@@ -327,11 +342,11 @@ const styles = StyleSheet.create({
     metaText: {
         fontFamily: AppFonts.semiBold,
         fontSize: 12,
-        color: '#555',
+        color: '#475569',
     },
     cardTime: {
         fontFamily: AppFonts.regular,
         fontSize: 11,
-        color: '#999',
+        color: '#94A3B8',
     },
 });

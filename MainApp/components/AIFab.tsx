@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Sparkles } from 'lucide-react-native';
+import { ChefHat } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInUp, FadeOutDown } from 'react-native-reanimated';
 
@@ -25,7 +25,7 @@ export default function AIFab() {
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                 >
-                    <Sparkles size={24} color="#FFF" />
+                    <ChefHat size={26} color="#FFF" />
                 </LinearGradient>
             </TouchableOpacity>
         </Animated.View>
@@ -35,7 +35,7 @@ export default function AIFab() {
 const styles = StyleSheet.create({
     container: {
         position: 'absolute',
-        bottom: 120,  // Stays above the tab bar
+        bottom: 120,
         right: 20,
         zIndex: 999,
         elevation: 10,

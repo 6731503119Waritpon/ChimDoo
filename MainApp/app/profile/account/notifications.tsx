@@ -76,11 +76,14 @@ export default function NotificationsScreen() {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
-                <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-                    <ChevronLeft size={28} color="#fff" />
+                <TouchableOpacity
+                    style={styles.backButton}
+                    onPress={() => router.back()}
+                >
+                    <ChevronLeft size={26} color="#fff" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Notifications</Text>
-                <View style={{ width: 40 }} />
+                <View style={{ width: 44 }} />
             </View>
 
             <FlatList
@@ -136,9 +139,9 @@ export default function NotificationsScreen() {
                 animationType="fade"
                 onRequestClose={() => setShowSettingsModal(false)}
             >
-                <TouchableOpacity 
-                    style={styles.modalBackdrop} 
-                    activeOpacity={1} 
+                <TouchableOpacity
+                    style={styles.modalBackdrop}
+                    activeOpacity={1}
                     onPress={() => setShowSettingsModal(false)}
                 >
                     <View style={styles.modalContent} onStartShouldSetResponder={() => true}>
@@ -148,7 +151,7 @@ export default function NotificationsScreen() {
                                 <Text style={styles.modalCloseText}>Done</Text>
                             </TouchableOpacity>
                         </View>
-                        
+
                         {(Object.keys(TYPE_META) as NotificationType[]).map((type) => {
                             const meta = TYPE_META[type];
                             const Icon = meta.icon;
@@ -181,19 +184,21 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingTop: Platform.OS === 'ios' ? 60 : 48,
-        paddingHorizontal: 20,
+        paddingHorizontal: 16,
         paddingBottom: 20,
-        backgroundColor: AppColors.navy,
     },
     backButton: {
-        width: 40, height: 40, borderRadius: 20,
-        backgroundColor: 'rgba(255,255,255,0.15)',
-        alignItems: 'center', justifyContent: 'center',
+        width: 40,
+        height: 40,
+        borderRadius: 22,
+        backgroundColor: AppColors.navy,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     headerTitle: {
         fontFamily: AppFonts.bold,
-        fontSize: 20,
-        color: '#fff',
+        fontSize: 22,
+        color: AppColors.navy,
     },
     listContent: { paddingBottom: 40 },
     settingsSection: { paddingHorizontal: 20, paddingTop: 20 },

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity, StyleSheet,
-    ActivityIndicator, Image, KeyboardAvoidingView, Platform,
-    ScrollView, Alert, ActionSheetIOS,
+    ActivityIndicator, Image, Platform,
+    Alert, ActionSheetIOS,
 } from 'react-native';
+import KeyboardAwareView from '@/components/KeyboardAwareView';
 import { useRouter } from 'expo-router';
-import { ChevronLeft, Camera } from 'lucide-react-native';
+import { ChevronLeft, Camera, User } from 'lucide-react-native';
 import { updateProfile } from 'firebase/auth';
 import { doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc } from 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
@@ -159,102 +160,92 @@ export default function EditProfileScreen() {
     const avatarLetter = (user?.displayName || user?.email || '?').charAt(0).toUpperCase();
 
     return (
-        <KeyboardAvoidingView
+        <KeyboardAwareView
             style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            contentContainerStyle={styles.scrollContent}
         >
-            <ScrollView
-                contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={false}
-                keyboardShouldPersistTaps="handled"
-            >
-                <View style={styles.header}>
-                    <TouchableOpacity
-                        style={styles.backButton}
-                        onPress={() => router.back()}
-                    >
-                        <ChevronLeft size={28} color="#fff" />
-                    </TouchableOpacity>
-                    <Text style={styles.headerTitle}>Edit Profile</Text>
-                    <View style={{ width: 28 }} />
-                </View>
+            <View style={styles.header}>
+                <TouchableOpacity
+                    style={styles.backButton}
+                    onPress={() => router.back()}
+                >
+                    <ChevronLeft size={26} color="#fff" />
+                </TouchableOpacity>
+                <Text style={styles.headerTitle}>Edit Profile</Text>
+                <View style={{ width: 44 }} />
+            </View>
 
-                <View style={styles.avatarSection}>
-                    <TouchableOpacity
-                        style={styles.avatarWrapper}
-                        onPress={showImageOptions}
-                        activeOpacity={0.8}
-                    >
-                        <View style={styles.avatarGradientRing}>
-                            {photoPreview ? (
-                                <Image
-                                    source={{ uri: photoPreview }}
-                                    style={styles.avatar}
-                                />
-                            ) : (
-                                <View style={styles.avatarPlaceholder}>
-                                    <Text style={styles.avatarInitial}>
-                                        {avatarLetter}
-                                    </Text>
-                                </View>
-                            )}
-                        </View>
-                        <View style={styles.cameraButton}>
-                            <Camera size={16} color="#fff" />
-                        </View>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={showImageOptions}>
-                        <Text style={styles.changePhotoText}>Change Photo</Text>
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.form}>
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Display Name</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Enter your name"
-                            placeholderTextColor="#ccc"
-                            value={displayName}
-                            onChangeText={setDisplayName}
-                            autoCapitalize="words"
-                        />
+            <View style={styles.avatarSection}>
+                <TouchableOpacity
+                    style={styles.avatarWrapper}
+                    onPress={showImageOptions}
+                    activeOpacity={0.9}
+                >
+                    <View style={styles.avatarContainer}>
+                        {photoPreview ? (
+                            <Image
+                                source={{ uri: photoPreview }}
+                                style={styles.avatar}
+                            />
+                        ) : (
+                            <View style={styles.avatarPlaceholder}>
+                                <User size={40} color="#DDD" />
+                            </View>
+                        )}
                     </View>
+                    <View style={styles.cameraSeal}>
+                        <Camera size={14} color="#fff" />
+                    </View>
+                </TouchableOpacity>
+                <Text style={styles.changePhotoText}>Tap to update photo</Text>
+            </View>
 
-                    <View style={styles.inputGroup}>
-                        <Text style={styles.label}>Email Address</Text>
-                        <View style={styles.readOnlyInput}>
-                            <Text style={styles.readOnlyText}>
-                                {user?.email || 'No email'}
-                            </Text>
-                        </View>
-                        <Text style={styles.helperText}>
-                            Registered email cannot be changed
+            <View style={styles.form}>
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Display Name</Text>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Enter your name"
+                        placeholderTextColor="#ccc"
+                        value={displayName}
+                        onChangeText={setDisplayName}
+                        autoCapitalize="words"
+                    />
+                </View>
+
+                <View style={styles.inputGroup}>
+                    <Text style={styles.label}>Email Address</Text>
+                    <View style={styles.readOnlyInput}>
+                        <Text style={styles.readOnlyText}>
+                            {user?.email || 'No email'}
                         </Text>
                     </View>
+                    <Text style={styles.helperText}>
+                        Registered email cannot be changed
+                    </Text>
                 </View>
+            </View>
 
-                <TouchableOpacity
-                    style={[styles.saveButton, saving && styles.saveButtonDisabled]}
-                    onPress={handleSave}
-                    disabled={saving}
-                    activeOpacity={0.8}
-                >
-                    {saving ? (
-                        <ActivityIndicator color="#fff" />
-                    ) : (
-                        <Text style={styles.saveButtonText}>Save Changes</Text>
-                    )}
-                </TouchableOpacity>
-            </ScrollView>
-        </KeyboardAvoidingView>
+            <TouchableOpacity
+                style={[styles.saveButton, saving && styles.saveButtonDisabled]}
+                onPress={handleSave}
+                disabled={saving}
+                activeOpacity={0.8}
+            >
+                {saving ? (
+                    <ActivityIndicator color="#fff" />
+                ) : (
+                    <Text style={styles.saveButtonText}>Save Changes</Text>
+                )}
+            </TouchableOpacity>
+        </KeyboardAwareView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: AppColors.backgroundLight,
+        backgroundColor: '#F8F9FA',
     },
     scrollContent: {
         flexGrow: 1,
@@ -265,131 +256,126 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingTop: Platform.OS === 'ios' ? 60 : 48,
-        paddingHorizontal: 20,
+        paddingHorizontal: 16,
         paddingBottom: 20,
     },
     backButton: {
         width: 40,
         height: 40,
-        borderRadius: 20,
+        borderRadius: 22,
         backgroundColor: AppColors.navy,
         alignItems: 'center',
         justifyContent: 'center',
     },
     headerTitle: {
         fontFamily: AppFonts.bold,
-        fontSize: 20,
+        fontSize: 22,
         color: AppColors.navy,
     },
     avatarSection: {
         alignItems: 'center',
-        marginTop: 10,
-        marginBottom: 36,
+        paddingVertical: 40,
+        backgroundColor: '#FFFFFF',
+        borderBottomWidth: 1,
+        borderBottomColor: '#F0F0F0',
+        marginBottom: 24,
     },
     avatarWrapper: {
-        position: 'relative',
+        width: 100,
+        height: 100,
     },
-    avatarGradientRing: {
-        width: 110,
-        height: 110,
-        borderRadius: 55,
-        borderWidth: 3,
-        borderColor: AppColors.navy,
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 3,
+    avatarContainer: {
+        width: 100,
+        height: 100,
+        borderRadius: 50,
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1.5,
+        borderColor: '#F1F5F9',
+        padding: 4,
+        overflow: 'hidden',
     },
     avatar: {
-        width: 98,
-        height: 98,
-        borderRadius: 49,
+        width: '100%',
+        height: '100%',
+        borderRadius: 47,
     },
     avatarPlaceholder: {
-        width: 98,
-        height: 98,
-        borderRadius: 49,
-        backgroundColor: 'rgba(29, 53, 87, 0.05)',
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
     },
-    avatarInitial: {
-        fontFamily: AppFonts.bold,
-        fontSize: 40,
-        color: AppColors.navy,
-    },
-    cameraButton: {
+    cameraSeal: {
         position: 'absolute',
-        bottom: 2,
-        right: 2,
-        width: 34,
-        height: 34,
-        borderRadius: 17,
-        backgroundColor: AppColors.primary,
+        bottom: 0,
+        right: 0,
+        width: 32,
+        height: 32,
+        borderRadius: 16,
+        backgroundColor: AppColors.navy,
         alignItems: 'center',
         justifyContent: 'center',
-        borderWidth: 3,
-        borderColor: '#fff',
+        borderWidth: 2.5,
+        borderColor: '#FFFFFF',
     },
     changePhotoText: {
-        fontFamily: AppFonts.semiBold,
-        marginTop: 12,
-        fontSize: 14,
-        color: AppColors.primary,
+        fontFamily: AppFonts.medium,
+        marginTop: 16,
+        fontSize: 13,
+        color: '#64748B',
+        letterSpacing: 0.5,
     },
     form: {
         paddingHorizontal: 24,
-        gap: 24,
+        gap: 32,
     },
     inputGroup: {
-        gap: 8,
+        gap: 10,
     },
     label: {
         fontFamily: AppFonts.bold,
-        fontSize: 14,
-        color: '#555',
+        fontSize: 10.5,
+        color: '#64748B',
         textTransform: 'uppercase',
-        letterSpacing: 0.8,
+        letterSpacing: 1.5,
+        marginLeft: 4,
     },
     input: {
-        fontFamily: AppFonts.regular,
-        backgroundColor: '#fff',
-        borderRadius: 14,
-        padding: 16,
+        fontFamily: AppFonts.bold,
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        borderRadius: 16,
+        padding: 18,
         fontSize: 16,
-        borderWidth: 1,
-        borderColor: 'rgba(29, 53, 87, 0.12)',
+        borderWidth: 1.5,
+        borderColor: '#F1F5F9',
         color: AppColors.navy,
     },
     readOnlyInput: {
-        backgroundColor: 'rgba(29, 53, 87, 0.05)',
-        borderRadius: 14,
-        padding: 16,
-        borderWidth: 1,
-        borderColor: 'rgba(29, 53, 87, 0.1)',
+        backgroundColor: '#F8FAFC',
+        borderRadius: 16,
+        padding: 18,
+        borderWidth: 1.5,
+        borderColor: '#F1F5F9',
     },
     readOnlyText: {
-        fontFamily: AppFonts.regular,
+        fontFamily: AppFonts.bold,
         fontSize: 16,
-        color: '#777',
+        color: '#94A3B8',
     },
     helperText: {
-        fontFamily: AppFonts.regular,
+        fontFamily: AppFonts.medium,
         fontSize: 12,
-        color: '#888',
-        marginTop: 2,
+        color: '#94A3B8',
+        marginTop: 4,
+        marginLeft: 4,
     },
     saveButton: {
         marginHorizontal: 24,
-        marginTop: 40,
-        backgroundColor: AppColors.primary,
-        borderRadius: 14,
-        padding: 18,
+        marginTop: 48,
+        backgroundColor: AppColors.navy,
+        borderRadius: 20,
+        height: 60,
         alignItems: 'center',
-        shadowColor: AppColors.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 4,
+        justifyContent: 'center',
     },
     saveButtonDisabled: {
         opacity: 0.6,
@@ -398,5 +384,6 @@ const styles = StyleSheet.create({
         fontFamily: AppFonts.bold,
         color: '#fff',
         fontSize: 17,
+        letterSpacing: 0.5,
     },
 });

@@ -60,7 +60,7 @@ export default function AboutScreen() {
         <View style={styles.center}>
           <Text style={styles.errorText}>Failed to load content</Text>
         </View>
-      ) : ( 
+      ) : (
         <ScrollView
           showsVerticalScrollIndicator={false}
           contentContainerStyle={styles.scrollContent}
@@ -92,7 +92,7 @@ export default function AboutScreen() {
           )}
           {data?.credits ? (
             <View style={styles.creditsCard}>
-              <Text style={styles.creditsTitle}>Made with</Text>
+              <Text style={styles.creditsTitle}>The Origin</Text>
               <Text style={styles.creditsText}>{data.credits}</Text>
               <View style={styles.divider} />
               <Text style={styles.creditsFooter}>© 2026 ChimDoo · All rights reserved</Text>

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
-import { Check, CircleCheckBig, Drumstick } from 'lucide-react-native';
+import { Check, CircleCheckBig, Drumstick, ChefHat } from 'lucide-react-native';
 
 interface NormalFoodItemProps {
     item: any;
@@ -22,7 +22,8 @@ export default function NormalFoodItem({ item, onPress, isTasted }: NormalFoodIt
             </View>
             {isTasted && (
                 <View style={styles.tastedBadge}>
-                    <Text style={styles.tastedBadgeText}>Chim <CircleCheckBig size={12} color="#fff" /></Text>
+                    <ChefHat size={10} color={AppColors.success} />
+                    <Text style={styles.tastedBadgeText}>CHIM</Text>
                 </View>
             )}
         </TouchableOpacity>
@@ -45,14 +46,20 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 10,
         right: 12,
-        backgroundColor: AppColors.success,
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
         paddingHorizontal: 8,
         paddingVertical: 3,
         borderRadius: 8,
+        borderWidth: 1.2,
+        borderColor: AppColors.success,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 4,
     },
     tastedBadgeText: {
-        color: '#fff',
-        fontSize: 10,
+        color: AppColors.success,
+        fontSize: 9,
         fontFamily: AppFonts.bold,
+        letterSpacing: 0.8,
     },
 });

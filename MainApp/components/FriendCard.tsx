@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { UserX } from 'lucide-react-native';
+import { UserX, User } from 'lucide-react-native';
 import { FriendInfo } from '@/types/friends';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
@@ -16,23 +16,28 @@ export default function FriendCard({ item, onRemove }: FriendCardProps) {
     return (
         <View style={styles.card}>
             <View style={styles.cardLeft}>
-                {item.photoURL ? (
-                    <Image source={{ uri: item.photoURL }} style={styles.avatar} />
-                ) : (
-                    <View style={[styles.avatar, styles.avatarPlaceholder]}>
-                        <Text style={styles.avatarText}>{avatarLetter}</Text>
-                    </View>
-                )}
-                <Text style={styles.cardName} numberOfLines={1}>
-                    {item.displayName}
-                </Text>
+                <View style={styles.avatarContainer}>
+                    {item.photoURL ? (
+                        <Image source={{ uri: item.photoURL }} style={styles.avatar} />
+                    ) : (
+                        <View style={styles.avatarPlaceholder}>
+                            <User size={20} color="#DDD" />
+                        </View>
+                    )}
+                </View>
+                <View style={styles.infoWrapper}>
+                    <Text style={styles.cardName} numberOfLines={1}>
+                        {item.displayName}
+                    </Text>
+                    <Text style={styles.cardStatus}>Active Friend</Text>
+                </View>
             </View>
             <TouchableOpacity
                 style={styles.removeButton}
                 onPress={() => onRemove(item.friendshipId, item.displayName)}
                 activeOpacity={0.6}
             >
-                <UserX size={18} color="#ef4444" />
+                <UserX size={16} color="#999" />
             </TouchableOpacity>
         </View>
     );
@@ -40,54 +45,65 @@ export default function FriendCard({ item, onRemove }: FriendCardProps) {
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: '#fff',
-        borderRadius: 16,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 20,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: 14,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 8,
-        elevation: 3,
+        padding: 16,
+        borderWidth: 1.5,
+        borderColor: '#F1F5F9',
     },
     cardLeft: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 12,
+        gap: 14,
+        flex: 1,
+    },
+    avatarContainer: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        backgroundColor: '#F8F9FA',
+        borderWidth: 1,
+        borderColor: '#F1F5F9',
+        padding: 2,
+        overflow: 'hidden',
+    },
+    avatar: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 23,
+    },
+    avatarPlaceholder: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    infoWrapper: {
         flex: 1,
     },
     cardName: {
-        fontFamily: AppFonts.semiBold,
+        fontFamily: AppFonts.bold,
         fontSize: 16,
         color: AppColors.navy,
-        flex: 1,
     },
-    avatar: {
-        width: 46,
-        height: 46,
-        borderRadius: 23,
-        backgroundColor: '#f0f0f0',
-        borderWidth: 2,
-        borderColor: AppColors.primary,
-    },
-    avatarPlaceholder: {
-        backgroundColor: AppColors.navy,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    avatarText: {
-        fontFamily: AppFonts.bold,
-        color: '#fff',
-        fontSize: 18,
+    cardStatus: {
+        fontFamily: AppFonts.medium,
+        fontSize: 11,
+        color: '#BBB',
+        marginTop: 2,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
     },
     removeButton: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: 'rgba(239, 68, 68, 0.08)',
+        width: 38,
+        height: 38,
+        borderRadius: 12,
+        backgroundColor: '#F8F9FA',
         alignItems: 'center',
         justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: '#F1F5F9',
     },
 });

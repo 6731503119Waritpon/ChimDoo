@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Dimensions } from 'react-native';
-import { Check, CircleCheckBig, Clock, Drumstick, Flame, Soup } from 'lucide-react-native';
+import { Check, CircleCheckBig, Clock, Drumstick, Flame, Soup, ChefHat } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
@@ -27,14 +27,16 @@ export default function PopularFoodCard({ item, onPress, badgeLabel = 'Popular',
 
             {isTasted && (
                 <View style={styles.tastedBadge}>
-                    <Text style={styles.tastedBadgeText}>Chim <CircleCheckBig size={12} color="#fff" /></Text>
+                    <ChefHat size={12} color={AppColors.success} />
+                    <Text style={styles.tastedBadgeText}>CHIM</Text>
                 </View>
             )}
 
             <View style={styles.largeCardContent}>
                 <View style={[
                     styles.largeCardBadge,
-                    { backgroundColor: badgeLabel === 'Popular' ? AppColors.gold : AppColors.primary }
+                    { backgroundColor: badgeLabel === 'Popular' ? AppColors.popular : AppColors.primary },
+                    styles.shadowSubtle
                 ]}>
                     <Text style={styles.largeCardBadgeText}>{badgeLabel}</Text>
                 </View>
@@ -79,10 +81,17 @@ const styles = StyleSheet.create({
     largeCardContent: { flex: 1, justifyContent: 'flex-end', padding: 20 },
     largeCardBadge: {
         alignSelf: 'flex-start',
-        borderRadius: 8,
-        paddingHorizontal: 10,
-        paddingVertical: 4,
-        marginBottom: 8,
+        borderRadius: 20,
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        marginBottom: 10,
+    },
+    shadowSubtle: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 3,
     },
     largeCardBadgeText: { color: '#fff', fontSize: 11, fontFamily: AppFonts.bold },
     largeCardTitle: {
@@ -103,20 +112,21 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 14,
         right: 14,
-        backgroundColor: AppColors.success,
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
         paddingHorizontal: 12,
-        paddingVertical: 5,
-        borderRadius: 10,
+        paddingVertical: 6,
+        borderRadius: 12,
         zIndex: 10,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        elevation: 4,
+        borderWidth: 1.5,
+        borderColor: AppColors.success,
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
     },
     tastedBadgeText: {
-        color: '#fff',
-        fontSize: 12,
+        color: AppColors.success,
+        fontSize: 10,
         fontFamily: AppFonts.bold,
+        letterSpacing: 1.2,
     },
 });

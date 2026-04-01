@@ -33,10 +33,6 @@ export default function ChangePasswordScreen() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [saving, setSaving] = useState(false);
 
-    const [showCurrent, setShowCurrent] = useState(false);
-    const [showNew, setShowNew] = useState(false);
-    const [showConfirm, setShowConfirm] = useState(false);
-
     const getStrength = (pw: string): { level: number; label: string; color: string } => {
         if (pw.length === 0) return { level: 0, label: '', color: '#ddd' };
         let score = 0;
@@ -53,7 +49,6 @@ export default function ChangePasswordScreen() {
         return map[score - 1] ?? { level: 0, label: '', color: '#ddd' };
     };
 
-    const strength = getStrength(newPassword);
     const isGoogleOnlyUser =
         (user?.providerData ?? []).length > 0 &&
         (user?.providerData ?? []).every((p) => p.providerId === 'google.com');
@@ -63,18 +58,18 @@ export default function ChangePasswordScreen() {
             <View style={styles.container}>
                 <View style={styles.header}>
                     <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-                        <ChevronLeft size={28} color="#fff" />
+                        <ChevronLeft size={26} color="#fff" />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Change Password</Text>
                     <View style={{ width: 40 }} />
                 </View>
                 <View style={styles.googleInfoContainer}>
                     <View style={styles.googleInfoIcon}>
-                        <AlertCircle size={40} color={AppColors.primary} />
+                        <AlertCircle size={40} color={AppColors.navy} />
                     </View>
                     <Text style={styles.googleInfoTitle}>Not Available</Text>
                     <Text style={styles.googleInfoText}>
-                        Your account is linked to Google Sign-In. Password management is handled by Google
+                        Your account is linked to Google Sign-In. Password management is handled by Google.
                     </Text>
                     <TouchableOpacity
                         style={styles.googleInfoButton}
@@ -114,7 +109,6 @@ export default function ChangePasswordScreen() {
         try {
             const credential = EmailAuthProvider.credential(user.email, currentPassword);
             await reauthenticateWithCredential(user, credential);
-
             await updatePassword(user, newPassword);
 
             toast.success('Done!', 'Password changed successfully');
@@ -150,7 +144,7 @@ export default function ChangePasswordScreen() {
                         style={styles.backButton}
                         onPress={() => router.back()}
                     >
-                        <ChevronLeft size={28} color="#fff" />
+                        <ChevronLeft size={26} color="#fff" />
                     </TouchableOpacity>
                     <Text style={styles.headerTitle}>Change Password</Text>
                     <View style={{ width: 40 }} />
@@ -160,14 +154,13 @@ export default function ChangePasswordScreen() {
                     <View style={styles.iconCircle}>
                         <ShieldCheck size={36} color={AppColors.navy} />
                     </View>
-                    <Text style={styles.bannerText}>Keep your account secure</Text>
+                    <Text style={styles.bannerText}>Security</Text>
                     <Text style={styles.bannerSub}>
                         Enter your current password, then choose a strong new one.
                     </Text>
                 </View>
 
                 <View style={styles.form}>
-
                     <SecureInput
                         label="Current Password"
                         value={currentPassword}
@@ -195,7 +188,6 @@ export default function ChangePasswordScreen() {
                                 : undefined
                         }
                     />
-
                 </View>
 
                 <TouchableOpacity style={[styles.saveButton, saving && styles.saveButtonDisabled]}
@@ -228,22 +220,21 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         paddingTop: Platform.OS === 'ios' ? 60 : 48,
-        paddingHorizontal: 20,
+        paddingHorizontal: 16,
         paddingBottom: 20,
-        backgroundColor: AppColors.navy,
     },
     backButton: {
         width: 40,
         height: 40,
         borderRadius: 20,
-        backgroundColor: 'rgba(255,255,255,0.15)',
+        backgroundColor: AppColors.navy,
         alignItems: 'center',
         justifyContent: 'center',
     },
     headerTitle: {
         fontFamily: AppFonts.bold,
-        fontSize: 20,
-        color: '#fff',
+        fontSize: 22,
+        color: AppColors.navy,
     },
     googleInfoContainer: {
         flex: 1,
@@ -256,10 +247,12 @@ const styles = StyleSheet.create({
         width: 88,
         height: 88,
         borderRadius: 44,
-        backgroundColor: 'rgba(230, 57, 70, 0.1)',
+        backgroundColor: '#F8FAFC',
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 24,
+        borderWidth: 1.5,
+        borderColor: '#F1F5F9',
     },
     googleInfoTitle: {
         fontFamily: AppFonts.bold,
@@ -268,80 +261,68 @@ const styles = StyleSheet.create({
         marginBottom: 12,
     },
     googleInfoText: {
-        fontFamily: AppFonts.regular,
+        fontFamily: AppFonts.medium,
         fontSize: 15,
-        color: '#666',
+        color: '#64748B',
         textAlign: 'center',
         lineHeight: 22,
         marginBottom: 32,
     },
-    googleInfoLink: {
-        fontFamily: AppFonts.semiBold,
-        color: AppColors.navy,
-    },
     googleInfoButton: {
         backgroundColor: AppColors.navy,
-        borderRadius: 14,
-        paddingVertical: 14,
-        paddingHorizontal: 40,
+        borderRadius: 20,
+        paddingVertical: 16,
+        paddingHorizontal: 48,
         alignItems: 'center',
     },
     googleInfoButtonText: {
         color: '#fff',
         fontSize: 16,
         fontFamily: AppFonts.bold,
+        letterSpacing: 0.5,
     },
     iconBanner: {
         alignItems: 'center',
-        backgroundColor: AppColors.navy,
-        paddingBottom: 36,
+        paddingBottom: 28,
         paddingHorizontal: 32,
     },
     iconCircle: {
         width: 80,
         height: 80,
         borderRadius: 40,
-        backgroundColor: '#fff',
+        backgroundColor: '#FFFFFF',
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 16,
-        shadowColor: AppColors.navy,
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.25,
-        shadowRadius: 12,
-        elevation: 8,
+        marginBottom: 20,
+        borderWidth: 1.5,
+        borderColor: '#F1F5F9',
     },
     bannerText: {
         fontFamily: AppFonts.bold,
-        fontSize: 20,
-        color: '#fff',
-        marginBottom: 6,
+        fontSize: 24,
+        color: AppColors.navy,
+        marginBottom: 8,
     },
     bannerSub: {
         fontFamily: AppFonts.regular,
-        fontSize: 14,
-        color: 'rgba(255,255,255,0.65)',
+        fontSize: 15,
+        color: '#64748B',
         textAlign: 'center',
-        lineHeight: 20,
+        lineHeight: 22,
     },
-
     form: {
         paddingHorizontal: 24,
-        paddingTop: 32,
-        gap: 24,
+        paddingTop: 16,
+        gap: 32,
     },
     saveButton: {
         marginHorizontal: 24,
-        marginTop: 40,
-        backgroundColor: AppColors.primary,
-        borderRadius: 14,
-        padding: 18,
+        marginTop: 48,
+        backgroundColor: AppColors.navy,
+        borderRadius: 20,
+        height: 60,
         alignItems: 'center',
-        shadowColor: AppColors.primary,
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.3,
-        shadowRadius: 12,
-        elevation: 6,
+        justifyContent: 'center',
     },
     saveButtonDisabled: {
         opacity: 0.6,
@@ -350,5 +331,6 @@ const styles = StyleSheet.create({
         fontFamily: AppFonts.bold,
         color: '#fff',
         fontSize: 17,
+        letterSpacing: 1,
     },
 });

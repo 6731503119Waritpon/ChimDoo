@@ -32,6 +32,10 @@ export const AppColors = {
   error: '#ef4444',
   info: '#3b82f6',
   purple: '#8b5cf6',
-  /** Gold — popular badges, premium accents */
+  /** Gold — premium accents */
   gold: '#EFBF04',
+  /** Orange — alerts, energetic accents */
+  orange: '#F59E0B',
+  /** Popular/Flame — vibrant call-to-action or badges */
+  popular: '#FF5A00',
 } as const;

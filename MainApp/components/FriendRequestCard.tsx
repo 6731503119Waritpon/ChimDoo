@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { UserCheck, UserX } from 'lucide-react-native';
+import { Check, X, User } from 'lucide-react-native';
 import { Friendship, FriendInfo } from '@/types/friends';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
@@ -17,34 +17,36 @@ export default function FriendRequestCard({ item, onAccept, onReject }: FriendRe
     return (
         <View style={styles.card}>
             <View style={styles.cardLeft}>
-                {item.senderInfo.photoURL ? (
-                    <Image
-                        source={{ uri: item.senderInfo.photoURL }}
-                        style={styles.avatar}
-                    />
-                ) : (
-                    <View style={[styles.avatar, styles.avatarPlaceholder]}>
-                        <Text style={styles.avatarText}>{avatarLetter}</Text>
-                    </View>
-                )}
-                <Text style={styles.cardName} numberOfLines={1}>
-                    {item.senderInfo.displayName}
-                </Text>
+                <View style={styles.avatarContainer}>
+                    {item.senderInfo.photoURL ? (
+                        <Image source={{ uri: item.senderInfo.photoURL }} style={styles.avatar} />
+                    ) : (
+                        <View style={styles.avatarPlaceholder}>
+                            <User size={20} color="#DDD" />
+                        </View>
+                    )}
+                </View>
+                <View style={styles.infoWrapper}>
+                    <Text style={styles.cardName} numberOfLines={1}>
+                        {item.senderInfo.displayName}
+                    </Text>
+                    <Text style={styles.cardStatus}>Wants to be your friend</Text>
+                </View>
             </View>
-            <View style={styles.requestActions}>
+            <View style={styles.actions}>
                 <TouchableOpacity
-                    style={styles.acceptButton}
-                    onPress={() => onAccept(item.id)}
-                    activeOpacity={0.6}
+                    style={[styles.actionBtn, styles.rejectBtn]}
+                    onPress={() => onReject(item.id)}
+                    activeOpacity={0.7}
                 >
-                    <UserCheck size={18} color="#fff" />
+                    <X size={16} color="#999" />
                 </TouchableOpacity>
                 <TouchableOpacity
-                    style={styles.rejectButton}
-                    onPress={() => onReject(item.id)}
-                    activeOpacity={0.6}
+                    style={[styles.actionBtn, styles.acceptBtn]}
+                    onPress={() => onAccept(item.id)}
+                    activeOpacity={0.7}
                 >
-                    <UserX size={18} color="#ef4444" />
+                    <Check size={16} color="#FFFFFF" />
                 </TouchableOpacity>
             </View>
         </View>
@@ -53,66 +55,75 @@ export default function FriendRequestCard({ item, onAccept, onReject }: FriendRe
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: '#fff',
-        borderRadius: 16,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 20,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: 14,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.06,
-        shadowRadius: 8,
-        elevation: 3,
+        padding: 16,
+        borderWidth: 1.5,
+        borderColor: '#F1F5F9',
     },
     cardLeft: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 12,
+        gap: 14,
+        flex: 1,
+    },
+    avatarContainer: {
+        width: 50,
+        height: 50,
+        borderRadius: 25,
+        backgroundColor: '#F8F9FA',
+        borderWidth: 1,
+        borderColor: '#F1F5F9',
+        padding: 2,
+        overflow: 'hidden',
+    },
+    avatar: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 23,
+    },
+    avatarPlaceholder: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    infoWrapper: {
         flex: 1,
     },
     cardName: {
-        fontFamily: AppFonts.semiBold,
+        fontFamily: AppFonts.bold,
         fontSize: 16,
         color: AppColors.navy,
-        flex: 1,
     },
-    avatar: {
-        width: 46,
-        height: 46,
-        borderRadius: 23,
-        backgroundColor: '#f0f0f0',
-        borderWidth: 2,
+    cardStatus: {
+        fontFamily: AppFonts.medium,
+        fontSize: 11,
+        color: AppColors.primary,
+        marginTop: 2,
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+    },
+    actions: {
+        flexDirection: 'row',
+        gap: 10,
+    },
+    actionBtn: {
+        width: 38,
+        height: 38,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+    },
+    acceptBtn: {
+        backgroundColor: AppColors.primary,
         borderColor: AppColors.primary,
     },
-    avatarPlaceholder: {
-        backgroundColor: AppColors.navy,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    avatarText: {
-        fontFamily: AppFonts.bold,
-        color: '#fff',
-        fontSize: 18,
-    },
-    requestActions: {
-        flexDirection: 'row',
-        gap: 8,
-    },
-    acceptButton: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: '#22c55e',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    rejectButton: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-        alignItems: 'center',
-        justifyContent: 'center',
+    rejectBtn: {
+        backgroundColor: '#F8F9FA',
+        borderColor: '#F1F5F9',
     },
 });

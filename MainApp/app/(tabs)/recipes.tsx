@@ -50,7 +50,7 @@ const Page = () => {
                 const savedSort = await AsyncStorage.getItem('chimpdoo_sort');
                 if (savedView === 'list' || savedView === 'grid') setViewMode(savedView);
                 if (savedSort === 'latest' || savedSort === 'az' || savedSort === 'za') setSortMode(savedSort);
-            } catch (e) {}
+            } catch (e) { }
         };
         loadPrefs();
     }, []);
@@ -229,10 +229,10 @@ const Page = () => {
                                                 {cat === 'All' ? (
                                                     <Compass size={14} color={isActive ? '#FFF' : AppColors.textMuted} style={{ marginRight: 6 }} />
                                                 ) : countryInfo?.isoCode ? (
-                                                    <CountryFlag 
-                                                        isoCode={countryInfo.isoCode} 
-                                                        size={12} 
-                                                        style={{ marginRight: 6, borderRadius: 2 }} 
+                                                    <CountryFlag
+                                                        isoCode={countryInfo.isoCode}
+                                                        size={12}
+                                                        style={{ marginRight: 6, borderRadius: 2 }}
                                                     />
                                                 ) : (
                                                     <Earth size={14} color={isActive ? '#FFF' : AppColors.textMuted} style={{ marginRight: 6 }} />
@@ -278,10 +278,10 @@ const Page = () => {
                                                 {cat === 'All' ? (
                                                     <Compass size={14} color={isActive ? '#FFF' : AppColors.textMuted} style={{ marginRight: 6 }} />
                                                 ) : countryInfo?.isoCode ? (
-                                                    <CountryFlag 
-                                                        isoCode={countryInfo.isoCode} 
-                                                        size={12} 
-                                                        style={{ marginRight: 6, borderRadius: 2 }} 
+                                                    <CountryFlag
+                                                        isoCode={countryInfo.isoCode}
+                                                        size={12}
+                                                        style={{ marginRight: 6, borderRadius: 2 }}
                                                     />
                                                 ) : (
                                                     <Earth size={14} color={isActive ? '#FFF' : AppColors.textMuted} style={{ marginRight: 6 }} />
@@ -292,7 +292,7 @@ const Page = () => {
                                             </TouchableOpacity>
                                         );
                                     })}
-                                    
+
                                     {categories.length > MAX_VISIBLE_CATS && (
                                         <TouchableOpacity
                                             style={[styles.categoryPill, styles.categoryPillSpecial]}
@@ -325,11 +325,11 @@ const Page = () => {
             <FlatList
                 data={paginatedRecipes}
                 refreshControl={
-                    <RefreshControl 
-                        refreshing={refreshing} 
-                        onRefresh={onRefresh} 
-                        colors={[AppColors.primary]} 
-                        tintColor={AppColors.primary} 
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        colors={[AppColors.primary]}
+                        tintColor={AppColors.primary}
                     />
                 }
                 keyExtractor={(item) => item.id}
@@ -360,7 +360,7 @@ const Page = () => {
                                 <Text style={styles.emptySubtitle}>
                                     We couldn't find any saved menus matching your filters. Try adjusting your search.
                                 </Text>
-                                <TouchableOpacity 
+                                <TouchableOpacity
                                     style={styles.emptyButton}
                                     activeOpacity={0.8}
                                     onPress={() => {
@@ -380,7 +380,7 @@ const Page = () => {
                                 <Text style={styles.emptySubtitle}>
                                     You haven't discovered any dishes yet. Let's travel the globe and find your next favorite meal!
                                 </Text>
-                                <TouchableOpacity 
+                                <TouchableOpacity
                                     style={[styles.emptyButton, { backgroundColor: AppColors.primary, borderColor: AppColors.primary }]}
                                     activeOpacity={0.8}
                                     onPress={() => router.push('/')}
@@ -532,10 +532,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         paddingHorizontal: 16,
         paddingVertical: 8,
-        borderRadius: 20,
-        backgroundColor: AppColors.backgroundLight,
-        borderWidth: 1.5,
-        borderColor: 'transparent',
+        borderRadius: 22,
+        backgroundColor: '#FFFFFF',
+        borderWidth: 1.2,
+        borderColor: '#E2E8F0',
     },
     categoryPillSpecial: {
         backgroundColor: AppColors.white,
@@ -547,9 +547,9 @@ const styles = StyleSheet.create({
         borderColor: AppColors.primary,
     },
     categoryText: {
-        fontFamily: AppFonts.semiBold,
+        fontFamily: AppFonts.bold,
         fontSize: 13,
-        color: AppColors.textDark,
+        color: '#64748B',
     },
     categoryTextSpecial: {
         fontFamily: AppFonts.medium,

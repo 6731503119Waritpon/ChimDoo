@@ -33,8 +33,6 @@ import ImageFullscreenModal from '@/components/ImageFullscreenModal';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
 
-
-
 type FeedTab = 'global' | 'friends';
 
 const Page = () => {

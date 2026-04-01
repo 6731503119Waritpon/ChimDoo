@@ -21,6 +21,7 @@ import { FoodItem } from '@/types/recipe';
 import { useChimDoo } from '@/hooks/useChimDoo';
 import { useCommunity } from '@/hooks/useCommunity';
 import { useToast } from '@/components/ToastProvider';
+import { addToViewingHistory } from '@/services/history';
 import ChimDooRequiredModal from '@/components/ChimDooRequiredModal';
 import ReviewModal from '@/components/ReviewModal';
 import CookingModeModal from '@/components/CookingModeModal';
@@ -52,6 +53,12 @@ export default function RecipePage() {
     const [showCookingMode, setShowCookingMode] = useState(false);
 
     const scrollY = useSharedValue(0);
+
+    useEffect(() => {
+        if (food && category) {
+            addToViewingHistory(food, category);
+        }
+    }, [food, category]);
 
     const onScroll = useAnimatedScrollHandler((event) => {
         scrollY.value = event.contentOffset.y;
@@ -150,10 +157,10 @@ export default function RecipePage() {
             >
                 <View style={s.hero}>
                     <Animated.View style={[s.heroImgWrapper, heroImageStyle]}>
-                        <SharedRecipeImage 
-                            source={{ uri: food.image }} 
-                            style={s.heroImg} 
-                            resizeMode="cover" 
+                        <SharedRecipeImage
+                            source={{ uri: food.image }}
+                            style={s.heroImg}
+                            resizeMode="cover"
                             sharedTransitionTag={`recipe-img-${(food as any).id}`}
                         />
                         <LinearGradient
@@ -189,16 +196,16 @@ export default function RecipePage() {
                     <Animated.View entering={FadeInDown.delay(200)} style={s.section}>
                         <View style={s.sectionHead}>
                             <View style={s.sectionTitleRow}>
-                                <CookingPot size={22} color={palette.primary} />
-                                <Text style={s.sectionTitle}>Ingredients</Text>
+                                <CookingPot size={20} color={palette.primary} />
+                                <Text style={s.sectionTitle}>INGREDIENTS</Text>
                             </View>
-                            <View style={s.scaler}>
+                            <View style={[s.scaler, { borderColor: '#E5E7EB' }]}>
                                 <TouchableOpacity onPress={() => setServings(Math.max(1, servings - 1))} style={s.scaleBtn}>
-                                    <Minus size={16} color={palette.primary} />
+                                    <Minus size={14} color={AppColors.navy} />
                                 </TouchableOpacity>
                                 <Text style={s.scaleVal}>{servings}P</Text>
                                 <TouchableOpacity onPress={() => setServings(servings + 1)} style={s.scaleBtn}>
-                                    <Plus size={16} color={palette.primary} />
+                                    <Plus size={14} color={AppColors.navy} />
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -229,8 +236,8 @@ export default function RecipePage() {
                     <Animated.View entering={FadeInDown.delay(300)} style={s.section}>
                         <View style={s.sectionHead}>
                             <View style={s.sectionTitleRow}>
-                                <ChefHat size={22} color={palette.primary} />
-                                <Text style={s.sectionTitle}>Instructions</Text>
+                                <ChefHat size={20} color={palette.primary} />
+                                <Text style={s.sectionTitle}>INSTRUCTIONS</Text>
                             </View>
                             <TouchableOpacity style={s.playBtn} onPress={() => setShowCookingMode(true)}>
                                 <LinearGradient colors={palette.gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={s.playGrad}>
@@ -311,7 +318,7 @@ const s = StyleSheet.create({
     back: { position: 'absolute', top: IOS ? 54 : 42, left: 20, zIndex: 40 },
     backBlur: { width: 44, height: 44, borderRadius: 22, overflow: 'hidden', justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.1)' },
 
-    stickyHeader: { position: 'absolute', top: 0, left: 0, right: 0, height: HEADER_MIN_H, zIndex: 30, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 15, borderBottomWidth: 0.5, borderBottomColor: '#f0f0f0' },
+    stickyHeader: { position: 'absolute', top: 0, left: 0, right: 0, height: HEADER_MIN_H, zIndex: 30, justifyContent: 'flex-end', alignItems: 'center', paddingBottom: 15, borderBottomWidth: 1, borderBottomColor: '#f0f0f0' },
     headerTitleText: { fontFamily: AppFonts.bold, fontSize: 17, color: AppColors.navy, width: '60%', textAlign: 'center' },
 
     hero: { height: HERO_H, justifyContent: 'flex-end' },
@@ -321,42 +328,42 @@ const s = StyleSheet.create({
     badgeRow: { marginBottom: 12 },
     catBadge: { alignSelf: 'flex-start', paddingHorizontal: 12, paddingVertical: 4, borderRadius: 8 },
     catBadgeText: { color: '#fff', fontSize: 12, fontFamily: AppFonts.bold, textTransform: 'uppercase' },
-    heroTitle: { color: '#fff', fontSize: 36, fontFamily: AppFonts.bold, marginBottom: 16, letterSpacing: -0.5 },
+    heroTitle: { color: '#fff', fontSize: 36, fontFamily: AppFonts.bold, marginBottom: 16, letterSpacing: -1 },
     pillRow: { flexDirection: 'row', gap: 10 },
     statPill: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 100, backgroundColor: 'rgba(255,255,255,0.1)' },
     statText: { color: '#fff', fontSize: 13, fontFamily: AppFonts.medium },
 
-    content: { backgroundColor: '#fff', borderTopLeftRadius: 32, borderTopRightRadius: 32, marginTop: -32, padding: 24 },
-    desc: { fontSize: 16, color: AppColors.textMuted, fontFamily: AppFonts.regular, lineHeight: 26, marginBottom: 32 },
+    content: { backgroundColor: '#fff', borderTopLeftRadius: 32, borderTopRightRadius: 32, marginTop: -32, padding: 28 },
+    desc: { fontSize: 16, color: '#6B7280', fontFamily: AppFonts.regular, lineHeight: 26, marginBottom: 32 },
 
     section: { marginBottom: 32 },
     sectionHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
-    sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-    sectionTitle: { fontSize: 22, fontFamily: AppFonts.bold, color: AppColors.navy },
+    sectionTitleRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    sectionTitle: { fontSize: 14, fontFamily: AppFonts.bold, color: AppColors.navy, letterSpacing: 1.5 },
 
-    scaler: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F3F4F6', borderRadius: 12, padding: 4 },
-    scaleBtn: { width: 32, height: 32, borderRadius: 8, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center' },
+    scaler: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F8FAFC', borderRadius: 12, padding: 4, borderWidth: 1 },
+    scaleBtn: { width: 34, height: 34, borderRadius: 8, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#eee' },
     scaleVal: { paddingHorizontal: 12, fontSize: 14, fontFamily: AppFonts.bold, color: AppColors.navy },
 
-    ingRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12, gap: 12 },
-    check: { width: 22, height: 22, borderRadius: 6, borderWidth: 2, borderColor: '#DDD', justifyContent: 'center', alignItems: 'center' },
-    ingText: { fontSize: 15, fontFamily: AppFonts.medium, color: AppColors.textDark, flex: 1 },
-    ingTextChecked: { textDecorationLine: 'line-through', color: '#9CA3AF', opacity: 0.8 },
+    ingRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 14, gap: 12 },
+    check: { width: 22, height: 22, borderRadius: 6, borderWidth: 1.5, borderColor: '#E5E7EB', justifyContent: 'center', alignItems: 'center' },
+    ingText: { fontSize: 15, fontFamily: AppFonts.medium, color: AppColors.navy, flex: 1 },
+    ingTextChecked: { textDecorationLine: 'line-through', color: '#9CA3AF', opacity: 0.6 },
 
     playBtn: { borderRadius: 12, overflow: 'hidden' },
-    playGrad: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, paddingVertical: 8 },
-    playTxt: { color: '#fff', fontSize: 13, fontFamily: AppFonts.bold },
+    playGrad: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 16, paddingVertical: 10 },
+    playTxt: { color: '#fff', fontSize: 12, fontFamily: AppFonts.bold, letterSpacing: 0.5 },
 
-    stepPreview: { flexDirection: 'row', gap: 14, marginBottom: 16 },
-    stepNum: { width: 28, height: 28, borderRadius: 8, justifyContent: 'center', alignItems: 'center' },
-    stepNumTxt: { fontSize: 14, fontFamily: AppFonts.bold },
-    stepPreviewTxt: { flex: 1, fontSize: 15, color: '#666', fontFamily: AppFonts.regular, lineHeight: 22 },
-    moreSteps: { fontFamily: AppFonts.bold, fontSize: 14, marginLeft: 42 },
+    stepPreview: { flexDirection: 'row', gap: 16, marginBottom: 18 },
+    stepNum: { width: 28, height: 28, borderRadius: 8, justifyContent: 'center', alignItems: 'center', borderWidth: 1.5, borderColor: '#eee' },
+    stepNumTxt: { fontSize: 13, fontFamily: AppFonts.bold },
+    stepPreviewTxt: { flex: 1, fontSize: 15, color: '#4B5563', fontFamily: AppFonts.regular, lineHeight: 22 },
+    moreSteps: { fontFamily: AppFonts.bold, fontSize: 14, marginLeft: 44 },
 
     footer: { position: 'absolute', bottom: 0, left: 0, right: 0 },
-    footerBlur: { flexDirection: 'row', gap: 12, paddingHorizontal: 20, paddingTop: 16, paddingBottom: IOS ? 34 : 20, borderTopWidth: 1, borderTopColor: '#F0F0F0' },
-    mainBtn: { flex: 1, borderRadius: 20, overflow: 'hidden' },
-    btnIn: { height: 60, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
-    btnTxt: { fontSize: 18, fontFamily: AppFonts.bold },
-    revBtn: { width: 60, height: 60, borderRadius: 20, backgroundColor: '#F3F4F6', justifyContent: 'center', alignItems: 'center' },
+    footerBlur: { flexDirection: 'row', gap: 12, paddingHorizontal: 20, paddingTop: 16, paddingBottom: IOS ? 34 : 20, borderTopWidth: 1, borderTopColor: '#F0F0F0', backgroundColor: 'rgba(255,255,255,0.9)' },
+    mainBtn: { flex: 1, borderRadius: 24, overflow: 'hidden' },
+    btnIn: { height: 62, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
+    btnTxt: { fontSize: 17, fontFamily: AppFonts.bold, letterSpacing: 1 },
+    revBtn: { width: 62, height: 62, borderRadius: 24, backgroundColor: '#F8FAFC', justifyContent: 'center', alignItems: 'center', borderWidth: 1.5, borderColor: '#F1F5F9' },
 });

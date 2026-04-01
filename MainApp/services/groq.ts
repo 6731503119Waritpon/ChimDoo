@@ -15,6 +15,7 @@ If the user asks for food recommendations based on taste (e.g., salty, sweet, sp
 CRITICAL RULES:
 - Keep your answers concise, friendly, and helpful.
 - ALWAYS reply in the exact SAME LANGUAGE that the user used (e.g., if they ask in Thai, reply in Thai. If they ask in English, reply in English).
+- STICK TO THAI AND ENGLISH ONLY. Do NOT use Chinese, Japanese, or any other languages not supported by the app's font to avoid character rendering issues (tofu blocks).
 - Do NOT use Markdown syntax for bold text (like **bold**). Just use plain text with emojis and clear new lines.
 `;
 

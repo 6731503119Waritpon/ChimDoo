@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import SharedRecipeImage from './SharedRecipeImage';
-import { Clock, Soup } from 'lucide-react-native';
+import { Clock, Soup, Sparkles } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown, useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import CountryFlag from 'react-native-country-flag';
@@ -37,7 +37,7 @@ const HeroRecipeCard: React.FC<HeroRecipeCardProps> = ({ item, onPress }) => {
     };
 
     return (
-        <Animated.View entering={FadeInDown.duration(500).springify()}>
+        <Animated.View entering={FadeInDown.duration(600).delay(100).springify()}>
             <Animated.View style={[styles.container, animatedStyle]}>
                 <TouchableOpacity
                     style={{ flex: 1 }}
@@ -46,14 +46,15 @@ const HeroRecipeCard: React.FC<HeroRecipeCardProps> = ({ item, onPress }) => {
                     onPressIn={handlePressIn}
                     onPressOut={handlePressOut}
                 >
-                    <SharedRecipeImage 
-                        source={{ uri: item.image }} 
-                        style={styles.image} 
-                        resizeMode="cover" 
+                    <SharedRecipeImage
+                        source={{ uri: item.image }}
+                        style={styles.image}
+                        resizeMode="cover"
                         sharedTransitionTag={`recipe-img-${item.id}`}
                     />
                     <LinearGradient
-                        colors={['transparent', 'rgba(0,0,0,0.85)']}
+                        colors={['rgba(0,0,0,0.2)', 'transparent', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0.95)']}
+                        locations={[0, 0.3, 0.6, 1]}
                         style={styles.gradient}
                     />
 
@@ -62,12 +63,12 @@ const HeroRecipeCard: React.FC<HeroRecipeCardProps> = ({ item, onPress }) => {
                             {countryInfo?.isoCode && (
                                 <CountryFlag
                                     isoCode={countryInfo.isoCode}
-                                    size={12}
+                                    size={10}
                                     style={styles.badgeFlag}
                                 />
                             )}
                             <Text style={styles.badgeText}>
-                                {item.category}
+                                {item.category.toUpperCase()}
                             </Text>
                         </View>
                     )}
@@ -83,17 +84,21 @@ const HeroRecipeCard: React.FC<HeroRecipeCardProps> = ({ item, onPress }) => {
                         <View style={styles.metaRow}>
                             {item.prepTime ? (
                                 <View style={styles.metaItem}>
-                                    <Clock size={12} color="#D1D5DB" />
+                                    <Clock size={14} color="#F3F4F6" />
                                     <Text style={styles.metaText}>{item.prepTime}</Text>
                                 </View>
                             ) : null}
 
                             {item.taste && item.taste.length > 0 ? (
                                 <View style={styles.metaItem}>
-                                    <Soup size={12} color="#D1D5DB" />
+                                    <Soup size={14} color="#F3F4F6" />
                                     <Text style={styles.metaText}>{item.taste[0]}</Text>
                                 </View>
                             ) : null}
+
+                            <View style={styles.exploreBtn}>
+                                <Text style={styles.exploreBtnText}>Lasted</Text>
+                            </View>
                         </View>
                     </View>
                 </TouchableOpacity>
@@ -106,19 +111,19 @@ export default HeroRecipeCard;
 
 const styles = StyleSheet.create({
     container: {
-        height: 220,
-        marginHorizontal: 20,
-        marginBottom: 20,
-        borderRadius: 24,
+        height: 250,
+        marginHorizontal: 18,
+        marginVertical: 10,
+        borderRadius: 30,
         backgroundColor: '#FFFFFF',
-        shadowColor: '#1F2937',
-        shadowOffset: { width: 0, height: 10 },
-        shadowOpacity: 0.1,
-        shadowRadius: 16,
-        elevation: 6,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 12 },
+        shadowOpacity: 0.2,
+        shadowRadius: 20,
+        elevation: 8,
         overflow: 'hidden',
         borderWidth: 1,
-        borderColor: '#E5E7EB',
+        borderColor: 'rgba(255,255,255,0.1)',
     },
     image: {
         width: '100%',
@@ -127,68 +132,95 @@ const styles = StyleSheet.create({
     },
     gradient: {
         ...StyleSheet.absoluteFillObject,
-        top: '30%',
     },
     badgeTopLeft: {
         position: 'absolute',
-        top: 16,
-        left: 16,
+        top: 18,
+        left: 18,
         flexDirection: 'row',
         alignItems: 'center',
         gap: 6,
-        backgroundColor: 'rgba(255,255,255,0.92)',
-        paddingHorizontal: 10,
+        backgroundColor: 'rgba(255,255,255,0.95)',
+        paddingHorizontal: 12,
         paddingVertical: 6,
-        borderRadius: 14,
+        borderRadius: 20,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
     },
     badgeFlag: {
         borderRadius: 2,
     },
     badgeText: {
-        fontSize: 11,
+        fontSize: 10,
         fontFamily: AppFonts.bold,
         color: '#111827',
+        letterSpacing: 0.5,
     },
     content: {
         flex: 1,
         justifyContent: 'flex-end',
-        padding: 20,
+        padding: 24,
     },
     featuredLabel: {
-        backgroundColor: 'rgba(16, 185, 129, 0.9)',
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: AppColors.primary,
         alignSelf: 'flex-start',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 8,
-        marginBottom: 8,
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: 10,
+        marginBottom: 10,
+        shadowColor: AppColors.primary,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
     },
     featuredText: {
         color: '#FFF',
         fontFamily: AppFonts.bold,
         fontSize: 9,
-        letterSpacing: 1.5,
+        letterSpacing: 1,
     },
     title: {
         fontFamily: AppFonts.bold,
-        fontSize: 26,
+        fontSize: 32,
         color: '#FFFFFF',
-        lineHeight: 32,
-        marginBottom: 10,
+        lineHeight: 38,
+        marginBottom: 14,
+        textShadowColor: 'rgba(0,0,0,0.3)',
+        textShadowOffset: { width: 0, height: 2 },
+        textShadowRadius: 10,
     },
     metaRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: 12,
+        justifyContent: 'space-between',
+        marginTop: 4,
     },
     metaItem: {
         flexDirection: 'row',
         alignItems: 'center',
         gap: 6,
+        marginRight: 16,
     },
     metaText: {
-        fontFamily: AppFonts.medium,
-        fontSize: 13,
-        color: '#E5E7EB',
+        fontFamily: AppFonts.bold,
+        fontSize: 14,
+        color: '#F3F4F6',
+    },
+    exploreBtn: {
+        backgroundColor: 'rgba(255,255,255,0.2)',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 12,
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.3)',
+    },
+    exploreBtnText: {
+        color: '#FFF',
+        fontFamily: AppFonts.bold,
+        fontSize: 12,
     },
 });

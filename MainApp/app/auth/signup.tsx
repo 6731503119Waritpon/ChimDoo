@@ -8,8 +8,8 @@ import {
     KeyboardAvoidingView,
     Platform,
     ActivityIndicator,
-    ScrollView,
 } from 'react-native';
+import KeyboardAwareView from '@/components/KeyboardAwareView';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth';
 import { useToast } from '@/components/ToastProvider';
@@ -108,123 +108,118 @@ export default function SignupScreen() {
             router.replace('/(tabs)');
         } catch (err: any) {
             let errorMessage = 'Please try again';
-            
+
             if (err.code === 'auth/email-already-in-use') {
                 errorMessage = 'This email is already registered. Please sign in instead.';
             } else if (err.message) {
                 errorMessage = err.message;
             }
-            
+
             toast.error('Signup Failed', errorMessage);
         }
     };
 
     return (
-        <KeyboardAvoidingView
+        <KeyboardAwareView
             style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            contentContainerStyle={styles.scrollContent}
         >
-            <ScrollView
-                contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={false}
-            >
-                <View style={styles.content}>
-                    <TouchableOpacity
-                        style={styles.backButton}
-                        onPress={() => router.back()}
-                    >
-                        <ArrowLeft size={22} color={AppColors.navy} />
-                    </TouchableOpacity>
-                    <View style={styles.header}>
-                        <Text style={styles.title}>Create Account</Text>
-                        <Text style={styles.subtitle}>Join us today</Text>
-                    </View>
-
-                    <View style={styles.form}>
-                        <View style={styles.inputContainer}>
-                            <Text style={styles.label}>Display Name</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Enter your name"
-                                placeholderTextColor="#666"
-                                value={displayName}
-                                onChangeText={setDisplayName}
-                                autoCapitalize="words"
-                            />
-                        </View>
-
-                        <View style={styles.inputContainer}>
-                            <Text style={styles.label}>Email</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Enter your email"
-                                placeholderTextColor="#666"
-                                value={email}
-                                onChangeText={setEmail}
-                                keyboardType="email-address"
-                                autoCapitalize="none"
-                                autoCorrect={false}
-                            />
-                        </View>
-
-                        <View style={styles.inputContainer}>
-                            <SecureInput
-                                label="Password"
-                                value={password}
-                                onChangeText={setPassword}
-                                placeholder="Create a password"
-                                showStrength={true}
-                            />
-                        </View>
-
-                        <View style={styles.inputContainer}>
-                            <SecureInput
-                                label="Confirm Password"
-                                value={confirmPassword}
-                                onChangeText={setConfirmPassword}
-                                placeholder="Confirm your password"
-                            />
-                        </View>
-
-                        <TouchableOpacity
-                            style={[styles.button, loading && styles.buttonDisabled]}
-                            onPress={handleSignup}
-                            disabled={loading}
-                        >
-                            {loading ? (
-                                <ActivityIndicator color="#fff" />
-                            ) : (
-                                <Text style={styles.buttonText}>Create Account</Text>
-                            )}
-                        </TouchableOpacity>
-                        <View style={styles.dividerContainer}>
-                            <View style={styles.dividerLine} />
-                            <Text style={styles.dividerText}>OR</Text>
-                            <View style={styles.dividerLine} />
-                        </View>
-
-                        <TouchableOpacity
-                            style={styles.googleButton}
-                            disabled={isGoogleDisabled}
-                            onPress={handleGooglePress}
-                        >
-                            {isGoogleLoading ? (
-                                <ActivityIndicator color="#000" />
-                            ) : (
-                                <Text style={styles.googleButtonText}>Sign in with Google</Text>
-                            )}
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.footer}>
-                        <Text style={styles.footerText}>Already have an account?</Text>
-                        <TouchableOpacity onPress={() => router.push('/auth/login')}>
-                            <Text style={styles.loginLink}>Sign In</Text>
-                        </TouchableOpacity>
-                    </View>
+            <View style={styles.content}>
+                <TouchableOpacity
+                    style={styles.backButton}
+                    onPress={() => router.back()}
+                >
+                    <ArrowLeft size={22} color={AppColors.navy} />
+                </TouchableOpacity>
+                <View style={styles.header}>
+                    <Text style={styles.title}>Create Account</Text>
+                    <Text style={styles.subtitle}>Join us today</Text>
                 </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+
+                <View style={styles.form}>
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.label}>Display Name</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Enter your name"
+                            placeholderTextColor="#666"
+                            value={displayName}
+                            onChangeText={setDisplayName}
+                            autoCapitalize="words"
+                        />
+                    </View>
+
+                    <View style={styles.inputContainer}>
+                        <Text style={styles.label}>Email</Text>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Enter your email"
+                            placeholderTextColor="#666"
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            autoCorrect={false}
+                        />
+                    </View>
+
+                    <View style={styles.inputContainer}>
+                        <SecureInput
+                            label="Password"
+                            value={password}
+                            onChangeText={setPassword}
+                            placeholder="Create a password"
+                            showStrength={true}
+                        />
+                    </View>
+
+                    <View style={styles.inputContainer}>
+                        <SecureInput
+                            label="Confirm Password"
+                            value={confirmPassword}
+                            onChangeText={setConfirmPassword}
+                            placeholder="Confirm your password"
+                        />
+                    </View>
+
+                    <TouchableOpacity
+                        style={[styles.button, loading && styles.buttonDisabled]}
+                        onPress={handleSignup}
+                        disabled={loading}
+                    >
+                        {loading ? (
+                            <ActivityIndicator color="#fff" />
+                        ) : (
+                            <Text style={styles.buttonText}>Create Account</Text>
+                        )}
+                    </TouchableOpacity>
+                    <View style={styles.dividerContainer}>
+                        <View style={styles.dividerLine} />
+                        <Text style={styles.dividerText}>OR</Text>
+                        <View style={styles.dividerLine} />
+                    </View>
+
+                    <TouchableOpacity
+                        style={styles.googleButton}
+                        disabled={isGoogleDisabled}
+                        onPress={handleGooglePress}
+                    >
+                        {isGoogleLoading ? (
+                            <ActivityIndicator color="#000" />
+                        ) : (
+                            <Text style={styles.googleButtonText}>Sign in with Google</Text>
+                        )}
+                    </TouchableOpacity>
+                </View>
+
+                <View style={styles.footer}>
+                    <Text style={styles.footerText}>Already have an account?</Text>
+                    <TouchableOpacity onPress={() => router.push('/auth/login')}>
+                        <Text style={styles.loginLink}>Sign In</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </KeyboardAwareView>
     );
 }
 
