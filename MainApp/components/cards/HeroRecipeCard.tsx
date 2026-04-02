@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import SharedRecipeImage from './SharedRecipeImage';
+import SharedRecipeImage from '@/components/ui/SharedRecipeImage';
 import { Clock, Soup, Sparkles } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown, useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
@@ -15,7 +15,7 @@ interface HeroRecipeCardProps {
     onPress: (item: ChimDooItem) => void;
 }
 
-const HeroRecipeCard: React.FC<HeroRecipeCardProps> = ({ item, onPress }) => {
+const HeroRecipeCard: React.FC<HeroRecipeCardProps> = memo(({ item, onPress }) => {
     const scale = useSharedValue(1);
 
     const countryInfo = globeCountries.find(
@@ -105,7 +105,7 @@ const HeroRecipeCard: React.FC<HeroRecipeCardProps> = ({ item, onPress }) => {
             </Animated.View>
         </Animated.View>
     );
-};
+});
 
 export default HeroRecipeCard;
 

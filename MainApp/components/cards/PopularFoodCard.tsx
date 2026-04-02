@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image, Dimensions } from 'react-native';
 import { Check, CircleCheckBig, Clock, Drumstick, Flame, Soup, ChefHat } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -15,7 +15,7 @@ interface PopularFoodCardProps {
     isTasted?: boolean;
 }
 
-export default function PopularFoodCard({ item, onPress, badgeLabel = 'Popular', isTasted }: PopularFoodCardProps) {
+const PopularFoodCard = memo(({ item, onPress, badgeLabel = 'Popular', isTasted }: PopularFoodCardProps) => {
     return (
         <TouchableOpacity style={styles.largeCard} activeOpacity={0.9} onPress={onPress}>
             <Image source={{ uri: item.image }} style={styles.largeCardImage} />
@@ -61,7 +61,9 @@ export default function PopularFoodCard({ item, onPress, badgeLabel = 'Popular',
             </View>
         </TouchableOpacity>
     );
-}
+});
+
+export default PopularFoodCard;
 
 const styles = StyleSheet.create({
     largeCard: {

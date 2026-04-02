@@ -14,11 +14,11 @@ import { Stack, useRouter, useFocusEffect } from 'expo-router';
 import { ChevronLeft, MessageSquareText, Heart, MessageCircle, Trash2, Clock } from 'lucide-react-native';
 import { useCommunity } from '@/hooks/useCommunity';
 import { CommunityPost } from '@/types/community';
-import { useToast } from '@/components/ToastProvider';
+import { useToast } from '@/components/ui/ToastProvider';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
 import { formatTimestamp } from '@/utils/formatTime';
-import ConfirmDeleteModal from '@/components/ConfirmDeleteModal';
+import ConfirmDeleteModal from '@/components/modals/ConfirmDeleteModal';
 
 const ReviewCard = ({
     item,

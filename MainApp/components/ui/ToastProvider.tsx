@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { View, StyleSheet } from 'react-native';
-import Toast, { ToastConfig } from './Toast';
+import Toast, { ToastConfig } from '@/components/ui/Toast';
 
 interface ToastContextType {
     showToast: (config: ToastConfig) => void;

@@ -3,7 +3,7 @@ import {
     View, Text, StyleSheet, TouchableOpacity,
     Platform, Alert, ActivityIndicator, Dimensions,
 } from 'react-native';
-import SharedRecipeImage from '../../components/SharedRecipeImage';
+import SharedRecipeImage from '@/components/ui/SharedRecipeImage';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
@@ -20,11 +20,11 @@ import Animated, {
 import { FoodItem } from '@/types/recipe';
 import { useChimDoo } from '@/hooks/useChimDoo';
 import { useCommunity } from '@/hooks/useCommunity';
-import { useToast } from '@/components/ToastProvider';
+import { useToast } from '@/components/ui/ToastProvider';
 import { addToViewingHistory } from '@/services/history';
-import ChimDooRequiredModal from '@/components/ChimDooRequiredModal';
-import ReviewModal from '@/components/ReviewModal';
-import CookingModeModal from '@/components/CookingModeModal';
+import ChimDooRequiredModal from '@/components/modals/ChimDooRequiredModal';
+import ReviewModal from '@/components/modals/ReviewModal';
+import CookingModeModal from '@/components/modals/CookingModeModal';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
 import { getPalette } from '@/utils/paletteEngine';
@@ -138,12 +138,12 @@ export default function RecipePage() {
     };
 
     return (
-        <View style={s.root}>
-            <Animated.View style={[s.stickyHeader, headerStyle]}>
-                <Text style={s.headerTitleText} numberOfLines={1}>{food.name}</Text>
+        <View style={styles.root}>
+            <Animated.View style={[styles.stickyHeader, headerStyle]}>
+                <Text style={styles.headerTitleText} numberOfLines={1}>{food.name}</Text>
             </Animated.View>
-            <TouchableOpacity style={s.back} onPress={() => router.back()} activeOpacity={0.7}>
-                <BlurView intensity={20} tint="dark" style={s.backBlur}>
+            <TouchableOpacity style={styles.back} onPress={() => router.back()} activeOpacity={0.7}>
+                <BlurView intensity={20} tint="dark" style={styles.backBlur}>
                     <ArrowLeft size={22} color="#fff" />
                 </BlurView>
             </TouchableOpacity>
@@ -155,11 +155,11 @@ export default function RecipePage() {
                 bounces={true}
                 contentContainerStyle={{ paddingBottom: 150 }}
             >
-                <View style={s.hero}>
-                    <Animated.View style={[s.heroImgWrapper, heroImageStyle]}>
+                <View style={styles.hero}>
+                    <Animated.View style={[styles.heroImgWrapper, heroImageStyle]}>
                         <SharedRecipeImage
                             source={{ uri: food.image }}
-                            style={s.heroImg}
+                            style={styles.heroImg}
                             resizeMode="cover"
                             sharedTransitionTag={`recipe-img-${food.name}`}
                         />
@@ -169,42 +169,42 @@ export default function RecipePage() {
                         />
                     </Animated.View>
 
-                    <Animated.View style={[s.heroContent, titleStyle]}>
-                        <View style={s.badgeRow}>
-                            <View style={[s.catBadge, { backgroundColor: palette.accent }]}>
-                                <Text style={s.catBadgeText}>{category || 'Recipe'}</Text>
+                    <Animated.View style={[styles.heroContent, titleStyle]}>
+                        <View style={styles.badgeRow}>
+                            <View style={[styles.catBadge, { backgroundColor: palette.accent }]}>
+                                <Text style={styles.catBadgeText}>{category || 'Recipe'}</Text>
                             </View>
                         </View>
-                        <Text style={s.heroTitle}>{food.name}</Text>
+                        <Text style={styles.heroTitle}>{food.name}</Text>
 
-                        <View style={s.pillRow}>
-                            <BlurView intensity={20} tint="light" style={s.statPill}>
+                        <View style={styles.pillRow}>
+                            <BlurView intensity={20} tint="light" style={styles.statPill}>
                                 <Clock size={16} color="#fff" />
-                                <Text style={s.statText}>{food.prepTime}</Text>
+                                <Text style={styles.statText}>{food.prepTime}</Text>
                             </BlurView>
-                            <BlurView intensity={20} tint="light" style={s.statPill}>
+                            <BlurView intensity={20} tint="light" style={styles.statPill}>
                                 <Soup size={16} color="#fff" />
-                                <Text style={s.statText}>{Array.isArray(food.taste) ? food.taste.join(', ') : food.taste}</Text>
+                                <Text style={styles.statText}>{Array.isArray(food.taste) ? food.taste.join(', ') : food.taste}</Text>
                             </BlurView>
                         </View>
                     </Animated.View>
                 </View>
 
-                <View style={s.content}>
-                    <Animated.Text entering={FadeInDown.delay(100)} style={s.desc}>{food.description}</Animated.Text>
+                <View style={styles.content}>
+                    <Animated.Text entering={FadeInDown.delay(100)} style={styles.desc}>{food.description}</Animated.Text>
 
-                    <Animated.View entering={FadeInDown.delay(200)} style={s.section}>
-                        <View style={s.sectionHead}>
-                            <View style={s.sectionTitleRow}>
+                    <Animated.View entering={FadeInDown.delay(200)} style={styles.section}>
+                        <View style={styles.sectionHead}>
+                            <View style={styles.sectionTitleRow}>
                                 <CookingPot size={20} color={palette.primary} />
-                                <Text style={s.sectionTitle}>INGREDIENTS</Text>
+                                <Text style={styles.sectionTitle}>INGREDIENTS</Text>
                             </View>
-                            <View style={[s.scaler, { borderColor: '#E5E7EB' }]}>
-                                <TouchableOpacity onPress={() => setServings(Math.max(1, servings - 1))} style={s.scaleBtn}>
+                            <View style={[styles.scaler, { borderColor: '#E5E7EB' }]}>
+                                <TouchableOpacity onPress={() => setServings(Math.max(1, servings - 1))} style={styles.scaleBtn}>
                                     <Minus size={14} color={AppColors.navy} />
                                 </TouchableOpacity>
-                                <Text style={s.scaleVal}>{servings}P</Text>
-                                <TouchableOpacity onPress={() => setServings(servings + 1)} style={s.scaleBtn}>
+                                <Text style={styles.scaleVal}>{servings}P</Text>
+                                <TouchableOpacity onPress={() => setServings(servings + 1)} style={styles.scaleBtn}>
                                     <Plus size={14} color={AppColors.navy} />
                                 </TouchableOpacity>
                             </View>
@@ -218,14 +218,14 @@ export default function RecipePage() {
                             return (
                                 <TouchableOpacity
                                     key={i}
-                                    style={[s.ingRow, isChecked && { opacity: 0.5 }]}
+                                    style={[styles.ingRow, isChecked && { opacity: 0.5 }]}
                                     activeOpacity={0.7}
                                     onPress={() => setCheckedIngredients(prev => ({ ...prev, [i]: !prev[i] }))}
                                 >
-                                    <View style={[s.check, isChecked && { backgroundColor: palette.accent, borderColor: palette.accent }]}>
+                                    <View style={[styles.check, isChecked && { backgroundColor: palette.accent, borderColor: palette.accent }]}>
                                         {isChecked && <Check size={12} color="#fff" />}
                                     </View>
-                                    <Text style={[s.ingText, isChecked && s.ingTextChecked]}>
+                                    <Text style={[styles.ingText, isChecked && styles.ingTextChecked]}>
                                         {scaledNum} {rest}
                                     </Text>
                                 </TouchableOpacity>
@@ -233,58 +233,58 @@ export default function RecipePage() {
                         })}
                     </Animated.View>
 
-                    <Animated.View entering={FadeInDown.delay(300)} style={s.section}>
-                        <View style={s.sectionHead}>
-                            <View style={s.sectionTitleRow}>
+                    <Animated.View entering={FadeInDown.delay(300)} style={styles.section}>
+                        <View style={styles.sectionHead}>
+                            <View style={styles.sectionTitleRow}>
                                 <ChefHat size={20} color={palette.primary} />
-                                <Text style={s.sectionTitle}>INSTRUCTIONS</Text>
+                                <Text style={styles.sectionTitle}>INSTRUCTIONS</Text>
                             </View>
-                            <TouchableOpacity style={s.playBtn} onPress={() => setShowCookingMode(true)}>
-                                <LinearGradient colors={palette.gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={s.playGrad}>
+                            <TouchableOpacity style={styles.playBtn} onPress={() => setShowCookingMode(true)}>
+                                <LinearGradient colors={palette.gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.playGrad}>
                                     <Play size={14} color="#fff" />
-                                    <Text style={s.playTxt}>Start Cooking</Text>
+                                    <Text style={styles.playTxt}>Start Cooking</Text>
                                 </LinearGradient>
                             </TouchableOpacity>
                         </View>
 
                         {food.instructions?.slice(0, 2).map((step, i) => (
-                            <View key={i} style={s.stepPreview}>
-                                <View style={[s.stepNum, { backgroundColor: palette.secondary }]}>
-                                    <Text style={[s.stepNumTxt, { color: palette.primary }]}>{i + 1}</Text>
+                            <View key={i} style={styles.stepPreview}>
+                                <View style={[styles.stepNum, { backgroundColor: palette.secondary }]}>
+                                    <Text style={[styles.stepNumTxt, { color: palette.primary }]}>{i + 1}</Text>
                                 </View>
-                                <Text style={s.stepPreviewTxt} numberOfLines={2}>{step}</Text>
+                                <Text style={styles.stepPreviewTxt} numberOfLines={2}>{step}</Text>
                             </View>
                         ))}
                         {food.instructions && food.instructions.length > 2 && (
                             <TouchableOpacity onPress={() => setShowCookingMode(true)}>
-                                <Text style={[s.moreSteps, { color: palette.primary }]}>+ {food.instructions.length - 2} more steps</Text>
+                                <Text style={[styles.moreSteps, { color: palette.primary }]}>+ {food.instructions.length - 2} more steps</Text>
                             </TouchableOpacity>
                         )}
                     </Animated.View>
                 </View>
             </Animated.ScrollView>
 
-            <View style={s.footer}>
-                <BlurView intensity={80} tint="light" style={s.footerBlur}>
+            <View style={styles.footer}>
+                <BlurView intensity={80} tint="light" style={styles.footerBlur}>
                     <TouchableOpacity
-                        style={[s.mainBtn, isChimDoo && { backgroundColor: '#F3F4F6' }]}
+                        style={[styles.mainBtn, isChimDoo && { backgroundColor: '#F3F4F6' }]}
                         onPress={handleChimDoo}
                         disabled={loading}
                     >
                         {isChimDoo ? (
-                            <View style={s.btnIn}>
+                            <View style={styles.btnIn}>
                                 <Check size={20} color={palette.primary} />
-                                <Text style={[s.btnTxt, { color: AppColors.navy }]}>Tasted!</Text>
+                                <Text style={[styles.btnTxt, { color: AppColors.navy }]}>Tasted!</Text>
                             </View>
                         ) : (
-                            <LinearGradient colors={palette.gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={s.btnIn}>
+                            <LinearGradient colors={palette.gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.btnIn}>
                                 <UtensilsCrossed size={20} color="#fff" />
-                                <Text style={[s.btnTxt, { color: '#fff' }]}>Chim Doo</Text>
+                                <Text style={[styles.btnTxt, { color: '#fff' }]}>Chim Doo</Text>
                             </LinearGradient>
                         )}
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={s.revBtn} onPress={handleReviewPress}>
+                    <TouchableOpacity style={styles.revBtn} onPress={handleReviewPress}>
                         <Star
                             size={20}
                             color={palette.primary}
@@ -313,7 +313,7 @@ export default function RecipePage() {
     );
 }
 
-const s = StyleSheet.create({
+const styles = StyleSheet.create({
     root: { flex: 1, backgroundColor: '#fff' },
     back: { position: 'absolute', top: IOS ? 54 : 42, left: 20, zIndex: 40 },
     backBlur: { width: 44, height: 44, borderRadius: 22, overflow: 'hidden', justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.1)' },
@@ -366,4 +366,4 @@ const s = StyleSheet.create({
     btnIn: { height: 62, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
     btnTxt: { fontSize: 17, fontFamily: AppFonts.bold, letterSpacing: 1 },
     revBtn: { width: 62, height: 62, borderRadius: 24, backgroundColor: '#F8FAFC', justifyContent: 'center', alignItems: 'center', borderWidth: 1.5, borderColor: '#F1F5F9' },
-});
+});

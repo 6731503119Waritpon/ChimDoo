@@ -1,7 +1,7 @@
 import { StyleSheet, View, LayoutChangeEvent, Platform } from 'react-native';
 import { useTheme } from '@react-navigation/native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import TabBarButton from './TabBarButton';
+import TabBarButton from '@/components/ui/TabBarButton';
 import { useEffect, useState } from 'react';
 import Animated, { useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 import { AppColors } from '@/constants/colors';
@@ -58,7 +58,7 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
           const label =
-            options.tabBarLabel !== undefined
+            typeof options.tabBarLabel === 'string'
               ? options.tabBarLabel
               : options.title !== undefined
                 ? options.title

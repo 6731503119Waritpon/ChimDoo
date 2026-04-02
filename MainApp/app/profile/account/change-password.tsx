@@ -1,4 +1,4 @@
-import SecureInput from '@/components/SecureInput';
+import SecureInput from '@/components/ui/SecureInput';
 import React, { useState } from 'react';
 import {
     View,
@@ -19,7 +19,7 @@ import {
     updatePassword,
 } from 'firebase/auth';
 import { useAuth } from '../../../hooks/useAuth';
-import { useToast } from '@/components/ToastProvider';
+import { useToast } from '@/components/ui/ToastProvider';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
 import { isFirebaseError, getErrorMessage } from '@/types/firebase';

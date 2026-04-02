@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
     },
     postCard: {
         backgroundColor: '#fff',
-        borderRadius: 30, // Extra rounded as requested
+        borderRadius: 30,
         overflow: 'hidden',
         borderWidth: 1,
         borderColor: 'rgba(0,0,0,0.05)',
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 12,
         borderRadius: 20,
         overflow: 'hidden',
-        height: 170, // Optimized height to leave room for text
+        height: 170,
         position: 'relative',
     },
     postImage: {

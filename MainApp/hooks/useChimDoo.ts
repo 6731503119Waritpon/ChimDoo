@@ -11,7 +11,7 @@ import {
     Timestamp,
     orderBy,
 } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
+import { db } from '@/config/firebase';
 import { useAuth } from './useAuth';
 import { FoodItem } from '@/types/recipe';
 import { createNotification } from '@/utils/notificationHelpers';
@@ -111,5 +111,3 @@ export const useChimDoo = (foodName?: string) => {
         isLoggedIn: !!user,
     };
 };
-
-export default useChimDoo;

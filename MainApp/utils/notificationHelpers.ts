@@ -1,5 +1,5 @@
 import { addDoc, collection, serverTimestamp, getDoc, doc } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
+import { db } from '@/config/firebase';
 import { NotificationType, NotificationSettings } from '@/types/notification';
 import { Collections } from '@/constants/collections';
 

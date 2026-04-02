@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import SharedRecipeImage from './SharedRecipeImage';
+import SharedRecipeImage from '@/components/ui/SharedRecipeImage';
 import { Clock, Soup, ChefHat } from 'lucide-react-native';
 import { BlurView } from 'expo-blur';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -17,7 +17,7 @@ interface GridRecipeCardProps {
     onPress: (item: ChimDooItem) => void;
 }
 
-const GridRecipeCard: React.FC<GridRecipeCardProps> = ({ item, index, onPress }) => {
+const GridRecipeCard: React.FC<GridRecipeCardProps> = memo(({ item, index, onPress }) => {
     const countryInfo = globeCountries.find(
         (c) => c.name.toLowerCase() === item.category?.toLowerCase()
     );
@@ -104,7 +104,7 @@ const GridRecipeCard: React.FC<GridRecipeCardProps> = ({ item, index, onPress })
             </Animated.View>
         </Animated.View>
     );
-};
+});
 
 export default GridRecipeCard;
 

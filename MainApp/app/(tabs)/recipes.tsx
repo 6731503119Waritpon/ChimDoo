@@ -12,21 +12,22 @@ import {
     RefreshControl,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Search, X, UtensilsCrossed, Compass, Earth, List, LayoutGrid, ChevronDown, ChevronUp, ArrowDownUp } from 'lucide-react-native';
+import { UtensilsCrossed, Search, Earth } from 'lucide-react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import CountryFlag from 'react-native-country-flag';
 import { useChimDoo, ChimDooItem } from '@/hooks/useChimDoo';
 import { globeCountries } from '@/config/home';
-import GuestState from '@/components/GuestState';
-import GridRecipeCard from '@/components/GridRecipeCard';
-import HeroRecipeCard from '@/components/HeroRecipeCard';
-import RecipeCard from '@/components/RecipeCard';
-import Pagination from '@/components/Pagination';
-import SortSelectModal from '@/components/SortSelectModal';
-import RecipeSkeleton from '@/components/RecipeSkeleton';
+import GuestState from '@/components/ui/GuestState';
+import GridRecipeCard from '@/components/cards/GridRecipeCard';
+import HeroRecipeCard from '@/components/cards/HeroRecipeCard';
+import RecipeCard from '@/components/cards/RecipeCard';
+import Pagination from '@/components/ui/Pagination';
+import SortSelectModal from '@/components/modals/SortSelectModal';
+import RecipeSkeleton from '@/components/ui/RecipeSkeleton';
 import { AppColors } from '@/constants/colors';
-import { AppFonts } from '@/constants/theme';
+import { AppFonts, AppLayout } from '@/constants/theme';
+import { AppStrings } from '@/constants/strings';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { RecipeFilterBar } from '@/modules/recipes/components/RecipeFilterBar';
 
 const Page = () => {
     const router = useRouter();
@@ -130,8 +131,8 @@ const Page = () => {
         return (
             <GuestState
                 icon={UtensilsCrossed}
-                title="Your Cookbook"
-                subtitle="Sign in to save menus you've tried and easily access your personal food diary!"
+                title={AppStrings.loginRequired}
+                subtitle={AppStrings.loginToSaveRecipe}
             />
         );
     }
@@ -165,151 +166,19 @@ const Page = () => {
             </View>
 
             {chimDooList.length > 0 && (
-                <View style={styles.stickyControls}>
-                    <View style={styles.searchContainer}>
-                        <View style={[styles.searchBar, { flex: 1 }]}>
-                            <Search size={18} color="#9CA3AF" />
-                            <TextInput
-                                style={styles.searchInput}
-                                placeholder="Find a dish or country..."
-                                placeholderTextColor="#9CA3AF"
-                                value={search}
-                                onChangeText={setSearch}
-                            />
-                            {search.length > 0 && (
-                                <TouchableOpacity onPress={() => setSearch('')} style={styles.clearBtn}>
-                                    <X size={16} color="#FFF" />
-                                </TouchableOpacity>
-                            )}
-                        </View>
-                        <TouchableOpacity
-                            style={[styles.toggleBtn, { marginRight: 4, marginLeft: 2 }]}
-                            activeOpacity={0.7}
-                            onPress={handleSortPress}
-                        >
-                            <ArrowDownUp size={20} color={sortMode !== 'latest' ? AppColors.primary : AppColors.textMuted} />
-                        </TouchableOpacity>
-
-                        <TouchableOpacity
-                            style={styles.toggleBtn}
-                            activeOpacity={0.7}
-                            onPress={() => changeViewMode(viewMode === 'grid' ? 'list' : 'grid')}
-                        >
-                            {viewMode === 'grid' ? (
-                                <List size={22} color="#6B7280" />
-                            ) : (
-                                <LayoutGrid size={22} color="#6B7280" />
-                            )}
-                        </TouchableOpacity>
-                    </View>
-
-                    {categories.length > 1 && (
-                        <View style={[styles.categoryContainer, isCategoriesExpanded && { marginBottom: 12 }]}>
-                            {categories.length > MAX_VISIBLE_CATS && isCategoriesExpanded ? (
-                                <View style={styles.categoryWrap}>
-                                    {categories.map((cat) => {
-                                        const isActive = activeCategory === cat;
-                                        const countryInfo = globeCountries.find(
-                                            (c) => c.name.toLowerCase() === cat.toLowerCase()
-                                        );
-
-                                        return (
-                                            <TouchableOpacity
-                                                key={cat}
-                                                style={[
-                                                    styles.categoryPill,
-                                                    isActive && styles.categoryPillActive,
-                                                ]}
-                                                onPress={() => {
-                                                    setActiveCategory(cat);
-                                                    setIsCategoriesExpanded(false);
-                                                }}
-                                                activeOpacity={0.8}
-                                            >
-                                                {cat === 'All' ? (
-                                                    <Compass size={14} color={isActive ? '#FFF' : AppColors.textMuted} style={{ marginRight: 6 }} />
-                                                ) : countryInfo?.isoCode ? (
-                                                    <CountryFlag
-                                                        isoCode={countryInfo.isoCode}
-                                                        size={12}
-                                                        style={{ marginRight: 6, borderRadius: 2 }}
-                                                    />
-                                                ) : (
-                                                    <Earth size={14} color={isActive ? '#FFF' : AppColors.textMuted} style={{ marginRight: 6 }} />
-                                                )}
-                                                <Text style={[styles.categoryText, isActive && styles.categoryTextActive]}>
-                                                    {cat}
-                                                </Text>
-                                            </TouchableOpacity>
-                                        );
-                                    })}
-
-                                    <TouchableOpacity
-                                        style={[styles.categoryPill, styles.categoryPillSpecial]}
-                                        onPress={() => setIsCategoriesExpanded(false)}
-                                        activeOpacity={0.8}
-                                    >
-                                        <ChevronUp size={16} color="#6B7280" style={{ marginRight: 4 }} />
-                                        <Text style={[styles.categoryText, styles.categoryTextSpecial]}>Less</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            ) : (
-                                <ScrollView
-                                    horizontal
-                                    showsHorizontalScrollIndicator={false}
-                                    contentContainerStyle={styles.categoryScroll}
-                                >
-                                    {categories.slice(0, MAX_VISIBLE_CATS).map((cat) => {
-                                        const isActive = activeCategory === cat;
-                                        const countryInfo = globeCountries.find(
-                                            (c) => c.name.toLowerCase() === cat.toLowerCase()
-                                        );
-
-                                        return (
-                                            <TouchableOpacity
-                                                key={cat}
-                                                style={[
-                                                    styles.categoryPill,
-                                                    isActive && styles.categoryPillActive,
-                                                ]}
-                                                onPress={() => setActiveCategory(cat)}
-                                                activeOpacity={0.8}
-                                            >
-                                                {cat === 'All' ? (
-                                                    <Compass size={14} color={isActive ? '#FFF' : AppColors.textMuted} style={{ marginRight: 6 }} />
-                                                ) : countryInfo?.isoCode ? (
-                                                    <CountryFlag
-                                                        isoCode={countryInfo.isoCode}
-                                                        size={12}
-                                                        style={{ marginRight: 6, borderRadius: 2 }}
-                                                    />
-                                                ) : (
-                                                    <Earth size={14} color={isActive ? '#FFF' : AppColors.textMuted} style={{ marginRight: 6 }} />
-                                                )}
-                                                <Text style={[styles.categoryText, isActive && styles.categoryTextActive]}>
-                                                    {cat}
-                                                </Text>
-                                            </TouchableOpacity>
-                                        );
-                                    })}
-
-                                    {categories.length > MAX_VISIBLE_CATS && (
-                                        <TouchableOpacity
-                                            style={[styles.categoryPill, styles.categoryPillSpecial]}
-                                            onPress={() => setIsCategoriesExpanded(true)}
-                                            activeOpacity={0.8}
-                                        >
-                                            <Text style={[styles.categoryText, styles.categoryTextSpecial]}>
-                                                +{categories.length - MAX_VISIBLE_CATS} More
-                                            </Text>
-                                            <ChevronDown size={14} color="#6B7280" style={{ marginLeft: 4 }} />
-                                        </TouchableOpacity>
-                                    )}
-                                </ScrollView>
-                            )}
-                        </View>
-                    )}
-                </View>
+                <RecipeFilterBar
+                    search={search}
+                    setSearch={setSearch}
+                    sortMode={sortMode}
+                    handleSortPress={() => setSortModalVisible(true)}
+                    viewMode={viewMode}
+                    changeViewMode={setViewMode}
+                    categories={categories}
+                    activeCategory={activeCategory}
+                    setActiveCategory={setActiveCategory}
+                    isCategoriesExpanded={isCategoriesExpanded}
+                    setIsCategoriesExpanded={setIsCategoriesExpanded}
+                />
             )}
 
             <SortSelectModal
@@ -334,7 +203,7 @@ const Page = () => {
                 }
                 keyExtractor={(item) => item.id}
                 numColumns={viewMode === 'grid' ? 2 : 1}
-                key={`recipes-${viewMode}-${currentPage}-${activeCategory}-${search}`}
+                key={`recipes-${viewMode}`}
                 renderItem={({ item, index }) =>
                     viewMode === 'grid' ? (
                         <GridRecipeCard item={item} index={index} onPress={handleRecipePress} />
@@ -428,8 +297,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     header: {
-        paddingTop: Platform.OS === 'ios' ? 68 : 48,
-        paddingHorizontal: 24,
+        paddingTop: Platform.select(AppLayout.headerPaddingTop),
+        paddingHorizontal: AppLayout.screenPaddingHorizontal,
         paddingBottom: 4,
     },
     headerTitleRow: {
@@ -459,104 +328,6 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: AppColors.textMuted,
         marginTop: 6,
-    },
-    stickyControls: {
-        backgroundColor: '#FAFAFA',
-        paddingVertical: 12,
-        zIndex: 10,
-    },
-    searchContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 20,
-        marginBottom: 12,
-        gap: 12,
-    },
-    searchBar: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: AppColors.white,
-        borderRadius: 16,
-        paddingHorizontal: 16,
-        paddingVertical: Platform.OS === 'ios' ? 14 : 10,
-        shadowColor: AppColors.textLight,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 12,
-        elevation: 3,
-        borderWidth: 1,
-        borderColor: AppColors.backgroundLight,
-        gap: 10,
-    },
-    toggleBtn: {
-        width: 48,
-        height: 48,
-        borderRadius: 16,
-        backgroundColor: AppColors.white,
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: AppColors.textLight,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.15,
-        shadowRadius: 12,
-        elevation: 3,
-        borderWidth: 1,
-        borderColor: AppColors.backgroundLight,
-    },
-    searchInput: {
-        fontFamily: AppFonts.regular,
-        flex: 1,
-        fontSize: 15,
-        color: AppColors.navy,
-    },
-    clearBtn: {
-        backgroundColor: AppColors.borderLight,
-        borderRadius: 12,
-        padding: 4,
-    },
-    categoryContainer: {
-    },
-    categoryWrap: {
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        paddingHorizontal: 20,
-        gap: 10,
-    },
-    categoryScroll: {
-        paddingHorizontal: 20,
-        paddingRight: 40,
-        gap: 8,
-    },
-    categoryPill: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 16,
-        paddingVertical: 8,
-        borderRadius: 22,
-        backgroundColor: '#FFFFFF',
-        borderWidth: 1.2,
-        borderColor: '#E2E8F0',
-    },
-    categoryPillSpecial: {
-        backgroundColor: AppColors.white,
-        borderColor: AppColors.borderSubtle,
-        borderStyle: 'dashed',
-    },
-    categoryPillActive: {
-        backgroundColor: AppColors.primary,
-        borderColor: AppColors.primary,
-    },
-    categoryText: {
-        fontFamily: AppFonts.bold,
-        fontSize: 13,
-        color: '#64748B',
-    },
-    categoryTextSpecial: {
-        fontFamily: AppFonts.medium,
-        color: AppColors.textMuted,
-    },
-    categoryTextActive: {
-        color: AppColors.white,
     },
     listContent: {
         paddingTop: 8,

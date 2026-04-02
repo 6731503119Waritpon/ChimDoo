@@ -5,18 +5,19 @@ import {
     TextInput,
     TouchableOpacity,
     StyleSheet,
-    KeyboardAvoidingView,
     Platform,
     ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { useAuth } from '../../hooks/useAuth';
-import { useToast } from '@/components/ToastProvider';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/components/ui/ToastProvider';
 import { ArrowLeft, Mail, KeyRound, CheckCircle2, RefreshCcw } from 'lucide-react-native';
 import { AppColors } from '@/constants/colors';
-import { AppFonts } from '@/constants/theme';
+import { AppFonts, AppLayout } from '@/constants/theme';
+import { AppStrings } from '@/constants/strings';
 import { getErrorMessage } from '@/types/firebase';
+import { authStyles as s } from '@/constants/authStyles';
 
 export default function ForgotPasswordScreen() {
     const router = useRouter();
@@ -28,13 +29,13 @@ export default function ForgotPasswordScreen() {
 
     const handleResetPassword = async () => {
         if (!email) {
-            toast.warning('Missing Email', 'Please enter your email address');
+            toast.warning(AppStrings.missingEmail, AppStrings.enterEmail);
             return;
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
-            toast.warning('Invalid Email', 'Please enter a valid email address');
+            toast.warning(AppStrings.invalidEmail, AppStrings.enterValidEmail);
             return;
         }
 
@@ -48,24 +49,24 @@ export default function ForgotPasswordScreen() {
 
     if (emailSent) {
         return (
-            <SafeAreaView style={styles.container}>
+            <SafeAreaView style={s.container}>
                 <View style={[styles.backgroundAccent, { top: -120, right: -120 }]} />
-                <View style={styles.content}>
+                <View style={s.content}>
                     <View style={styles.successContainer}>
                         <View style={styles.successIconWrapper}>
                             <CheckCircle2 size={60} color={AppColors.success} />
                         </View>
                         <Text style={styles.successTitle}>Check Your Email</Text>
-                        <Text style={styles.successText}>
+                        <Text style={styles.successSubtitle}>
                             We've sent a password reset link to{'\n'}
                             <Text style={styles.emailHighlight}>{email}</Text>
                         </Text>
                         
                         <TouchableOpacity
-                            style={styles.button}
+                            style={[s.button, { width: '100%', marginTop: 24 }]}
                             onPress={() => router.back()}
                         >
-                            <Text style={styles.buttonText}>Back to Login</Text>
+                            <Text style={s.buttonText}>Back to Login</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity 
@@ -82,37 +83,34 @@ export default function ForgotPasswordScreen() {
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={s.container}>
             <View style={styles.backgroundAccent} />
-            <KeyboardAvoidingView
-                style={{ flex: 1 }}
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            >
+            <View style={{ flex: 1 }}>
                 <TouchableOpacity
-                    style={styles.backButton}
+                    style={s.backButton}
                     onPress={() => router.back()}
                 >
                     <ArrowLeft size={22} color={AppColors.navy} />
                 </TouchableOpacity>
 
-                <View style={styles.content}>
-                    <View style={styles.header}>
+                <View style={s.content}>
+                    <View style={s.header}>
                         <View style={styles.iconCircle}>
                             <KeyRound size={32} color={AppColors.white} />
                         </View>
-                        <Text style={styles.title}>Forgot Password?</Text>
-                        <Text style={styles.subtitle}>
+                        <Text style={s.title}>Forgot Password?</Text>
+                        <Text style={[s.subtitle, { textAlign: 'center', paddingHorizontal: 20 }]}>
                             Don't worry! It happens. Please enter the email address associated with your account.
                         </Text>
                     </View>
 
-                    <View style={styles.formContainer}>
-                        <View style={styles.inputWrapper}>
-                            <Text style={styles.label}>Email Address</Text>
-                            <View style={styles.inputContainer}>
+                    <View style={s.form}>
+                        <View style={s.inputContainer}>
+                            <Text style={s.label}>Email Address</Text>
+                            <View style={styles.inputWrapper}>
                                 <Mail size={20} color={AppColors.textMuted} style={styles.inputIcon} />
                                 <TextInput
-                                    style={styles.input}
+                                    style={styles.inputField}
                                     placeholder="Enter your email"
                                     placeholderTextColor={AppColors.textPlaceholder}
                                     value={email}
@@ -125,14 +123,14 @@ export default function ForgotPasswordScreen() {
                         </View>
 
                         <TouchableOpacity
-                            style={[styles.button, loading && { opacity: 0.6 }]}
+                            style={[s.button, loading && s.buttonDisabled]}
                             onPress={handleResetPassword}
                             disabled={loading}
                         >
                             {loading ? (
                                 <ActivityIndicator color={AppColors.white} />
                             ) : (
-                                <Text style={styles.buttonText}>Send Reset Link</Text>
+                                <Text style={s.buttonText}>Send Reset Link</Text>
                             )}
                         </TouchableOpacity>
 
@@ -144,16 +142,12 @@ export default function ForgotPasswordScreen() {
                         </View>
                     </View>
                 </View>
-            </KeyboardAvoidingView>
+            </View>
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: AppColors.white,
-    },
     backgroundAccent: {
         position: 'absolute',
         top: -100,
@@ -164,27 +158,6 @@ const styles = StyleSheet.create({
         backgroundColor: AppColors.primary,
         opacity: 0.05,
         zIndex: 0,
-    },
-    content: {
-        flex: 1,
-        padding: 24,
-        justifyContent: 'center',
-    },
-    backButton: {
-        position: 'absolute',
-        top: 20,
-        left: 20,
-        zIndex: 10,
-        width: 44,
-        height: 44,
-        borderRadius: 22,
-        backgroundColor: '#F0F2F5',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    header: {
-        alignItems: 'center',
-        marginBottom: 40,
     },
     iconCircle: {
         width: 80,
@@ -200,70 +173,25 @@ const styles = StyleSheet.create({
         shadowRadius: 12,
         elevation: 8,
     },
-    title: {
-        fontFamily: AppFonts.bold,
-        fontSize: 32,
-        color: AppColors.navy,
-        marginBottom: 12,
-    },
-    subtitle: {
-        fontFamily: AppFonts.regular,
-        fontSize: 16,
-        color: AppColors.textMuted,
-        textAlign: 'center',
-        lineHeight: 24,
-        paddingHorizontal: 20,
-    },
-    formContainer: {
-        width: '100%',
-    },
     inputWrapper: {
-        marginBottom: 32,
-    },
-    label: {
-        fontFamily: AppFonts.bold,
-        fontSize: 14,
-        color: AppColors.navy,
-        marginBottom: 8,
-        marginLeft: 4,
-    },
-    inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F8F9FA',
-        borderRadius: 16,
+        backgroundColor: AppColors.backgroundMuted,
+        borderRadius: AppLayout.radius.md,
         borderWidth: 1,
-        borderColor: AppColors.borderLight,
+        borderColor: AppColors.borderSubtle,
         paddingHorizontal: 16,
         height: 60,
     },
     inputIcon: {
         marginRight: 12,
     },
-    input: {
+    inputField: {
         fontFamily: AppFonts.regular,
         flex: 1,
         fontSize: 16,
         color: AppColors.textDark,
         height: '100%',
-    },
-    button: {
-        backgroundColor: AppColors.primary,
-        borderRadius: 16,
-        height: 60,
-        width: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: AppColors.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 8,
-        elevation: 5,
-    },
-    buttonText: {
-        fontFamily: AppFonts.bold,
-        color: AppColors.white,
-        fontSize: 18,
     },
     infoBox: {
         marginTop: 40,
@@ -299,13 +227,13 @@ const styles = StyleSheet.create({
         color: AppColors.navy,
         marginBottom: 16,
     },
-    successText: {
+    successSubtitle: {
         fontFamily: AppFonts.regular,
         fontSize: 16,
         color: AppColors.textMuted,
         textAlign: 'center',
         lineHeight: 24,
-        marginBottom: 40,
+        marginBottom: 8,
     },
     emailHighlight: {
         fontFamily: AppFonts.bold,

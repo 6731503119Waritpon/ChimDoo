@@ -116,5 +116,3 @@ export const useAuth = (): UseAuthReturn => {
         clearError,
     };
 };
-
-export default useAuth;

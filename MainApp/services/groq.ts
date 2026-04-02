@@ -1,4 +1,3 @@
-// Replace with your API key from .env
 const API_KEY = process.env.EXPO_PUBLIC_GROQ_API_KEY || '';
 
 const SYSTEM_INSTRUCTION = `
@@ -25,30 +24,32 @@ export type Message = {
     isUser: boolean;
 };
 
-export let globalGroqHistory: { role: string; content: string }[] = [];
-export let globalUIMessages: Message[] = [];
+let groqHistory: { role: string; content: string }[] = [];
+let uiMessages: Message[] = [];
+
+export const getUIMessages = () => uiMessages;
 
 export const initOrRestoreChat = (
     systemInstruction: string = SYSTEM_INSTRUCTION,
     initialMessage: string = 'Loading message...'
 ) => {
-    if (globalGroqHistory.length > 0 && globalUIMessages.length > 0) {
+    if (groqHistory.length > 0 && uiMessages.length > 0) {
         return;
     }
 
-    globalGroqHistory = [
+    groqHistory = [
         { role: 'system', content: systemInstruction },
         { role: 'user', content: 'สวัสดีครับ คุณคือใครและทำอะไรได้บ้าง?' },
         { role: 'assistant', content: initialMessage }
     ];
 
-    globalUIMessages = [
+    uiMessages = [
         { id: '1', text: initialMessage, isUser: false }
     ];
 };
 
 export const sendMessageToGroq = async (text: string) => {
-    globalGroqHistory.push({ role: 'user', content: text });
+    groqHistory.push({ role: 'user', content: text });
 
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
@@ -58,7 +59,7 @@ export const sendMessageToGroq = async (text: string) => {
         },
         body: JSON.stringify({
             model: "llama-3.3-70b-versatile",
-            messages: globalGroqHistory,
+            messages: groqHistory,
             temperature: 0.7,
         })
     });
@@ -66,17 +67,17 @@ export const sendMessageToGroq = async (text: string) => {
     const data = await response.json();
 
     if (!response.ok) {
-        globalGroqHistory.pop();
+        groqHistory.pop();
         throw new Error(data.error?.message || "Unknown Groq API Error");
     }
 
     const replyContent = data.choices?.[0]?.message?.content || "";
-    globalGroqHistory.push({ role: 'assistant', content: replyContent });
+    groqHistory.push({ role: 'assistant', content: replyContent });
 
     return replyContent;
 };
 
 export const clearChatHistory = () => {
-    globalGroqHistory = [];
-    globalUIMessages = [];
+    groqHistory = [];
+    uiMessages = [];
 };

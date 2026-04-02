@@ -18,7 +18,7 @@ import * as MediaLibrary from 'expo-media-library';
 import { CommunityPost } from '@/types/community';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
-import ShareCardView from './ShareCardView';
+import ShareCardView from '@/components/ui/ShareCardView';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 

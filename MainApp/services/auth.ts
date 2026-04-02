@@ -7,7 +7,7 @@ import {
     onAuthStateChanged,
     User,
 } from 'firebase/auth';
-import { auth } from '../firebaseConfig';
+import { auth } from '@/config/firebase';
 import { clearChatHistory } from '@/services/groq';
 
 export const signUp = async (

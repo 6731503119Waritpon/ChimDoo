@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import SharedRecipeImage from './SharedRecipeImage';
+import SharedRecipeImage from '@/components/ui/SharedRecipeImage';
 import { Clock, Flame, Soup } from 'lucide-react-native';
 import { ChimDooItem } from '@/hooks/useChimDoo';
 import { AppFonts } from '@/constants/theme';
@@ -10,7 +10,7 @@ interface RecipeCardProps {
     onPress: (item: ChimDooItem) => void;
 }
 
-const RecipeCard: React.FC<RecipeCardProps> = ({ item, onPress }) => {
+const RecipeCard: React.FC<RecipeCardProps> = memo(({ item, onPress }) => {
     return (
         <TouchableOpacity
             style={styles.recipeCard}
@@ -50,7 +50,7 @@ const RecipeCard: React.FC<RecipeCardProps> = ({ item, onPress }) => {
             </View>
         </TouchableOpacity>
     );
-};
+});
 
 export default RecipeCard;
 

@@ -10,7 +10,7 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import { X, Smartphone, CheckCircle2, Clock } from 'lucide-react-native';
-import { useAppVersion } from '../hooks/useAppVersion';
+import { useAppVersion } from '@/hooks/useAppVersion';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
 

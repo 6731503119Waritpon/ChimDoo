@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Platform } from 'react-native';
 import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
-import { auth } from '../firebaseConfig';
+import { auth } from '@/config/firebase';
 import { isFirebaseError } from '@/types/firebase';
 
 interface GoogleSignInModule {

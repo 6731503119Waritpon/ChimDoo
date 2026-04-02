@@ -20,14 +20,14 @@ import {
     Inbox,
 } from 'lucide-react-native';
 import { useFriends } from '@/hooks/useFriends';
-import { useToast } from '@/components/ToastProvider';
+import { useToast } from '@/components/ui/ToastProvider';
 import { FriendInfo, Friendship } from '@/types/friends';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
-import EmptyState from '@/components/EmptyState';
-import FriendCard from '@/components/FriendCard';
-import FriendRequestCard from '@/components/FriendRequestCard';
-import AddFriendModal from '@/components/AddFriendModal';
+import EmptyState from '@/components/ui/EmptyState';
+import FriendCard from '@/components/cards/FriendCard';
+import FriendRequestCard from '@/components/cards/FriendRequestCard';
+import AddFriendModal from '@/components/modals/AddFriendModal';
 
 type Tab = 'friends' | 'requests';
 

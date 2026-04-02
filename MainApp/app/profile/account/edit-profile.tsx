@@ -4,17 +4,17 @@ import {
     ActivityIndicator, Image, Platform,
     Alert, ActionSheetIOS,
 } from 'react-native';
-import KeyboardAwareView from '@/components/KeyboardAwareView';
+import KeyboardAwareView from '@/components/ui/KeyboardAwareView';
 import { useRouter } from 'expo-router';
 import { ChevronLeft, Camera, User } from 'lucide-react-native';
 import { updateProfile } from 'firebase/auth';
 import { doc, setDoc, getDoc, collection, query, where, getDocs, updateDoc } from 'firebase/firestore';
 import * as ImagePicker from 'expo-image-picker';
 import { useAuth } from '../../../hooks/useAuth';
-import { useToast } from '@/components/ToastProvider';
+import { useToast } from '@/components/ui/ToastProvider';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
-import { db } from '@/firebaseConfig';
+import { db } from '@/config/firebase';
 import { Collections } from '@/constants/collections';
 
 export default function EditProfileScreen() {

@@ -16,8 +16,8 @@ import {
     getDocs,
     Timestamp,
 } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
-import { useAuth } from './useAuth';
+import { db } from '@/config/firebase';
+import { useAuth } from '@/hooks/useAuth';
 import { CommunityPost, Comment } from '@/types/community';
 import { createNotification } from '@/utils/notificationHelpers';
 import { Collections } from '@/constants/collections';
@@ -211,5 +211,3 @@ export const useCommunity = () => {
         currentUserId: user?.uid,
     };
 };
-
-export default useCommunity;

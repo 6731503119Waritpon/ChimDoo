@@ -9,14 +9,9 @@ import {
     Platform,
 } from 'react-native';
 import Animated, {
-    useSharedValue,
-    useAnimatedStyle,
-    withSpring,
     FadeInDown
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
-import { BlurView } from 'expo-blur';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth';
@@ -27,85 +22,27 @@ import {
 import { LucideIcon } from 'lucide-react-native';
 import { ProfileMenuItem } from '@/types/menuProfile';
 import { profileMenuConfig } from '@/config/menuProfile';
-import { useToast } from '@/components/ToastProvider';
-import LogoutModal from '@/components/LogoutModal';
-import AppVersionModal from '@/components/AppVersionModal';
-import GuestState from '@/components/GuestState';
-import ProfileMenuSection from '@/components/ProfileMenuSection';
-import SkeletonProfile from '@/components/SkeletonProfile';
+import { useToast } from '@/components/ui/ToastProvider';
+import LogoutModal from '@/components/modals/LogoutModal';
+import AppVersionModal from '@/components/modals/AppVersionModal';
+import GuestState from '@/components/ui/GuestState';
+import ProfileMenuSection from '@/components/cards/ProfileMenuSection';
+import SkeletonProfile from '@/components/ui/SkeletonProfile';
 import { doc, getDoc } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
+import { db } from '@/config/firebase';
 import { Collections } from '@/constants/collections';
-import { AppFonts } from '@/constants/theme';
+import { AppFonts, AppLayout } from '@/constants/theme';
 import { AppColors } from '@/constants/colors';
+import { AppStrings } from '@/constants/strings';
 import { getErrorMessage } from '@/types/firebase';
-import ChefStatsBar from '@/components/ChefStatsBar';
+import ChefStatsBar from '@/components/ui/ChefStatsBar';
 import { useChimDoo } from '@/hooks/useChimDoo';
 import { useCommunity } from '@/hooks/useCommunity';
-import { Heart, MessageCircleMore, Users, Star, ArrowRight, Clock } from 'lucide-react-native';
+import { Heart, MessageCircleMore, Users, Clock } from 'lucide-react-native';
+import DashboardGridCard from '@/modules/profile/components/DashboardGridCard';
 
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
-interface GridCardProps {
-    label: string;
-    value: string;
-    icon: LucideIcon;
-    color: string;
-    onPress: () => void;
-    delay?: number;
-}
-
-const DashboardGridCard: React.FC<GridCardProps> = ({
-    label,
-    value,
-    icon: Icon,
-    color,
-    onPress,
-    delay = 0
-}) => {
-    const scale = useSharedValue(1);
-
-    const animatedStyle = useAnimatedStyle(() => ({
-        transform: [{ scale: scale.value }],
-    }));
-
-    const handlePressIn = () => {
-        scale.value = withSpring(0.96);
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    };
-
-    const handlePressOut = () => {
-        scale.value = withSpring(1);
-    };
-
-    return (
-        <Animated.View
-            entering={FadeInDown.delay(delay).duration(400)}
-            style={styles.gridCardWrapper}
-        >
-            <AnimatedTouchableOpacity
-                onPressIn={handlePressIn}
-                onPressOut={handlePressOut}
-                onPress={onPress}
-                activeOpacity={1}
-                style={[styles.gridCardInner, animatedStyle]}
-            >
-                <View style={styles.gridCard}>
-                    <View style={[styles.badgeDot, { backgroundColor: color }]} />
-
-                    <View style={styles.gridCardHeader}>
-                        <Icon size={24} color={color} />
-                    </View>
-
-                    <View style={styles.gridCardFooter}>
-                        <Text style={styles.gridCardLabel}>{label.toUpperCase()}</Text>
-                        <Text style={styles.gridCardValue}>{value}</Text>
-                    </View>
-                </View>
-            </AnimatedTouchableOpacity>
-        </Animated.View>
-    );
-};
 
 const Page = () => {
     const router = useRouter();
@@ -167,8 +104,8 @@ const Page = () => {
         return (
             <GuestState
                 icon={UserPen}
-                title="Welcome to ChimDoo"
-                subtitle="Sign in to access your profile, saved recipes, and more"
+                title={AppStrings.loginRequired}
+                subtitle={AppStrings.loginToReview}
                 showAuthButtons={true}
             />
         );
@@ -295,17 +232,13 @@ const Page = () => {
 export default Page;
 
 const styles = StyleSheet.create({
-    centerContent: {
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
 
     container: {
         flex: 1,
         backgroundColor: '#F8F9FA',
     },
     scrollContent: {
-        paddingTop: Platform.OS === 'ios' ? 60 : 48,
+        paddingTop: Platform.select(AppLayout.headerPaddingTop),
         paddingBottom: 160,
     },
 
@@ -316,10 +249,10 @@ const styles = StyleSheet.create({
         paddingVertical: 28,
         marginHorizontal: 20,
         marginBottom: 8,
-        backgroundColor: '#FFFFFF',
-        borderRadius: 24,
+        backgroundColor: AppColors.white,
+        borderRadius: AppLayout.radius.xl,
         borderWidth: 1,
-        borderColor: 'rgba(29, 53, 87, 0.08)',
+        borderColor: AppColors.borderSubtle,
         shadowColor: '#1D3557',
         shadowOffset: {
             width: 0,
@@ -334,7 +267,7 @@ const styles = StyleSheet.create({
         height: 96,
         borderRadius: 48,
         borderWidth: 3,
-        borderColor: '#1D3557',
+        borderColor: AppColors.navy,
         alignItems: 'center',
         justifyContent: 'center',
         padding: 3,
@@ -386,7 +319,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         gap: 6,
-        backgroundColor: 'rgba(29, 53, 87, 0.05)', // Subtle Navy Tint
+        backgroundColor: 'rgba(29, 53, 87, 0.05)',
         paddingHorizontal: 14,
         paddingVertical: 7,
         borderRadius: 20,
@@ -437,48 +370,5 @@ const styles = StyleSheet.create({
         flexWrap: 'wrap',
         justifyContent: 'space-between',
         gap: 12,
-    },
-    gridCardWrapper: {
-        width: '48.2%',
-        borderRadius: 20,
-    },
-    gridCardInner: {
-        flex: 1,
-    },
-    gridCard: {
-        backgroundColor: '#FFFFFF',
-        padding: 20,
-        borderRadius: 20,
-        borderWidth: 1.5,
-        borderColor: '#F1F1F1',
-        minHeight: 140,
-        justifyContent: 'space-between',
-        overflow: 'hidden',
-    },
-    gridCardHeader: {
-        alignItems: 'flex-start',
-    },
-    badgeDot: {
-        position: 'absolute',
-        top: 20,
-        right: 20,
-        width: 8,
-        height: 8,
-        borderRadius: 4,
-    },
-    gridCardFooter: {
-        marginTop: 8,
-    },
-    gridCardLabel: {
-        fontFamily: AppFonts.bold,
-        fontSize: 11,
-        color: '#999',
-        letterSpacing: 1.2,
-        marginBottom: 4,
-    },
-    gridCardValue: {
-        fontFamily: AppFonts.bold,
-        fontSize: 18,
-        color: AppColors.navy,
     },
 });

@@ -12,7 +12,7 @@ import {
     serverTimestamp,
     setDoc,
 } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
+import { db } from '@/config/firebase';
 import { useAuth } from './useAuth';
 import { Friendship, FriendInfo } from '@/types/friends';
 import { createNotification } from '@/utils/notificationHelpers';

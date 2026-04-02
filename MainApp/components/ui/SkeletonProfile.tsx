@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, Platform, Dimensions } from 'react-native';
-import Skeleton from './Skeleton';
+import Skeleton from '@/components/ui/Skeleton';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 

@@ -8,7 +8,7 @@ import {
     deleteDoc,
     doc,
 } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
+import { db } from '@/config/firebase';
 import { useAuth } from './useAuth';
 import { AppNotification } from '@/types/notification';
 import { Collections } from '@/constants/collections';

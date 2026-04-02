@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet, Text } from 'react-native';
 import { Bell } from 'lucide-react-native';
-import { useNotifications } from '../hooks/useNotifications';
+import { useNotifications } from '@/hooks/useNotifications';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
 

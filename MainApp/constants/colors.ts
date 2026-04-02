@@ -20,11 +20,21 @@ export const AppColors = {
   textDark: '#333',
   textMuted: '#666',
   textLight: '#888',
+  textSecondary: '#777',
   textPlaceholder: '#aaa',
 
-  /** Borders */
+  /** Borders & dividers */
   borderLight: '#e0e0e0',
   borderSubtle: '#e8e8e8',
+  divider: '#eee',
+  inputBorder: '#ddd',
+
+  /** Background variants */
+  backgroundCard: '#FFFFFF',
+  backgroundMuted: '#F0F2F5',
+
+  /** Shadows */
+  shadow: '#000',
 
   /** Semantic colors */
   success: '#22c55e',
@@ -32,6 +42,7 @@ export const AppColors = {
   error: '#ef4444',
   info: '#3b82f6',
   purple: '#8b5cf6',
+
   /** Gold — premium accents */
   gold: '#EFBF04',
   /** Orange — alerts, energetic accents */
@@ -39,3 +50,4 @@ export const AppColors = {
   /** Popular/Flame — vibrant call-to-action or badges */
   popular: '#FF5A00',
 } as const;
+

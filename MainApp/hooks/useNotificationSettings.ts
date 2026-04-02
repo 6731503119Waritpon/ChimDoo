@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { doc, onSnapshot, setDoc } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
+import { db } from '@/config/firebase';
 import { useAuth } from './useAuth';
 import { NotificationType, NotificationSettings } from '@/types/notification';
 import { Collections } from '@/constants/collections';

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, memo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Heart, Share2, UserPlus, UserCheck, Clock, UserMinus } from 'lucide-react-native';
 import Animated, {
@@ -8,7 +8,6 @@ import Animated, {
     withSequence,
     withDelay,
     withTiming,
-    runOnJS
 } from 'react-native-reanimated';
 import { GestureDetector, Gesture, GestureHandlerRootView } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
@@ -31,7 +30,7 @@ interface PostCardProps {
     isOwnPost: boolean;
 }
 
-const PostCard = ({
+const PostCard = memo(({
     item,
     onLike,
     onComment,
@@ -245,7 +244,7 @@ const PostCard = ({
             </View>
         </GestureHandlerRootView>
     );
-};
+});
 
 export default PostCard;
 

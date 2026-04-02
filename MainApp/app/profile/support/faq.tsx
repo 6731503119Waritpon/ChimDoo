@@ -12,7 +12,7 @@ import {
 import { useRouter } from 'expo-router';
 import { ChevronLeft, ChevronDown, ChevronUp, HelpCircle } from 'lucide-react-native';
 import { collection, getDocs, orderBy, query } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
+import { db } from '@/config/firebase';
 import { ActivityIndicator } from 'react-native';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';

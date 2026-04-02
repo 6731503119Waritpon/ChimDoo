@@ -8,9 +8,9 @@ import { useRouter, Stack, useFocusEffect } from 'expo-router';
 import { ChevronLeft, Send, ChefHat } from 'lucide-react-native';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
-import { initOrRestoreChat, sendMessageToGroq, globalUIMessages, Message } from '@/services/groq';
+import { initOrRestoreChat, sendMessageToGroq, getUIMessages, Message } from '@/services/groq';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { db } from '@/firebaseConfig';
+import { db } from '@/config/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import Animated, {
     FadeInLeft,
@@ -149,8 +149,9 @@ export default function ChatbotScreen() {
     useEffect(() => {
         const initChat = async () => {
             try {
-                if (globalUIMessages.length > 0) {
-                    setMessages([...globalUIMessages]);
+                const uiMessages = getUIMessages();
+                if (uiMessages.length > 0) {
+                    setMessages([...uiMessages]);
                     setInitializing(false);
                     setTimeout(() => flatListRef.current?.scrollToEnd({ animated: false }), 50);
                     return;
@@ -170,12 +171,12 @@ export default function ChatbotScreen() {
                 }
 
                 initOrRestoreChat(sysInstruction, initMessageText);
-                setMessages([...globalUIMessages]);
+                setMessages([...getUIMessages()]);
             } catch (error) {
                 console.warn("Failed to init chat settings from Firebase", error);
                 const defaultInitMsg = 'Loading message...';
                 initOrRestoreChat(undefined, defaultInitMsg);
-                setMessages([...globalUIMessages]);
+                setMessages([...getUIMessages()]);
             } finally {
                 setInitializing(false);
             }
@@ -190,8 +191,9 @@ export default function ChatbotScreen() {
 
         const userMsg: Message = { id: Date.now().toString(), text, isUser: true };
 
-        globalUIMessages.push(userMsg);
-        setMessages([...globalUIMessages]);
+        const uiMessages = getUIMessages();
+        uiMessages.push(userMsg);
+        setMessages([...uiMessages]);
 
         setInputText('');
         setLoading(true);
@@ -200,9 +202,10 @@ export default function ChatbotScreen() {
             const responseText = await sendMessageToGroq(text);
 
             const aiMsg: Message = { id: (Date.now() + 1).toString(), text: responseText, isUser: false };
-            globalUIMessages.push(aiMsg);
+            const uiMessages = getUIMessages();
+            uiMessages.push(aiMsg);
             setLastNewMessageId(aiMsg.id);
-            setMessages([...globalUIMessages]);
+            setMessages([...uiMessages]);
         } catch (error: unknown) {
             console.error("Groq Error:", error);
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
@@ -212,8 +215,9 @@ export default function ChatbotScreen() {
                 text: `Error: ${errorMessage} ${apiKeyPreview}`,
                 isUser: false,
             };
-            globalUIMessages.push(errorMsg);
-            setMessages([...globalUIMessages]);
+            const uiMessages = getUIMessages();
+            uiMessages.push(errorMsg);
+            setMessages([...uiMessages]);
         } finally {
             setLoading(false);
         }

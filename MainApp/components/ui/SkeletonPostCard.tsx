@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import Skeleton from './Skeleton';
+import Skeleton from '@/components/ui/Skeleton';
 import { AppColors } from '@/constants/colors';
 
 const SkeletonPostCard = () => {

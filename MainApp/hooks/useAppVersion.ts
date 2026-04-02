@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { collection, getDocs, orderBy, query } from 'firebase/firestore';
-import { db } from '@/firebaseConfig';
+import { db } from '@/config/firebase';
 import { AppVersion } from '@/types/appContent';
 import { Collections } from '@/constants/collections';
 import { getErrorMessage } from '@/types/firebase';

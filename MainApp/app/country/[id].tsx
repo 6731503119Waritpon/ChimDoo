@@ -21,8 +21,8 @@ import { FoodItem } from '@/types/recipe';
 import { globeCountries } from '@/config/home';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
-import PopularFoodCard from '@/components/PopularFoodCard';
-import NormalFoodItem from '@/components/NormalFoodItem';
+import PopularFoodCard from '@/components/cards/PopularFoodCard';
+import NormalFoodItem from '@/components/cards/NormalFoodItem';
 
 const { width } = Dimensions.get('window');
 

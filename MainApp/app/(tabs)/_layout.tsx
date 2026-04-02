@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { Tabs, usePathname } from "expo-router";
 import { View, StyleSheet, Platform } from "react-native";
-import { TabBar } from "@/components/TabBar";
-import AIFab from "@/components/AIFab";
-import NotificationBell from "@/components/NotificationBell";
-import NotificationModal from "@/components/NotificationModal";
+import { TabBar } from "@/components/ui/TabBar";
+import AIFab from "@/components/ui/AIFab";
+import NotificationBell from "@/components/ui/NotificationBell";
+import NotificationModal from "@/components/modals/NotificationModal";
 
 const TabLayout = () => {
     const pathname = usePathname();

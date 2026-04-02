@@ -14,7 +14,7 @@ import {
 import { Bell, X, UserPlus, Heart, MessageCircle, Star, CheckCheck, LucideIcon } from 'lucide-react-native';
 import { BlurView } from 'expo-blur';
 import { useRouter } from 'expo-router';
-import { useNotifications, AppNotification } from '../hooks/useNotifications';
+import { useNotifications, AppNotification } from '@/hooks/useNotifications';
 import { formatRelativeTime } from '@/utils/formatTime';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';

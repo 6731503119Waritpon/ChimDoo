@@ -6,32 +6,29 @@ import {
     StyleSheet,
     FlatList,
     Platform,
-    ActivityIndicator,
     RefreshControl,
 } from 'react-native';
-import Animated, {
-    useSharedValue,
-    useAnimatedStyle,
-    withSpring,
-    withTiming,
-    interpolate,
-} from 'react-native-reanimated';
-import { UsersRound, Globe, Users, Info, CircleHelp } from 'lucide-react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { UsersRound, Info, CircleHelp } from 'lucide-react-native';
 import { CommunityPost } from '@/types/community';
 import { useCommunity } from '@/hooks/useCommunity';
 import { useFriends } from '@/hooks/useFriends';
-import { useToast } from '@/components/ToastProvider';
-import CommentModal from '@/components/CommentModal';
-import GuestState from '@/components/GuestState';
-import PostCard from '@/components/PostCard';
-import Pagination from '@/components/Pagination';
-import SkeletonPostCard from '@/components/SkeletonPostCard';
-import ConfirmCancelModal from '@/components/ConfirmCancelModal';
-import CommunityInfoModal from '@/components/CommunityInfoModal';
-import SharePostModal from '@/components/SharePostModal';
-import ImageFullscreenModal from '@/components/ImageFullscreenModal';
+import { useToast } from '@/components/ui/ToastProvider';
+import CommentModal from '@/components/modals/CommentModal';
+import GuestState from '@/components/ui/GuestState';
+import PostCard from '@/components/cards/PostCard';
+import Pagination from '@/components/ui/Pagination';
+import SkeletonPostCard from '@/components/ui/SkeletonPostCard';
+import ConfirmCancelModal from '@/components/modals/ConfirmCancelModal';
+import CommunityInfoModal from '@/components/modals/CommunityInfoModal';
+import SharePostModal from '@/components/modals/SharePostModal';
+import ImageFullscreenModal from '@/components/modals/ImageFullscreenModal';
 import { AppColors } from '@/constants/colors';
-import { AppFonts } from '@/constants/theme';
+import { AppFonts, AppLayout } from '@/constants/theme';
+import { AppStrings } from '@/constants/strings';
+
+import { FeedTabBar } from '@/modules/community/components/FeedTabBar';
+import { EmptyFeedState } from '@/modules/community/components/EmptyFeedState';
 
 type FeedTab = 'global' | 'friends';
 
@@ -50,7 +47,6 @@ const Page = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [refreshing, setRefreshing] = useState(false);
     const ITEMS_PER_PAGE = 10;
-    const activeIndex = useSharedValue(0);
 
     const onRefresh = useCallback(() => {
         setRefreshing(true);
@@ -58,31 +54,9 @@ const Page = () => {
     }, []);
 
     useEffect(() => {
-        activeIndex.value = withTiming(feedTab === 'global' ? 0 : 1, {
-            duration: 300,
-        });
         setCurrentPage(1);
     }, [feedTab]);
 
-    const globalTextStyle = useAnimatedStyle(() => {
-        const opacity = interpolate(activeIndex.value, [0, 1], [1, 0.45], 'clamp');
-        const scale = interpolate(activeIndex.value, [0, 1], [1.1, 0.95], 'clamp');
-        return { opacity, transform: [{ scale }] };
-    });
-
-    const friendsTextStyle = useAnimatedStyle(() => {
-        const opacity = interpolate(activeIndex.value, [0, 1], [0.45, 1], 'clamp');
-        const scale = interpolate(activeIndex.value, [0, 1], [0.95, 1.1], 'clamp');
-        return { opacity, transform: [{ scale }] };
-    });
-
-    const indicatorStyle = useAnimatedStyle(() => {
-        const left = interpolate(activeIndex.value, [0, 1], [0, 50], 'clamp');
-        return {
-            left: `${left + 15}%`,
-            width: '25%',
-        };
-    });
 
     const displayPosts = useMemo(() => {
         if (feedTab === 'friends') {
@@ -193,10 +167,7 @@ const Page = () => {
                         </Text>
                     </View>
                 </View>
-                <View style={styles.liquidContainer}>
-                    <View style={styles.liquidTab}><Text style={styles.liquidText}>Global</Text></View>
-                    <View style={styles.liquidTab}><Text style={styles.liquidText}>Friends</Text></View>
-                </View>
+                <FeedTabBar feedTab={feedTab} setFeedTab={setFeedTab} />
                 <FlatList
                     data={[1, 2, 3]}
                     keyExtractor={(i) => i.toString()}
@@ -228,60 +199,10 @@ const Page = () => {
                     </View>
                 </View>
 
-                <View style={styles.liquidContainer}>
-                    <TouchableOpacity
-                        style={styles.liquidTab}
-                        onPress={() => setFeedTab('global')}
-                        activeOpacity={0.6}
-                    >
-                        <Animated.View style={[styles.tabInner, globalTextStyle]}>
-                            <Globe
-                                size={20}
-                                color={AppColors.navy}
-                                style={{ marginRight: 6 }}
-                            />
-                            <Text style={styles.liquidText}>Global</Text>
-                        </Animated.View>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={styles.liquidTab}
-                        onPress={() => setFeedTab('friends')}
-                        activeOpacity={0.6}
-                    >
-                        <Animated.View style={[styles.tabInner, friendsTextStyle]}>
-                            <Users
-                                size={20}
-                                color={AppColors.navy}
-                                style={{ marginRight: 6 }}
-                            />
-                            <Text style={styles.liquidText}>Friends</Text>
-                        </Animated.View>
-                    </TouchableOpacity>
-
-                    <Animated.View style={[styles.liquidIndicator, indicatorStyle]} />
-                </View>
+                <FeedTabBar feedTab={feedTab} setFeedTab={setFeedTab} />
 
                 {displayPosts.length === 0 ? (
-                    <View style={styles.emptyContainer}>
-                        {feedTab === 'friends' ? (
-                            <>
-                                <Users size={48} color={AppColors.navy} />
-                                <Text style={styles.emptyTitle}>No Friend Posts</Text>
-                                <Text style={styles.emptySubtitle}>
-                                    Add friends from the Global feed to see their posts here!
-                                </Text>
-                            </>
-                        ) : (
-                            <>
-                                <Info size={48} color={AppColors.navy} />
-                                <Text style={styles.emptyTitle}>No Reviews Yet</Text>
-                                <Text style={styles.emptySubtitle}>
-                                    Be the first to share your food experience! Go to a recipe, tap "Chim Doo", then write a review.
-                                </Text>
-                            </>
-                        )}
-                    </View>
+                    <EmptyFeedState feedTab={feedTab} />
                 ) : (
                     <FlatList
                         data={paginatedPosts}
@@ -368,25 +289,13 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: AppColors.backgroundLight,
     },
-    loadingContainer: {
-        flex: 1,
-        backgroundColor: AppColors.backgroundLight,
-        justifyContent: 'center',
-        alignItems: 'center',
-        gap: 12,
-    },
-    loadingText: {
-        fontFamily: AppFonts.regular,
-        fontSize: 15,
-        color: '#888',
-    },
 
     header: {
         flexDirection: 'row',
         alignItems: 'flex-end',
         justifyContent: 'space-between',
-        paddingTop: Platform.OS === 'ios' ? 64 : 48,
-        paddingHorizontal: 24,
+        paddingTop: Platform.select(AppLayout.headerPaddingTop),
+        paddingHorizontal: AppLayout.screenPaddingHorizontal,
         paddingBottom: 12,
     },
     headerTitle: {
@@ -398,70 +307,10 @@ const styles = StyleSheet.create({
     headerSubtitle: {
         fontFamily: AppFonts.regular,
         fontSize: 14,
-        color: '#888',
+        color: AppColors.textLight,
         marginTop: 2,
     },
 
-    liquidContainer: {
-        flexDirection: 'row',
-        marginHorizontal: 40,
-        backgroundColor: 'rgba(255, 255, 255, 0.4)',
-        borderRadius: 24,
-        padding: 4,
-        borderWidth: 1,
-        borderColor: 'rgba(29, 53, 87, 0.08)',
-        marginBottom: 16,
-        position: 'relative',
-        height: 56,
-        alignItems: 'center',
-    },
-    liquidTab: {
-        flex: 1,
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    tabInner: {
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    liquidText: {
-        fontFamily: AppFonts.bold,
-        fontSize: 15,
-        color: AppColors.navy,
-    },
-    liquidIndicator: {
-        position: 'absolute',
-        bottom: 8,
-        height: 4,
-        backgroundColor: AppColors.primary,
-        borderRadius: 2,
-        shadowColor: AppColors.primary,
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.5,
-        shadowRadius: 6,
-        elevation: 4,
-    },
-
-    emptyContainer: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: 40,
-    },
-    emptyTitle: {
-        fontFamily: AppFonts.bold,
-        fontSize: 22,
-        color: AppColors.navy,
-        marginBottom: 8,
-    },
-    emptySubtitle: {
-        fontFamily: AppFonts.regular,
-        fontSize: 15,
-        color: '#888',
-        textAlign: 'center',
-        lineHeight: 22,
-    },
 
     feedContent: {
         paddingTop: 8,

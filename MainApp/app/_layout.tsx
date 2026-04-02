@@ -2,8 +2,9 @@ import React, { useEffect } from 'react';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useColorScheme, LogBox } from 'react-native';
+import { useColorScheme, LogBox, Platform } from 'react-native';
 import * as SplashScreen from 'expo-splash-screen';
+import { WebSplashScreen } from '@/components/ui/WebSplashScreen';
 import {
   useFonts,
   Prompt_300Light,
@@ -12,11 +13,11 @@ import {
   Prompt_600SemiBold,
   Prompt_700Bold
 } from '@expo-google-fonts/prompt';
-import { ToastProvider } from '@/components/ToastProvider';
+import { ToastProvider } from '@/components/ui/ToastProvider';
 import 'react-native-reanimated';
 
-const originalWarn = console.warn;
-const originalLog = console.log;
+const originalWarn = console.warn.bind(console);
+const originalLog = console.log.bind(console);
 
 const NOISY_PATTERNS = [
   "EXGL: gl.pixelStorei() doesn't support this parameter yet!",
@@ -29,7 +30,7 @@ console.warn = (...args: unknown[]) => {
   if (typeof message === 'string' && NOISY_PATTERNS.some(p => message.includes(p))) {
     return;
   }
-  originalWarn.apply(console, args as any);
+  originalWarn(...args);
 };
 
 console.log = (...args: unknown[]) => {
@@ -37,7 +38,7 @@ console.log = (...args: unknown[]) => {
   if (typeof message === 'string' && NOISY_PATTERNS.some(p => message.includes(p))) {
     return;
   }
-  originalLog.apply(console, args as any);
+  originalLog(...args);
 };
 
 LogBox.ignoreLogs(NOISY_PATTERNS);
@@ -58,13 +59,29 @@ export default function RootLayout() {
     Prompt_700Bold,
   });
 
+  const [webReady, setWebReady] = React.useState(false);
+
   useEffect(() => {
-    if (loaded || error) {
+    if (Platform.OS === 'web') {
+      const timer = setTimeout(() => {
+        setWebReady(true);
+      }, 2000);
+      return () => clearTimeout(timer);
+    } else {
+      setWebReady(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    if ((loaded || error) && webReady) {
       SplashScreen.hideAsync();
     }
-  }, [loaded, error]);
+  }, [loaded, error, webReady]);
 
-  if (!loaded && !error) {
+  if ((!loaded && !error) || !webReady) {
+    if (Platform.OS === 'web') {
+      return <WebSplashScreen />;
+    }
     return null;
   }
 
