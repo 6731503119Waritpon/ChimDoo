@@ -4,14 +4,7 @@ import { FoodItem } from '@/types/recipe';
 const HISTORY_KEY = 'chimdoo_viewing_history';
 const MAX_HISTORY_ITEMS = 20;
 
-export interface HistoryItem {
-    id: string;
-    name: string;
-    image: string;
-    category: string;
-    timestamp: number;
-    foodData: FoodItem;
-}
+import { HistoryItem } from '@/types/home';
 
 export const getViewingHistory = async (): Promise<HistoryItem[]> => {
     try {

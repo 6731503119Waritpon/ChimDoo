@@ -1,3 +1,8 @@
+export interface FirestoreDocument {
+    id: string;
+    [key: string]: unknown;
+}
+
 export interface FirebaseAuthError {
     code: string;
     message: string;

@@ -13,14 +13,7 @@ import { AppColors } from '@/constants/colors';
 
 const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
 
-interface GridCardProps {
-    label: string;
-    value: string;
-    icon: LucideIcon;
-    color: string;
-    onPress: () => void;
-    delay?: number;
-}
+import { GridCardProps } from '@/types/menuProfile';
 
 const DashboardGridCard: React.FC<GridCardProps> = ({
     label,

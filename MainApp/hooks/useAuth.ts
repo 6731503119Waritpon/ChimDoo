@@ -14,24 +14,7 @@ import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { Collections } from '@/constants/collections';
 
-interface UserProfile {
-    photoBase64?: string | null;
-}
-
-interface AuthState {
-    user: User | null;
-    profile: UserProfile | null;
-    loading: boolean;
-    error: string | null;
-}
-
-interface UseAuthReturn extends AuthState {
-    signUp: (email: string, password: string, displayName?: string) => Promise<void>;
-    signIn: (email: string, password: string) => Promise<void>;
-    logOut: () => Promise<void>;
-    resetPassword: (email: string) => Promise<void>;
-    clearError: () => void;
-}
+import { UserProfile, AuthState, UseAuthReturn } from '@/types/auth';
 
 export const useAuth = (): UseAuthReturn => {
     const [state, setState] = useState<AuthState>({

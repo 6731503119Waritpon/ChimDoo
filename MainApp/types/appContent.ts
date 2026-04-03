@@ -30,3 +30,12 @@ export interface PrivacyPolicyData {
     lastUpdated: string;
     sections: PolicySection[];
 }
+
+export interface TabBarButtonProps {
+    onPress: () => void;
+    onLongPress: () => void;
+    isFocused: boolean;
+    label: string;
+    routeName: string;
+    color: string;
+}

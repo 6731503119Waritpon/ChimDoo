@@ -1,18 +1,7 @@
 import { addDoc, collection, serverTimestamp, getDoc, doc } from 'firebase/firestore';
 import { db } from '@/config/firebase';
-import { NotificationType, NotificationSettings } from '@/types/notification';
+import { NotificationType, NotificationSettings, CreateNotifOptions } from '@/types/notification';
 import { Collections } from '@/constants/collections';
-
-interface CreateNotifOptions {
-    targetUserId: string;
-    type: NotificationType;
-    title: string;
-    body: string;
-    fromUserId?: string;
-    fromUserName?: string;
-    fromAvatar?: string;
-    metadata?: Record<string, string>;
-}
 
 export async function createNotification(opts: CreateNotifOptions): Promise<void> {
     try {

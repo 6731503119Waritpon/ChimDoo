@@ -8,19 +8,7 @@ import { globeCountries } from '@/config/home';
 
 const MAX_VISIBLE_CATS = 6;
 
-interface RecipeFilterBarProps {
-    search: string;
-    setSearch: (text: string) => void;
-    sortMode: string;
-    handleSortPress: () => void;
-    viewMode: 'grid' | 'list';
-    changeViewMode: (mode: 'grid' | 'list') => void;
-    categories: string[];
-    activeCategory: string;
-    setActiveCategory: (cat: string) => void;
-    isCategoriesExpanded: boolean;
-    setIsCategoriesExpanded: (expanded: boolean) => void;
-}
+import { RecipeFilterBarProps } from '@/types/recipe';
 
 const CategoryPill = ({
     cat,

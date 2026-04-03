@@ -3,12 +3,7 @@ import { useFrame } from '@react-three/fiber/native';
 import { OrbitControls } from '@react-three/drei/native';
 import { easeInOutCubic } from '@/utils/recipeHelpers';
 
-interface AnimatedControlsProps {
-  target: { phi: number; theta: number } | null;
-  zooming: boolean;
-  onRotationDone: () => void;
-  onZoomDone: () => void;
-}
+import { AnimatedControlsProps } from '@/types/home';
 
 export default function AnimatedControls({ target, zooming, onRotationDone, onZoomDone }: AnimatedControlsProps) {
   const controlsRef = useRef<React.ComponentRef<typeof OrbitControls> | null>(null);

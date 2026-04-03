@@ -10,12 +10,7 @@ import { Globe, Users } from 'lucide-react-native';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
 
-type FeedTab = 'global' | 'friends';
-
-interface FeedTabBarProps {
-    feedTab: FeedTab;
-    setFeedTab: (tab: FeedTab) => void;
-}
+import { FeedTab, FeedTabBarProps } from '@/types/community';
 
 export const FeedTabBar: React.FC<FeedTabBarProps> = ({ feedTab, setFeedTab }) => {
     const activeIndex = useSharedValue(feedTab === 'global' ? 0 : 1);

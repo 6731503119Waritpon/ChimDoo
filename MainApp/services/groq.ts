@@ -18,14 +18,10 @@ CRITICAL RULES:
 - Do NOT use Markdown syntax for bold text (like **bold**). Just use plain text with emojis and clear new lines.
 `;
 
-export type Message = {
-    id: string;
-    text: string;
-    isUser: boolean;
-};
+import { Message, UIMessage } from '@/types/common';
 
-let groqHistory: { role: string; content: string }[] = [];
-let uiMessages: Message[] = [];
+let groqHistory: Message[] = [];
+let uiMessages: UIMessage[] = [];
 
 export const getUIMessages = () => uiMessages;
 

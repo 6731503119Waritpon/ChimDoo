@@ -4,14 +4,7 @@ import { icon } from "@/constants/icon"
 import Animated, { interpolate, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated"
 import { AppFonts } from "@/constants/theme"
 
-interface TabBarButtonProps {
-    onPress: () => void;
-    onLongPress: () => void;
-    isFocused: boolean;
-    label: string;
-    routeName: string;
-    color: string;
-}
+import { TabBarButtonProps } from '@/types/appContent';
 
 const TabBarButton = ({ onPress, onLongPress, isFocused, label, routeName, color }: TabBarButtonProps) => {
     const scale = useSharedValue(0);

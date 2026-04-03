@@ -19,10 +19,7 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 
-export interface FirestoreDocument {
-    id: string;
-    [key: string]: unknown;
-}
+import { FirestoreDocument } from '@/types/firebase';
 
 export const getDocument = async <T extends FirestoreDocument>(
     collectionName: string,

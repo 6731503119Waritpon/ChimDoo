@@ -1,11 +1,6 @@
 import { AppColors } from '@/constants/colors';
 
-export interface Palette {
-    primary: string;
-    secondary: string;
-    accent: string;
-    gradient: [string, string];
-}
+import { Palette } from '@/types/common';
 
 const PALETTES: Record<string, Palette> = {
     thailand: {

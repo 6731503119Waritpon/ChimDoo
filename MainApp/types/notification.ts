@@ -16,3 +16,14 @@ export interface AppNotification {
 }
 
 export type NotificationSettings = Record<NotificationType, boolean>;
+
+export interface CreateNotifOptions {
+    targetUserId: string;
+    type: NotificationType;
+    title: string;
+    body: string;
+    fromUserId?: string;
+    fromUserName?: string;
+    fromAvatar?: string;
+    metadata?: Record<string, string>;
+}

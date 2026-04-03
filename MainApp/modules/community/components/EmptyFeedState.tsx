@@ -4,9 +4,7 @@ import { Info, Users } from 'lucide-react-native';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
 
-interface EmptyFeedStateProps {
-    feedTab: 'global' | 'friends';
-}
+import { EmptyFeedStateProps } from '@/types/community';
 
 export const EmptyFeedState: React.FC<EmptyFeedStateProps> = ({ feedTab }) => {
     return (

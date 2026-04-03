@@ -23,3 +23,14 @@ export interface Comment {
     text: string;
     createdAt: Timestamp;
 }
+
+export type FeedTab = 'global' | 'friends';
+
+export interface FeedTabBarProps {
+    feedTab: FeedTab;
+    setFeedTab: (tab: FeedTab) => void;
+}
+
+export interface EmptyFeedStateProps {
+    feedTab: FeedTab;
+}

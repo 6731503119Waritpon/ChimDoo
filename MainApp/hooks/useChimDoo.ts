@@ -13,14 +13,8 @@ import {
 } from 'firebase/firestore';
 import { db } from '@/config/firebase';
 import { useAuth } from './useAuth';
-import { FoodItem } from '@/types/recipe';
+import { FoodItem, ChimDooItem } from '@/types/recipe';
 import { createNotification } from '@/utils/notificationHelpers';
-
-export interface ChimDooItem extends FoodItem {
-    id: string;
-    category: string;
-    chimDooAt: Timestamp;
-}
 
 export const useChimDoo = (foodName?: string) => {
     const { user } = useAuth();
