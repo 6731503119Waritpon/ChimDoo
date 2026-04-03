@@ -2,20 +2,16 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
     View,
     Text,
-    TextInput,
     TouchableOpacity,
     StyleSheet,
     FlatList,
     Platform,
-    ScrollView,
-    ActivityIndicator,
     RefreshControl,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { UtensilsCrossed, Search, Earth } from 'lucide-react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useChimDoo, ChimDooItem } from '@/hooks/useChimDoo';
-import { globeCountries } from '@/config/home';
 import GuestState from '@/components/ui/GuestState';
 import GridRecipeCard from '@/components/cards/GridRecipeCard';
 import HeroRecipeCard from '@/components/cards/HeroRecipeCard';
@@ -40,7 +36,6 @@ const Page = () => {
     const [isSortModalVisible, setSortModalVisible] = useState(false);
     const [refreshing, setRefreshing] = useState(false);
     const ITEMS_PER_PAGE = 12;
-    const MAX_VISIBLE_CATS = 4;
 
     const { chimDooList, loading, isLoggedIn } = useChimDoo();
 
@@ -297,8 +292,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     header: {
-        paddingTop: Platform.select(AppLayout.headerPaddingTop),
-        paddingHorizontal: AppLayout.screenPaddingHorizontal,
+        paddingTop: Platform.OS === 'ios' ? 68 : 48,
+        paddingHorizontal: 24,
         paddingBottom: 4,
     },
     headerTitleRow: {

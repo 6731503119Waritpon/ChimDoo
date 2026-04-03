@@ -31,7 +31,7 @@ export const authStyles = StyleSheet.create({
     header: {
         alignItems: 'center',
         marginBottom: 48,
-        marginTop: 20,
+        marginTop: Platform.select({ ios: 40, android: 40, default: 80 }),
     },
     title: {
         fontFamily: AppFonts.bold,

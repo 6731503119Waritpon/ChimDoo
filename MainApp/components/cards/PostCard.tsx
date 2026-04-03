@@ -42,8 +42,10 @@ const PostCard = memo(({
     friendStatus,
     isOwnPost,
 }: PostCardProps) => {
-    const { subscribeToComments } = useCommunity();
+    const { subscribeToComments, profile, currentUserId } = useCommunity();
     const [recentComments, setRecentComments] = useState<Comment[]>([]);
+    const isOwnPostLocal = item.userId === currentUserId;
+    const postAvatar = isOwnPostLocal ? (profile?.photoBase64 || item.userAvatar) : item.userAvatar;
     const avatarLetter = (item.userName || '?').charAt(0).toUpperCase();
 
     const heartScale = useSharedValue(0);
@@ -152,8 +154,8 @@ const PostCard = memo(({
     return (
         <GestureHandlerRootView style={styles.postCard}>
             <View style={styles.postHeader}>
-                {item.userAvatar ? (
-                    <Image source={{ uri: item.userAvatar }} style={styles.postAvatar} />
+                {postAvatar ? (
+                    <Image source={{ uri: postAvatar }} style={styles.postAvatar} />
                 ) : (
                     <View style={[styles.postAvatar, styles.postAvatarPlaceholder]}>
                         <Text style={styles.postAvatarText}>{avatarLetter}</Text>
@@ -229,12 +231,19 @@ const PostCard = memo(({
                         </Text>
                         <View style={styles.commentsBox}>
                             {recentComments.length > 0 ? (
-                                recentComments.map((comment) => (
-                                    <Text key={comment.id} style={styles.commentPreviewText} numberOfLines={1}>
-                                        <Text style={styles.commentAuthor}>{comment.userName}: </Text>
-                                        {comment.text}
-                                    </Text>
-                                ))
+                                recentComments.map((comment) => {
+                                    const isOwnCommentPreview = comment.userId === currentUserId;
+                                    const commentAvatarPreview = isOwnCommentPreview ? (profile?.photoBase64 || comment.userAvatar) : comment.userAvatar;
+                                    
+                                    return (
+                                        <View key={comment.id} style={{ marginBottom: 2 }}>
+                                            <Text style={styles.commentPreviewText} numberOfLines={1}>
+                                                <Text style={styles.commentAuthor}>{comment.userName}: </Text>
+                                                {comment.text}
+                                            </Text>
+                                        </View>
+                                    );
+                                })
                             ) : (
                                 <Text style={styles.noCommentsText}>No comments yet...</Text>
                             )}

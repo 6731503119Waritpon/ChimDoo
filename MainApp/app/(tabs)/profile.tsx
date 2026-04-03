@@ -8,10 +8,6 @@ import {
     ScrollView,
     Platform,
 } from 'react-native';
-import Animated, {
-    FadeInDown
-} from 'react-native-reanimated';
-import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { useFocusEffect } from 'expo-router';
 import { useAuth } from '../../hooks/useAuth';
@@ -19,7 +15,6 @@ import {
     UserPen,
     LogOut,
 } from 'lucide-react-native';
-import { LucideIcon } from 'lucide-react-native';
 import { ProfileMenuItem } from '@/types/menuProfile';
 import { profileMenuConfig } from '@/config/menuProfile';
 import { useToast } from '@/components/ui/ToastProvider';
@@ -40,9 +35,6 @@ import { useChimDoo } from '@/hooks/useChimDoo';
 import { useCommunity } from '@/hooks/useCommunity';
 import { Heart, MessageCircleMore, Users, Clock } from 'lucide-react-native';
 import DashboardGridCard from '@/modules/profile/components/DashboardGridCard';
-
-const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpacity);
-
 
 const Page = () => {
     const router = useRouter();
@@ -238,7 +230,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#F8F9FA',
     },
     scrollContent: {
-        paddingTop: Platform.select(AppLayout.headerPaddingTop),
+        paddingTop: Platform.OS === 'ios' ? 60 : 48,
         paddingBottom: 160,
     },
 

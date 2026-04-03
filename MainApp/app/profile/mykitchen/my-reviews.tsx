@@ -110,10 +110,10 @@ const MyReviews = () => {
         try {
             await deleteReview(deletingReview.id);
             setReviews((prev) => prev.filter((r) => r.id !== deletingReview.id));
-            toast.success('ลบรีวิวแล้ว', 'รีวิวของคุณถูกลบออกจากระบบแล้ว');
+            toast.success('Delete Review', 'Your review has been deleted');
             setShowDeleteModal(false);
         } catch (err) {
-            toast.error('เกิดข้อผิดพลาด', 'ไม่สามารถลบรีวิวได้ในขณะนี้');
+            toast.error('Error', 'Failed to delete review');
         } finally {
             setIsDeleting(false);
         }

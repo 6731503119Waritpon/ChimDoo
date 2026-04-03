@@ -8,8 +8,7 @@ import {
     Platform,
     RefreshControl,
 } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
-import { UsersRound, Info, CircleHelp } from 'lucide-react-native';
+import { UsersRound, CircleHelp } from 'lucide-react-native';
 import { CommunityPost } from '@/types/community';
 import { useCommunity } from '@/hooks/useCommunity';
 import { useFriends } from '@/hooks/useFriends';
@@ -24,8 +23,7 @@ import CommunityInfoModal from '@/components/modals/CommunityInfoModal';
 import SharePostModal from '@/components/modals/SharePostModal';
 import ImageFullscreenModal from '@/components/modals/ImageFullscreenModal';
 import { AppColors } from '@/constants/colors';
-import { AppFonts, AppLayout } from '@/constants/theme';
-import { AppStrings } from '@/constants/strings';
+import { AppFonts } from '@/constants/theme';
 
 import { FeedTabBar } from '@/modules/community/components/FeedTabBar';
 import { EmptyFeedState } from '@/modules/community/components/EmptyFeedState';
@@ -294,8 +292,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'flex-end',
         justifyContent: 'space-between',
-        paddingTop: Platform.select(AppLayout.headerPaddingTop),
-        paddingHorizontal: AppLayout.screenPaddingHorizontal,
+        paddingTop: Platform.OS === 'ios' ? 64 : 48,
+        paddingHorizontal: 24,
         paddingBottom: 12,
     },
     headerTitle: {
@@ -310,7 +308,6 @@ const styles = StyleSheet.create({
         color: AppColors.textLight,
         marginTop: 2,
     },
-
 
     feedContent: {
         paddingTop: 8,

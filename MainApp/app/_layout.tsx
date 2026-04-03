@@ -78,7 +78,9 @@ export default function RootLayout() {
     }
   }, [loaded, error, webReady]);
 
-  if ((!loaded && !error) || !webReady) {
+  const isLoading = !webReady || (!loaded && !error);
+
+  if (isLoading) {
     if (Platform.OS === 'web') {
       return <WebSplashScreen />;
     }
@@ -94,6 +96,7 @@ export default function RootLayout() {
           <Stack.Screen name="profile" options={{ headerShown: false }} />
           <Stack.Screen name="country" options={{ headerShown: false }} />
           <Stack.Screen name="recipe" options={{ headerShown: false }} />
+          <Stack.Screen name="landing-page" options={{ headerShown: false }} />
         </Stack>
         <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
       </ToastProvider>

@@ -1,4 +1,4 @@
-import React, { Suspense, useRef } from 'react';
+import React, { Suspense } from 'react';
 import {
   StyleSheet,
   View,
@@ -15,7 +15,7 @@ import { globeCountries } from '@/config/home';
 import { useGlobe } from '@/hooks/useGlobe';
 import CountrySelectModal from '@/components/modals/CountrySelectModal';
 import { AppColors } from '@/constants/colors';
-import { AppFonts, AppLayout } from '@/constants/theme';
+import { AppFonts } from '@/constants/theme';
 import { getGreetingConfig } from '@/utils/greetingHelpers';
 import EarthModel from '@/modules/home/components/EarthModel';
 import AnimatedControls from '@/modules/home/components/AnimatedControls';
@@ -123,8 +123,8 @@ const styles = StyleSheet.create({
   },
 
   header: {
-    paddingTop: Platform.select(AppLayout.headerPaddingTop),
-    paddingHorizontal: AppLayout.screenPaddingHorizontal,
+    paddingTop: Platform.OS === 'ios' ? 64 : 48,
+    paddingHorizontal: 24,
     marginBottom: 4,
     flexDirection: 'row',
     alignItems: 'flex-start',

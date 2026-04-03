@@ -10,8 +10,17 @@ import {
 } from '../services/auth';
 import { getErrorMessage } from '@/types/firebase';
 
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from '@/config/firebase';
+import { Collections } from '@/constants/collections';
+
+interface UserProfile {
+    photoBase64?: string | null;
+}
+
 interface AuthState {
     user: User | null;
+    profile: UserProfile | null;
     loading: boolean;
     error: string | null;
 }
@@ -27,20 +36,52 @@ interface UseAuthReturn extends AuthState {
 export const useAuth = (): UseAuthReturn => {
     const [state, setState] = useState<AuthState>({
         user: getCurrentUser(),
+        profile: null,
         loading: true,
         error: null,
     });
 
     useEffect(() => {
-        const unsubscribe = subscribeToAuthChanges((user) => {
-            setState((prev) => ({
-                ...prev,
-                user,
-                loading: false,
-            }));
+        let unsubscribeProfile: (() => void) | undefined;
+
+        const unsubscribeAuth = subscribeToAuthChanges((user) => {
+            if (unsubscribeProfile) {
+                unsubscribeProfile();
+                unsubscribeProfile = undefined;
+            }
+
+            if (user) {
+                unsubscribeProfile = onSnapshot(doc(db, Collections.users, user.uid), (docSnap) => {
+                    if (docSnap.exists()) {
+                        setState((prev) => ({
+                            ...prev,
+                            user,
+                            profile: docSnap.data() as UserProfile,
+                            loading: false,
+                        }));
+                    } else {
+                        setState((prev) => ({
+                            ...prev,
+                            user,
+                            profile: null,
+                            loading: false,
+                        }));
+                    }
+                });
+            } else {
+                setState((prev) => ({
+                    ...prev,
+                    user: null,
+                    profile: null,
+                    loading: false,
+                }));
+            }
         });
 
-        return () => unsubscribe();
+        return () => {
+            unsubscribeAuth();
+            if (unsubscribeProfile) unsubscribeProfile();
+        };
     }, []);
 
     const handleSignUp = useCallback(

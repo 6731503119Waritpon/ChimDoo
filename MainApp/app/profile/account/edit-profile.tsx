@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity, StyleSheet,
     ActivityIndicator, Image, Platform,
-    Alert, ActionSheetIOS,
 } from 'react-native';
 import KeyboardAwareView from '@/components/ui/KeyboardAwareView';
 import { useRouter } from 'expo-router';
@@ -16,6 +15,7 @@ import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
 import { db } from '@/config/firebase';
 import { Collections } from '@/constants/collections';
+import PhotoActionModal from '@/components/modals/PhotoActionModal';
 
 export default function EditProfileScreen() {
     const router = useRouter();
@@ -27,6 +27,7 @@ export default function EditProfileScreen() {
     const [newPhotoBase64, setNewPhotoBase64] = useState<string | null>(null);
     const [photoRemoved, setPhotoRemoved] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [isPhotoModalVisible, setIsPhotoModalVisible] = useState(false);
 
     useEffect(() => {
         if (!user) return;
@@ -75,34 +76,7 @@ export default function EditProfileScreen() {
     };
 
     const showImageOptions = () => {
-        const hasPhoto = !!photoPreview;
-        if (Platform.OS === 'ios') {
-            const options = hasPhoto
-                ? ['Cancel', 'Take Photo', 'Choose from Gallery', 'Remove Photo']
-                : ['Cancel', 'Take Photo', 'Choose from Gallery'];
-            ActionSheetIOS.showActionSheetWithOptions(
-                {
-                    options,
-                    cancelButtonIndex: 0,
-                    destructiveButtonIndex: hasPhoto ? 3 : undefined,
-                },
-                (index) => {
-                    if (index === 1) pickImage(true);
-                    if (index === 2) pickImage(false);
-                    if (index === 3 && hasPhoto) removePhoto();
-                }
-            );
-        } else {
-            const buttons: {text: string; style?: 'cancel' | 'destructive'; onPress?: () => void}[] = [
-                { text: 'Cancel', style: 'cancel' },
-                { text: 'Take Photo', onPress: () => pickImage(true) },
-                { text: 'Choose from Gallery', onPress: () => pickImage(false) },
-            ];
-            if (hasPhoto) {
-                buttons.push({ text: 'Remove Photo', style: 'destructive', onPress: removePhoto });
-            }
-            Alert.alert('Change Photo', 'Choose an option', buttons);
-        }
+        setIsPhotoModalVisible(true);
     };
 
     const handleSave = async () => {
@@ -239,6 +213,15 @@ export default function EditProfileScreen() {
                     <Text style={styles.saveButtonText}>Save Changes</Text>
                 )}
             </TouchableOpacity>
+
+            <PhotoActionModal
+                visible={isPhotoModalVisible}
+                onClose={() => setIsPhotoModalVisible(false)}
+                onTakePhoto={() => pickImage(true)}
+                onChooseFromGallery={() => pickImage(false)}
+                onRemovePhoto={removePhoto}
+                hasPhoto={!!photoPreview}
+            />
         </KeyboardAwareView>
     );
 }

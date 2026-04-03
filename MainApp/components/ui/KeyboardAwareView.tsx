@@ -22,7 +22,16 @@ const KeyboardAwareView: React.FC<KeyboardAwareViewProps> = ({
     contentContainerStyle,
 }) => {
     if (Platform.OS === 'web') {
-        return <View style={[styles.container, style]}>{children}</View>;
+        return (
+            <View style={[styles.container, style]}>
+                <ScrollView 
+                    contentContainerStyle={[styles.scrollContent, contentContainerStyle]}
+                    showsVerticalScrollIndicator={false}
+                >
+                    {children}
+                </ScrollView>
+            </View>
+        );
     }
 
     return (

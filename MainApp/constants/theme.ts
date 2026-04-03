@@ -17,7 +17,7 @@ export const AppFonts = {
  */
 export const AppLayout = {
   /** Standard header top padding — accounts for status bar */
-  headerPaddingTop: { ios: 64, android: 48 },
+  headerPaddingTop: { ios: 64, android: 48, default: 44 },
   /** Standard horizontal screen padding */
   screenPaddingHorizontal: 24,
   /** Border radius presets */

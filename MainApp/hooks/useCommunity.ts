@@ -24,7 +24,7 @@ import { Collections } from '@/constants/collections';
 import { AppStrings } from '@/constants/strings';
 
 export const useCommunity = () => {
-    const { user } = useAuth();
+    const { user, profile } = useAuth();
     const [posts, setPosts] = useState<CommunityPost[]>([]);
     const [loading, setLoading] = useState(true);
 
@@ -53,7 +53,7 @@ export const useCommunity = () => {
             await addDoc(collection(db, Collections.reviews), {
                 userId: user.uid,
                 userName: user.displayName || AppStrings.anonymous,
-                userAvatar: user.photoURL || '',
+                userAvatar: profile?.photoBase64 || user.photoURL || '',
                 foodName,
                 image: imageDataUri,
                 description,
@@ -71,11 +71,11 @@ export const useCommunity = () => {
                 body: `You reviewed "${foodName}" — nice one!`,
                 fromUserId: user.uid,
                 fromUserName: user.displayName ?? 'You',
-                fromAvatar: user.photoURL ?? '',
+                fromAvatar: profile?.photoBase64 || user.photoURL || '',
                 metadata: { foodName },
             });
         },
-        [user]
+        [user, profile]
     );
 
     const toggleLike = useCallback(
@@ -101,12 +101,12 @@ export const useCommunity = () => {
                     body: `${user.displayName ?? AppStrings.someone} liked your review of "${post.foodName}"`,
                     fromUserId: user.uid,
                     fromUserName: user.displayName ?? AppStrings.someone,
-                    fromAvatar: user.photoURL ?? '',
+                    fromAvatar: profile?.photoBase64 || user.photoURL || '',
                     metadata: { reviewId, foodName: post.foodName },
                 });
             }
         },
-        [user, posts]
+        [user, posts, profile]
     );
 
     const addComment = useCallback(
@@ -122,7 +122,7 @@ export const useCommunity = () => {
             await addDoc(commentsRef, {
                 userId: user.uid,
                 userName: user.displayName || AppStrings.anonymous,
-                userAvatar: user.photoURL || '',
+                userAvatar: profile?.photoBase64 || user.photoURL || '',
                 text,
                 createdAt: serverTimestamp(),
             });
@@ -140,12 +140,12 @@ export const useCommunity = () => {
                     body: `commented: "${text.slice(0, 60)}${text.length > 60 ? '...' : ''}"`,
                     fromUserId: user.uid,
                     fromUserName: user.displayName ?? AppStrings.someone,
-                    fromAvatar: user.photoURL ?? '',
+                    fromAvatar: profile?.photoBase64 || user.photoURL || '',
                     metadata: { reviewId, foodName: post.foodName },
                 });
             }
         },
-        [user, posts]
+        [user, posts, profile]
     );
 
     const subscribeToComments = useCallback(
@@ -196,12 +196,27 @@ export const useCommunity = () => {
         [user]
     );
 
+    const deleteComment = useCallback(
+        async (reviewId: string, commentId: string) => {
+            if (!user) return;
+            const commentRef = doc(db, Collections.reviews, reviewId, 'comments', commentId);
+            await deleteDoc(commentRef);
+
+            const reviewRef = doc(db, Collections.reviews, reviewId);
+            await updateDoc(reviewRef, {
+                commentsCount: increment(-1),
+            });
+        },
+        [user]
+    );
+
     return {
         posts,
         loading,
         addReview,
         toggleLike,
         addComment,
+        deleteComment,
         subscribeToComments,
         getUserReviews,
         getUserFavorites,
@@ -209,5 +224,6 @@ export const useCommunity = () => {
         deleteReview,
         isLoggedIn: !!user,
         currentUserId: user?.uid,
+        profile,
     };
 };

@@ -47,6 +47,7 @@ export default function RecipePage() {
     const { addReview, hasReviewed } = useCommunity();
 
     const [servings, setServings] = useState(4);
+    const [isExpanded, setIsExpanded] = useState(false);
     const [checkedIngredients, setCheckedIngredients] = useState<Record<number, boolean>>({});
     const [showChimDooRequired, setShowChimDooRequired] = useState(false);
     const [showReviewModal, setShowReviewModal] = useState(false);
@@ -191,7 +192,21 @@ export default function RecipePage() {
                 </View>
 
                 <View style={styles.content}>
-                    <Animated.Text entering={FadeInDown.delay(100)} style={styles.desc}>{food.description}</Animated.Text>
+                    <Animated.View entering={FadeInDown.delay(100)}>
+                        <Text 
+                            style={styles.desc} 
+                            numberOfLines={isExpanded ? undefined : 4}
+                        >
+                            {food.description}
+                        </Text>
+                        {(food.description || '').length > 100 && (
+                            <TouchableOpacity onPress={() => setIsExpanded(!isExpanded)}>
+                                <Text style={[styles.showMore, { color: palette.primary }]}>
+                                    {isExpanded ? 'Show less' : 'Show more'}
+                                </Text>
+                            </TouchableOpacity>
+                        )}
+                    </Animated.View>
 
                     <Animated.View entering={FadeInDown.delay(200)} style={styles.section}>
                         <View style={styles.sectionHead}>
@@ -334,7 +349,8 @@ const styles = StyleSheet.create({
     statText: { color: '#fff', fontSize: 13, fontFamily: AppFonts.medium },
 
     content: { backgroundColor: '#fff', borderTopLeftRadius: 32, borderTopRightRadius: 32, marginTop: -32, padding: 28 },
-    desc: { fontSize: 16, color: '#6B7280', fontFamily: AppFonts.regular, lineHeight: 26, marginBottom: 32 },
+    desc: { fontSize: 16, color: '#6B7280', fontFamily: AppFonts.regular, lineHeight: 26, marginBottom: 16 },
+    showMore: { fontFamily: AppFonts.bold, fontSize: 14, marginBottom: 32 },
 
     section: { marginBottom: 32 },
     sectionHead: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 },
@@ -366,4 +382,4 @@ const styles = StyleSheet.create({
     btnIn: { height: 62, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
     btnTxt: { fontSize: 17, fontFamily: AppFonts.bold, letterSpacing: 1 },
     revBtn: { width: 62, height: 62, borderRadius: 24, backgroundColor: '#F8FAFC', justifyContent: 'center', alignItems: 'center', borderWidth: 1.5, borderColor: '#F1F5F9' },
-});
+});

@@ -66,14 +66,14 @@ export default function SignupScreen() {
             style={styles.container}
             contentContainerStyle={styles.scrollContent}
         >
+            <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => router.back()}
+            >
+                <ArrowLeft size={22} color={AppColors.navy} />
+            </TouchableOpacity>
+
             <View style={styles.content}>
-                <TouchableOpacity
-                    style={styles.backButton}
-                    onPress={() => router.back()}
-                >
-                    <ArrowLeft size={22} color={AppColors.navy} />
-                </TouchableOpacity>
-                
                 <View style={styles.header}>
                     <Text style={styles.title}>Create Account</Text>
                     <Text style={styles.subtitle}>Join us today</Text>

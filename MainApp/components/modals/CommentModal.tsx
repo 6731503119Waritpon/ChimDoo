@@ -16,11 +16,13 @@ import {
 import { X, Send } from 'lucide-react-native';
 import { Comment } from '@/types/community';
 import { useCommunity } from '@/hooks/useCommunity';
-import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/components/ui/ToastProvider';
 import { Unsubscribe } from 'firebase/firestore';
 import { formatTimestamp } from '@/utils/formatTime';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
+import { Image } from 'react-native';
+import ConfirmCommentDeleteModal from './ConfirmCommentDeleteModal';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -31,11 +33,16 @@ interface Props {
 }
 
 const CommentModal: React.FC<Props> = ({ visible, reviewId, onClose }) => {
-    const { addComment, subscribeToComments, isLoggedIn } = useCommunity();
+    const { addComment, deleteComment, subscribeToComments, isLoggedIn, currentUserId, profile } = useCommunity();
+    const toast = useToast();
     const [comments, setComments] = useState<Comment[]>([]);
     const [text, setText] = useState('');
     const [sending, setSending] = useState(false);
     const [loadingComments, setLoadingComments] = useState(true);
+
+    const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+    const [commentToDelete, setCommentToDelete] = useState<Comment | null>(null);
+    const [deleting, setDeleting] = useState(false);
 
     const slideAnim = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
     const backdropOpacity = useRef(new Animated.Value(0)).current;
@@ -87,22 +94,58 @@ const CommentModal: React.FC<Props> = ({ visible, reviewId, onClose }) => {
         }
     };
 
-    const renderComment = ({ item }: { item: Comment }) => (
-        <View style={styles.commentItem}>
-            <View style={styles.commentAvatar}>
-                <Text style={styles.commentAvatarText}>
-                    {(item.userName || '?').charAt(0).toUpperCase()}
-                </Text>
-            </View>
-            <View style={styles.commentContent}>
-                <View style={styles.commentHeader}>
-                    <Text style={styles.commentUserName}>{item.userName}</Text>
-                    <Text style={styles.commentTime}>{formatTimestamp(item.createdAt)}</Text>
+    const handleLongPress = (comment: Comment) => {
+        if (!isLoggedIn || comment.userId !== currentUserId) return;
+        setCommentToDelete(comment);
+        setIsDeleteModalVisible(true);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!commentToDelete) return;
+        setDeleting(true);
+        try {
+            await deleteComment(reviewId, commentToDelete.id);
+            toast.success('Comment deleted', 'Your comment has been removed.');
+            setIsDeleteModalVisible(false);
+        } catch (err) {
+            toast.error('Error', 'Failed to delete comment.');
+        } finally {
+            setDeleting(false);
+            setCommentToDelete(null);
+        }
+    };
+
+    const renderComment = ({ item }: { item: Comment }) => {
+        const isOwnComment = item.userId === currentUserId;
+        const displayAvatar = isOwnComment ? (profile?.photoBase64 || item.userAvatar) : item.userAvatar;
+        const avatarLetter = (item.userName || '?').charAt(0).toUpperCase();
+
+        return (
+            <TouchableOpacity 
+                style={styles.commentItem}
+                onLongPress={() => handleLongPress(item)}
+                delayLongPress={500}
+                activeOpacity={0.7}
+            >
+                <View style={styles.commentAvatar}>
+                    {displayAvatar ? (
+                        <Image source={{ uri: displayAvatar }} style={styles.avatarImg} />
+                    ) : (
+                        <View style={[styles.avatarImg, { backgroundColor: AppColors.navy, alignItems: 'center', justifyContent: 'center' }]}>
+                            <Text style={styles.commentAvatarText}>{avatarLetter}</Text>
+                        </View>
+                    )}
                 </View>
-                <Text style={styles.commentText}>{item.text}</Text>
-            </View>
-        </View>
-    );
+                <View style={styles.commentContent}>
+                    <View style={styles.commentHeader}>
+                        <Text style={styles.commentUserName}>{item.userName}</Text>
+                        <Text style={styles.commentTime}>{formatTimestamp(item.createdAt)}</Text>
+                    </View>
+                    <Text style={styles.commentText}>{item.text}</Text>
+                </View>
+            </TouchableOpacity>
+        );
+    };
 
     if (!visible) return null;
 
@@ -186,6 +229,16 @@ const CommentModal: React.FC<Props> = ({ visible, reviewId, onClose }) => {
                         </View>
                     )}
                 </Animated.View>
+
+                <ConfirmCommentDeleteModal
+                    visible={isDeleteModalVisible}
+                    onClose={() => {
+                        setIsDeleteModalVisible(false);
+                        setCommentToDelete(null);
+                    }}
+                    onConfirm={handleConfirmDelete}
+                    loading={deleting}
+                />
             </KeyboardAvoidingView>
         </Modal>
     );
@@ -259,6 +312,11 @@ const styles = StyleSheet.create({
         backgroundColor: AppColors.navy,
         alignItems: 'center',
         justifyContent: 'center',
+        overflow: 'hidden',
+    },
+    avatarImg: {
+        width: '100%',
+        height: '100%',
     },
     commentAvatarText: {
         fontFamily: AppFonts.bold,
