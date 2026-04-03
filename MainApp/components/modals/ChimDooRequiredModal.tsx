@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import {
     View,
     Text,
@@ -15,7 +15,7 @@ interface Props {
     onClose: () => void;
 }
 
-const ChimDooRequiredModal: React.FC<Props> = ({ visible, onClose }) => {
+const ChimDooRequiredModal: FC<Props> = ({ visible, onClose }) => {
     return (
         <Modal
             visible={visible}

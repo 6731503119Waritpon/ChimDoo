@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { getViewingHistory, addToViewingHistory, clearHistory, HistoryItem } from '@/services/history';
+import { getViewingHistory, addToViewingHistory, clearHistory } from '@/services/history';
+import { HistoryItem } from '@/types/home';
 import { FoodItem } from '@/types/recipe';
 
 export const useHistory = () => {

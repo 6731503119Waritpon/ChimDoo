@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC, ReactNode } from 'react';
 import {
     KeyboardAvoidingView,
     ScrollView,
@@ -11,12 +11,12 @@ import {
 } from 'react-native';
 
 interface KeyboardAwareViewProps {
-    children: React.ReactNode;
+    children: ReactNode;
     style?: ViewStyle;
     contentContainerStyle?: ViewStyle;
 }
 
-const KeyboardAwareView: React.FC<KeyboardAwareViewProps> = ({
+const KeyboardAwareView: FC<KeyboardAwareViewProps> = ({
     children,
     style,
     contentContainerStyle,

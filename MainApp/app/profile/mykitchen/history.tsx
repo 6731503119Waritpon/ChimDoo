@@ -16,7 +16,7 @@ import { useHistory } from '@/hooks/useHistory';
 import { AppFonts } from '@/constants/theme';
 import { AppColors } from '@/constants/colors';
 import { getPalette } from '@/utils/paletteEngine';
-import { HistoryItem } from '@/services/history';
+import { HistoryItem } from '@/types/home';
 
 const HistoryItemCard = ({ item, index }: { item: HistoryItem, index: number }) => {
     const router = useRouter();

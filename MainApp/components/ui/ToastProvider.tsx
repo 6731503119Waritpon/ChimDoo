@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, FC, ReactNode } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Toast, { ToastConfig } from '@/components/ui/Toast';
 
@@ -12,7 +12,7 @@ interface ToastContextType {
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
-export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ToastProvider: FC<{ children: ReactNode }> = ({ children }) => {
     const [toast, setToast] = useState<ToastConfig | null>(null);
     const [visible, setVisible] = useState(false);
 

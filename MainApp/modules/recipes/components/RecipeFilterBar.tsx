@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { Search, X, ArrowDownUp, List, LayoutGrid, Compass, Earth, ChevronDown, ChevronUp, LucideIcon } from 'lucide-react-native';
 import CountryFlag from 'react-native-country-flag';
@@ -66,7 +66,7 @@ const CategoryPill = ({
     );
 };
 
-export const RecipeFilterBar: React.FC<RecipeFilterBarProps> = ({
+export const RecipeFilterBar: FC<RecipeFilterBarProps> = ({
     search,
     setSearch,
     sortMode,

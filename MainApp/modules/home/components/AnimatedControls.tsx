@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, ComponentRef } from 'react';
 import { useFrame } from '@react-three/fiber/native';
 import { OrbitControls } from '@react-three/drei/native';
 import { easeInOutCubic } from '@/utils/recipeHelpers';
@@ -6,7 +6,7 @@ import { easeInOutCubic } from '@/utils/recipeHelpers';
 import { AnimatedControlsProps } from '@/types/home';
 
 export default function AnimatedControls({ target, zooming, onRotationDone, onZoomDone }: AnimatedControlsProps) {
-  const controlsRef = useRef<React.ComponentRef<typeof OrbitControls> | null>(null);
+  const controlsRef = useRef<ComponentRef<typeof OrbitControls> | null>(null);
 
   const rotating = useRef(false);
   const rotProgress = useRef(0);
@@ -18,7 +18,7 @@ export default function AnimatedControls({ target, zooming, onRotationDone, onZo
   const zoomFinished = useRef(false);
   const ZOOM_TARGET = 20;
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (target && controlsRef.current) {
       const controls = controlsRef.current;
       startAngles.current = {
@@ -31,7 +31,7 @@ export default function AnimatedControls({ target, zooming, onRotationDone, onZo
     }
   }, [target]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (zooming && controlsRef.current) {
       zoomStartDistance.current = controlsRef.current.getDistance();
       zoomProgress.current = 0;

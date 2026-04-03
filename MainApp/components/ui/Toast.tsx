@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, FC } from 'react';
 import { View, Text, StyleSheet, Platform, Animated, PanResponder } from 'react-native';
 import {
     CheckCircle,
@@ -59,7 +59,7 @@ const toastThemes: Record<
     },
 };
 
-const Toast: React.FC<ToastProps> = ({
+const Toast: FC<ToastProps> = ({
     type,
     title,
     message,

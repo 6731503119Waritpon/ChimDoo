@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC, ComponentType } from 'react';
 import { Image, ImageProps, StyleProp, ImageStyle } from 'react-native';
 import Animated from 'react-native-reanimated';
 
@@ -7,11 +7,11 @@ interface SharedRecipeImageProps extends Omit<ImageProps, 'style'> {
   sharedTransitionTag?: string;
 }
 
-const AnimatedImage = Animated.createAnimatedComponent(Image) as React.ComponentType<
+const AnimatedImage = Animated.createAnimatedComponent(Image) as ComponentType<
   ImageProps & { sharedTransitionTag?: string }
 >;
 
-const SharedRecipeImage: React.FC<SharedRecipeImageProps> = ({ sharedTransitionTag, ...props }) => {
+const SharedRecipeImage: FC<SharedRecipeImageProps> = ({ sharedTransitionTag, ...props }) => {
   return (
     <AnimatedImage 
       {...props} 

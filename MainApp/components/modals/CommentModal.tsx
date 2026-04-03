@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, FC } from 'react';
 import {
     View,
     Text,
@@ -32,7 +32,7 @@ interface Props {
     onClose: () => void;
 }
 
-const CommentModal: React.FC<Props> = ({ visible, reviewId, onClose }) => {
+const CommentModal: FC<Props> = ({ visible, reviewId, onClose }) => {
     const { addComment, deleteComment, subscribeToComments, isLoggedIn, currentUserId, profile } = useCommunity();
     const toast = useToast();
     const [comments, setComments] = useState<Comment[]>([]);

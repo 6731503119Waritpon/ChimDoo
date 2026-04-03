@@ -11,7 +11,8 @@ import {
 import { useRouter } from 'expo-router';
 import { UtensilsCrossed, Search, Earth } from 'lucide-react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { useChimDoo, ChimDooItem } from '@/hooks/useChimDoo';
+import { useChimDoo } from '@/hooks/useChimDoo';
+import { ChimDooItem } from '@/types/recipe';
 import GuestState from '@/components/ui/GuestState';
 import GridRecipeCard from '@/components/cards/GridRecipeCard';
 import HeroRecipeCard from '@/components/cards/HeroRecipeCard';

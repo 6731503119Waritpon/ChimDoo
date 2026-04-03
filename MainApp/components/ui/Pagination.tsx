@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import { AppColors } from '@/constants/colors';
@@ -11,7 +11,7 @@ interface PaginationProps {
     onPageChange: (page: number) => void;
 }
 
-const Pagination: React.FC<PaginationProps> = ({
+const Pagination: FC<PaginationProps> = ({
     currentPage,
     totalItems,
     itemsPerPage,

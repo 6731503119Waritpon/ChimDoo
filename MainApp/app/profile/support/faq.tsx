@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     Text,
@@ -34,7 +34,7 @@ export default function FAQScreen() {
     const [faqData, setFaqData] = useState<FAQItem[]>([]);
     const [loading, setLoading] = useState(true);
 
-    React.useEffect(() => {
+    useEffect(() => {
         const fetchFAQ = async () => {
             try {
                 const q = query(collection(db, 'faq'), orderBy('order', 'asc'));

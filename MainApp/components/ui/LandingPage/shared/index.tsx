@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import { View, ViewStyle, StyleSheet, Text } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Smartphone } from 'lucide-react-native';
 import { Image } from 'react-native';
 
-export const GlassCard = ({ children, style, styles }: { children: React.ReactNode, style?: ViewStyle, styles: any }) => (
+export const GlassCard = ({ children, style, styles }: { children: ReactNode, style?: ViewStyle, styles: any }) => (
   <View style={[styles.glassCard, style]}>
     <View style={styles.glassBackground} />
     <View style={styles.glassBorder} />
@@ -24,7 +24,7 @@ export const SectionHeader = ({ preTitle, title, subtitle, light = false, styles
   </Animated.View>
 );
 
-export const DeviceMockup = ({ children, label, scale = 1, shadow = true, source, styles }: { children?: React.ReactNode, label?: string, scale?: number, shadow?: boolean, source?: any, styles: any }) => (
+export const DeviceMockup = ({ children, label, scale = 1, shadow = true, source, styles }: { children?: ReactNode, label?: string, scale?: number, shadow?: boolean, source?: any, styles: any }) => (
   <View style={[styles.mockupWrapper, { transform: [{ scale }] }]}>
     <View style={styles.deviceContainer}>
       <View style={styles.deviceFrame}>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, FC } from 'react';
 import {
     View,
     Text,
@@ -28,7 +28,7 @@ interface Props {
     onSubmit: (imageUri: string, description: string) => Promise<void>;
 }
 
-const ReviewModal: React.FC<Props> = ({ visible, foodName, onClose, onSubmit }) => {
+const ReviewModal: FC<Props> = ({ visible, foodName, onClose, onSubmit }) => {
     const [imageUri, setImageUri] = useState<string | null>(null);
     const [imageBase64, setImageBase64] = useState<string | null>(null);
     const [description, setDescription] = useState('');

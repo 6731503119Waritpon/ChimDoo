@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import {
     View,
     Text,
@@ -19,7 +19,7 @@ interface Props {
     loading?: boolean;
 }
 
-const LogoutModal: React.FC<Props> = ({ visible, onClose, onConfirm, loading }) => {
+const LogoutModal: FC<Props> = ({ visible, onClose, onConfirm, loading }) => {
     return (
         <Modal
             visible={visible}

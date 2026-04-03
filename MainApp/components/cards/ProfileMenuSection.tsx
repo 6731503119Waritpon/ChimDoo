@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC, Fragment } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
 import { ProfileMenuItem } from '@/types/menuProfile';
@@ -10,7 +10,7 @@ interface ProfileMenuSectionProps {
     onPress: (item: ProfileMenuItem) => void;
 }
 
-const ProfileMenuSection: React.FC<ProfileMenuSectionProps> = ({ title, items, onPress }) => {
+const ProfileMenuSection: FC<ProfileMenuSectionProps> = ({ title, items, onPress }) => {
     return (
         <View style={styles.menuSection}>
             <Text style={styles.sectionTitle}>{title}</Text>
@@ -18,7 +18,7 @@ const ProfileMenuSection: React.FC<ProfileMenuSectionProps> = ({ title, items, o
                 {items.map((item, index) => {
                     const Icon = item.icon;
                     return (
-                        <React.Fragment key={item.label}>
+                        <Fragment key={item.label}>
                             <TouchableOpacity
                                 style={styles.menuItem}
                                 onPress={() => onPress(item)}
@@ -37,7 +37,7 @@ const ProfileMenuSection: React.FC<ProfileMenuSectionProps> = ({ title, items, o
                                 <ChevronRight size={18} color="#444" />
                             </TouchableOpacity>
                             {index < items.length - 1 && <View style={styles.menuDivider} />}
-                        </React.Fragment>
+                        </Fragment>
                     );
                 })}
             </View>

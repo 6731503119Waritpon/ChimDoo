@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Info, Users } from 'lucide-react-native';
 import { AppColors } from '@/constants/colors';
@@ -6,7 +6,7 @@ import { AppFonts } from '@/constants/theme';
 
 import { EmptyFeedStateProps } from '@/types/community';
 
-export const EmptyFeedState: React.FC<EmptyFeedStateProps> = ({ feedTab }) => {
+export const EmptyFeedState: FC<EmptyFeedStateProps> = ({ feedTab }) => {
     return (
         <View style={styles.emptyContainer}>
             {feedTab === 'friends' ? (

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ComponentType } from 'react';
 import {
   View,
   Text,
@@ -26,7 +26,7 @@ import { useAbout } from '../../../hooks/useAbout';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
 
-const ICON_MAP: Record<string, React.ComponentType<LucideProps>> = {
+const ICON_MAP: Record<string, ComponentType<LucideProps>> = {
   Globe,
   Heart,
   Users,

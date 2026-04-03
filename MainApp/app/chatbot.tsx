@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity, StyleSheet,
     KeyboardAvoidingView, Platform, FlatList, ActivityIndicator,
@@ -8,7 +8,8 @@ import { useRouter, Stack, useFocusEffect } from 'expo-router';
 import { ChevronLeft, Send, ChefHat } from 'lucide-react-native';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
-import { initOrRestoreChat, sendMessageToGroq, getUIMessages, Message } from '@/services/groq';
+import { initOrRestoreChat, sendMessageToGroq, getUIMessages } from '@/services/groq';
+import { Message, UIMessage } from '@/types/common';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { db } from '@/config/firebase';
 import { doc, getDoc } from 'firebase/firestore';
@@ -131,7 +132,7 @@ export default function ChatbotScreen() {
     const insets = useSafeAreaInsets();
 
     const [initializing, setInitializing] = useState(true);
-    const [messages, setMessages] = useState<Message[]>([]);
+    const [messages, setMessages] = useState<UIMessage[]>([]);
     const [inputText, setInputText] = useState('');
     const [loading, setLoading] = useState(false);
     const [suggestedPrompts, setSuggestedPrompts] = useState<string[]>(DEFAULT_SUGGESTIONS);
@@ -140,7 +141,7 @@ export default function ChatbotScreen() {
     const flatListRef = useRef<FlatList>(null);
 
     useFocusEffect(
-        React.useCallback(() => {
+        useCallback(() => {
             return () => {
                 setLastNewMessageId(null);
             };
@@ -189,7 +190,7 @@ export default function ChatbotScreen() {
         const text = (overrideText || inputText).trim();
         if (!text || loading) return;
 
-        const userMsg: Message = { id: Date.now().toString(), text, isUser: true };
+        const userMsg: UIMessage = { id: Date.now().toString(), text, isUser: true };
 
         const uiMessages = getUIMessages();
         uiMessages.push(userMsg);
@@ -201,7 +202,7 @@ export default function ChatbotScreen() {
         try {
             const responseText = await sendMessageToGroq(text);
 
-            const aiMsg: Message = { id: (Date.now() + 1).toString(), text: responseText, isUser: false };
+            const aiMsg: UIMessage = { id: (Date.now() + 1).toString(), text: responseText, isUser: false };
             const uiMessages = getUIMessages();
             uiMessages.push(aiMsg);
             setLastNewMessageId(aiMsg.id);
@@ -210,7 +211,7 @@ export default function ChatbotScreen() {
             console.error("Groq Error:", error);
             const errorMessage = error instanceof Error ? error.message : 'Unknown error';
             const apiKeyPreview = process.env.EXPO_PUBLIC_GROQ_API_KEY ? `(Key length: ${process.env.EXPO_PUBLIC_GROQ_API_KEY.length})` : '(Key is EMPTY)';
-            const errorMsg: Message = {
+            const errorMsg: UIMessage = {
                 id: (Date.now() + 1).toString(),
                 text: `Error: ${errorMessage} ${apiKeyPreview}`,
                 isUser: false,
@@ -227,7 +228,7 @@ export default function ChatbotScreen() {
         sendMessage(prompt);
     };
 
-    const renderMessage = ({ item, index }: { item: Message, index: number }) => {
+    const renderMessage = ({ item, index }: { item: UIMessage, index: number }) => {
         const isUser = item.isUser;
         const isNew = item.id === lastNewMessageId;
         const isLatestAI = !isUser && isNew;

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, FC } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Animated, {
     useSharedValue,
@@ -12,7 +12,7 @@ import { AppFonts } from '@/constants/theme';
 
 import { FeedTab, FeedTabBarProps } from '@/types/community';
 
-export const FeedTabBar: React.FC<FeedTabBarProps> = ({ feedTab, setFeedTab }) => {
+export const FeedTabBar: FC<FeedTabBarProps> = ({ feedTab, setFeedTab }) => {
     const activeIndex = useSharedValue(feedTab === 'global' ? 0 : 1);
 
     useEffect(() => {

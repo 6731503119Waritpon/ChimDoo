@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, useState, useEffect, useCallback } from 'react';
 import {
   StyleSheet,
   View,
@@ -32,18 +32,18 @@ export default function HomeScreen() {
     handleRotationDone,
     handleZoomDone,
   } = useGlobe();
-  const [canvasKey, setCanvasKey] = React.useState(0);
+  const [canvasKey, setCanvasKey] = useState(0);
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       setCanvasKey(k => k + 1);
     }, [])
   );
 
-  const [greeting, setGreeting] = React.useState('');
-  const [GreetingIcon, setGreetingIcon] = React.useState<LucideIcon | null>(null);
+  const [greeting, setGreeting] = useState('');
+  const [GreetingIcon, setGreetingIcon] = useState<LucideIcon | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const { message, icon } = getGreetingConfig();
     setGreeting(message);
     setGreetingIcon(() => icon);

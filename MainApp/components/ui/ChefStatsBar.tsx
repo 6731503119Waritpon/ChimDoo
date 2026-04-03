@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { UtensilsCrossed, Globe, Trophy } from 'lucide-react-native';
 import { BlurView } from 'expo-blur';
@@ -11,7 +11,7 @@ interface ChefStatsBarProps {
     totalCountries: number;
 }
 
-const ChefStatsBar: React.FC<ChefStatsBarProps> = ({ totalDishes, totalCountries }) => {
+const ChefStatsBar: FC<ChefStatsBarProps> = ({ totalDishes, totalCountries }) => {
     const getRank = (count: number) => {
         if (count >= 100) return 'Master';
         if (count >= 50) return 'Traveler';

@@ -1,17 +1,28 @@
-import React from 'react';
-import { View, Image, StyleSheet, Dimensions } from 'react-native';
-import { AppColors } from '@/constants/colors';
+import React, { useEffect } from 'react';
+import { View, Image, StyleSheet, Dimensions, Animated } from 'react-native';
 
-const { width } = Dimensions.get('window');
+const { width, height } = Dimensions.get('window');
 
 export const WebSplashScreen = () => {
+  const fadeAnim = new Animated.Value(0);
+
+  useEffect(() => {
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 800,
+      useNativeDriver: true,
+    }).start();
+  }, []);
+
   return (
     <View style={styles.container}>
-      <Image
-        source={require('@/assets/images/ChimDooLogo2.png')}
-        style={styles.logo}
-        resizeMode="contain"
-      />
+      <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
+        <Image
+          source={require('@/assets/images/ChimDooLogo2.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+      </Animated.View>
     </View>
   );
 };
@@ -29,10 +40,14 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    zIndex: 9999,
+    zIndex: 99999,
+  },
+  content: {
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   logo: {
-    width: Math.min(width * 0.6, 400),
-    height: 300,
+    width: Math.min(width * 0.5, 300),
+    height: 180,
   },
 });

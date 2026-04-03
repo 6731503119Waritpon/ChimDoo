@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { AppColors } from '@/constants/colors';
 import { LucideIcon } from 'lucide-react-native';
@@ -12,7 +12,7 @@ interface GuestStateProps {
     showAuthButtons?: boolean;
 }
 
-const GuestState: React.FC<GuestStateProps> = ({ 
+const GuestState: FC<GuestStateProps> = ({ 
     icon: Icon, 
     title, 
     subtitle, 

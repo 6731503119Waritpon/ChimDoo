@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useGLTF } from '@react-three/drei/native';
 import * as THREE from 'three';
 import modelPath from '@/assets/models/earth.glb';
@@ -6,7 +6,7 @@ import modelPath from '@/assets/models/earth.glb';
 export default function EarthModel(props: Record<string, unknown>) {
   const gltf = useGLTF(modelPath);
 
-  React.useEffect(() => {
+  useEffect(() => {
     gltf.scene.traverse((child: THREE.Object3D) => {
       const mesh = child as THREE.Mesh;
       if (mesh.isMesh && mesh.material) {

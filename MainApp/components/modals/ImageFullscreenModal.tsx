@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { 
     Modal, 
     View, 
@@ -34,7 +34,7 @@ const ImageFullscreenModal = ({ visible, imageUri, onClose }: ImageFullscreenMod
     const savedTranslateX = useSharedValue(0);
     const savedTranslateY = useSharedValue(0);
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (!visible) {
             scale.value = 1;
             savedScale.value = 1;

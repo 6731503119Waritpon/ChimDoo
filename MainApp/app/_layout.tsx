@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -59,13 +59,13 @@ export default function RootLayout() {
     Prompt_700Bold,
   });
 
-  const [webReady, setWebReady] = React.useState(false);
+  const [webReady, setWebReady] = useState(false);
 
   useEffect(() => {
     if (Platform.OS === 'web') {
       const timer = setTimeout(() => {
         setWebReady(true);
-      }, 2000);
+      }, 1500); 
       return () => clearTimeout(timer);
     } else {
       setWebReady(true);

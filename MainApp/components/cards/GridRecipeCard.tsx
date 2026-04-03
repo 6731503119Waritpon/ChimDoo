@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, FC } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import SharedRecipeImage from '@/components/ui/SharedRecipeImage';
 import { Clock, Soup, ChefHat } from 'lucide-react-native';
@@ -8,7 +8,7 @@ import CountryFlag from 'react-native-country-flag';
 import Animated, { FadeInUp, useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
 import { AppFonts } from '@/constants/theme';
 import { AppColors } from '@/constants/colors';
-import { ChimDooItem } from '@/hooks/useChimDoo';
+import { ChimDooItem } from '@/types/recipe';
 import { globeCountries } from '@/config/home';
 
 interface GridRecipeCardProps {
@@ -17,7 +17,7 @@ interface GridRecipeCardProps {
     onPress: (item: ChimDooItem) => void;
 }
 
-const GridRecipeCard: React.FC<GridRecipeCardProps> = memo(({ item, index, onPress }) => {
+const GridRecipeCard: FC<GridRecipeCardProps> = memo(({ item, index, onPress }) => {
     const countryInfo = globeCountries.find(
         (c) => c.name.toLowerCase() === item.category?.toLowerCase()
     );

@@ -7,7 +7,7 @@ import { BlurView } from 'expo-blur';
 import { X, ChevronRight, ChevronLeft, CheckCircle2, CookingPot } from 'lucide-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { AppFonts } from '@/constants/theme';
-import { Palette } from '@/utils/paletteEngine';
+import { Palette } from '@/types/common';
 
 const { width } = Dimensions.get('window');
 

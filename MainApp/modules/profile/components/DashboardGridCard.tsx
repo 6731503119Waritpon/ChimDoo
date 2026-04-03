@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Animated, {
     useSharedValue,
@@ -15,7 +15,7 @@ const AnimatedTouchableOpacity = Animated.createAnimatedComponent(TouchableOpaci
 
 import { GridCardProps } from '@/types/menuProfile';
 
-const DashboardGridCard: React.FC<GridCardProps> = ({
+const DashboardGridCard: FC<GridCardProps> = ({
     label,
     value,
     icon: Icon,
