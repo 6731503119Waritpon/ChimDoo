@@ -51,13 +51,17 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [loaded, error] = useFonts({
-    Prompt_300Light,
-    Prompt_400Regular,
-    Prompt_500Medium,
-    Prompt_600SemiBold,
-    Prompt_700Bold,
-  });
+  const [loaded, error] = useFonts(
+    Platform.OS === 'web'
+      ? {}
+      : {
+          Prompt_300Light,
+          Prompt_400Regular,
+          Prompt_500Medium,
+          Prompt_600SemiBold,
+          Prompt_700Bold,
+        }
+  );
 
   const [webReady, setWebReady] = useState(false);
 

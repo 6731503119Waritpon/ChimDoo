@@ -1,20 +1,18 @@
-import React, { useEffect } from 'react';
-import { View, Image, StyleSheet, Dimensions, Animated } from 'react-native';
+import React from 'react';
+import { View, Image, StyleSheet, Dimensions } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
 
 export const WebSplashScreen = () => {
-  const fadeAnim = new Animated.Value(1);
-
   return (
     <View style={styles.container}>
-      <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
+      <View style={styles.content}>
         <Image
           source={require('@/assets/images/ChimDooLogo2.png')}
           style={styles.logo}
           resizeMode="contain"
         />
-      </Animated.View>
+      </View>
     </View>
   );
 };
