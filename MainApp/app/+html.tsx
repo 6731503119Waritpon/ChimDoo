@@ -25,19 +25,47 @@ export default function Root({ children }: PropsWithChildren) {
         />
 
         <style dangerouslySetInnerHTML={{ __html: `
-          /* Robust Font Aliasing: Ensures 'Prompt_XXX' maps correctly to the standard Google Font names on Web */
-          
-          @font-face { font-family: 'Prompt_300Light'; src: local('Prompt'), local('Prompt Light'); font-weight: 300; }
-          @font-face { font-family: 'Prompt_400Regular'; src: local('Prompt'), local('Prompt Regular'); font-weight: 400; }
-          @font-face { font-family: 'Prompt_500Medium'; src: local('Prompt'), local('Prompt Medium'); font-weight: 500; }
-          @font-face { font-family: 'Prompt_600SemiBold'; src: local('Prompt'), local('Prompt SemiBold'); font-weight: 600; }
-          @font-face { font-family: 'Prompt_700Bold'; src: local('Prompt'), local('Prompt Bold'); font-weight: 700; }
+          @font-face {
+            font-family: 'Prompt_300Light';
+            font-style: normal;
+            font-weight: 300;
+            src: url('https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-thai-300-normal.woff2') format('woff2'),
+                 url('https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-latin-300-normal.woff2') format('woff2');
+          }
+          @font-face {
+            font-family: 'Prompt_400Regular';
+            font-style: normal;
+            font-weight: 400;
+            src: url('https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-thai-400-normal.woff2') format('woff2'),
+                 url('https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-latin-400-normal.woff2') format('woff2');
+          }
+          @font-face {
+            font-family: 'Prompt_500Medium';
+            font-style: normal;
+            font-weight: 500;
+            src: url('https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-thai-500-normal.woff2') format('woff2'),
+                 url('https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-latin-500-normal.woff2') format('woff2');
+          }
+          @font-face {
+            font-family: 'Prompt_600SemiBold';
+            font-style: normal;
+            font-weight: 600;
+            src: url('https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-thai-600-normal.woff2') format('woff2'),
+                 url('https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-latin-600-normal.woff2') format('woff2');
+          }
+          @font-face {
+            font-family: 'Prompt_700Bold';
+            font-style: normal;
+            font-weight: 700;
+            src: url('https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-thai-700-normal.woff2') format('woff2'),
+                 url('https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-latin-700-normal.woff2') format('woff2');
+          }
 
-          /* Global Fallback: Prevent Serif leakage and ensure Prompt is the primary choice */
           html, body { 
-            font-family: 'Prompt', -apple-system, system-ui, sans-serif !important; 
             margin: 0;
             padding: 0;
+            background-color: #ffffff;
+            font-family: 'Prompt_400Regular', sans-serif !important;
           }
         `}} />
 

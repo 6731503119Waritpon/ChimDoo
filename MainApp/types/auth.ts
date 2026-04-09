@@ -16,5 +16,6 @@ export interface UseAuthReturn extends AuthState {
     signIn: (email: string, password: string) => Promise<void>;
     logOut: () => Promise<void>;
     resetPassword: (email: string) => Promise<void>;
+    deleteAccount: () => Promise<void>;
     clearError: () => void;
 }

@@ -7,6 +7,7 @@ import {
     resetPassword,
     subscribeToAuthChanges,
     getCurrentUser,
+    deleteUserAccount,
 } from '../services/auth';
 import { getErrorMessage } from '@/types/firebase';
 
@@ -131,12 +132,27 @@ export const useAuth = (): UseAuthReturn => {
         setState((prev) => ({ ...prev, error: null }));
     }, []);
 
+    const handleDeleteAccount = useCallback(async () => {
+        try {
+            setState((prev) => ({ ...prev, loading: true, error: null }));
+            await deleteUserAccount();
+        } catch (error: unknown) {
+            setState((prev) => ({
+                ...prev,
+                loading: false,
+                error: getErrorMessage(error),
+            }));
+            throw error;
+        }
+    }, []);
+
     return {
         ...state,
         signUp: handleSignUp,
         signIn: handleSignIn,
         logOut: handleLogOut,
         resetPassword: handleResetPassword,
+        deleteAccount: handleDeleteAccount,
         clearError,
     };
 };

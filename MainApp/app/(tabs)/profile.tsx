@@ -19,6 +19,7 @@ import { ProfileMenuItem } from '@/types/menuProfile';
 import { profileMenuConfig } from '@/config/menuProfile';
 import { useToast } from '@/components/ui/ToastProvider';
 import LogoutModal from '@/components/modals/LogoutModal';
+import DeleteAccountModal from '@/components/modals/DeleteAccountModal';
 import AppVersionModal from '@/components/modals/AppVersionModal';
 import GuestState from '@/components/ui/GuestState';
 import ProfileMenuSection from '@/components/cards/ProfileMenuSection';
@@ -38,12 +39,14 @@ import DashboardGridCard from '@/modules/profile/components/DashboardGridCard';
 
 const Page = () => {
     const router = useRouter();
-    const { user, loading, logOut } = useAuth();
+    const { user, loading, logOut, deleteAccount } = useAuth();
     const toast = useToast();
     const { chimDooList } = useChimDoo();
     const { getUserReviews } = useCommunity();
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [loggingOut, setLoggingOut] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deletingAccount, setDeletingAccount] = useState(false);
     const [showVersionModal, setShowVersionModal] = useState(false);
     const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
     const [displayName, setDisplayName] = useState(user?.displayName || '');
@@ -75,6 +78,19 @@ const Page = () => {
             toast.error('Error', getErrorMessage(err));
         } finally {
             setLoggingOut(false);
+        }
+    };
+
+    const handleDeleteAccount = async () => {
+        setDeletingAccount(true);
+        try {
+            await deleteAccount();
+            setShowDeleteModal(false);
+            toast.success("Account Deleted", "Your account and data have been wiped.");
+        } catch (err: unknown) {
+            toast.error('Error', getErrorMessage(err));
+        } finally {
+            setDeletingAccount(false);
         }
     };
 
@@ -207,11 +223,26 @@ const Page = () => {
                 <Text style={styles.logoutText}>Log Out</Text>
             </TouchableOpacity>
 
+            <TouchableOpacity
+                style={styles.deleteAccountButton}
+                onPress={() => setShowDeleteModal(true)}
+                activeOpacity={0.7}
+            >
+                <Text style={styles.deleteAccountText}>Delete Account</Text>
+            </TouchableOpacity>
+
             <LogoutModal
                 visible={showLogoutModal}
                 onClose={() => setShowLogoutModal(false)}
                 onConfirm={handleLogout}
                 loading={loggingOut}
+            />
+            
+            <DeleteAccountModal
+                visible={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onConfirm={handleDeleteAccount}
+                loading={deletingAccount}
             />
             <AppVersionModal
                 visible={showVersionModal}
@@ -342,6 +373,18 @@ const styles = StyleSheet.create({
         fontFamily: AppFonts.bold,
         color: '#ef4444',
         fontSize: 16,
+    },
+    deleteAccountButton: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 16,
+        marginBottom: 20,
+    },
+    deleteAccountText: {
+        fontFamily: AppFonts.regular,
+        color: '#94A3B8',
+        fontSize: 14,
+        textDecorationLine: 'underline',
     },
     statsWrapper: {
         marginTop: 10,

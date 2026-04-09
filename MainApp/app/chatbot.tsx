@@ -13,6 +13,9 @@ import { Message, UIMessage } from '@/types/common';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { db } from '@/config/firebase';
 import { doc, getDoc } from 'firebase/firestore';
+import { z } from 'zod';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import AIConsentModal from '@/components/modals/AIConsentModal';
 import Animated, {
     FadeInLeft,
     FadeInRight,
@@ -137,6 +140,7 @@ export default function ChatbotScreen() {
     const [loading, setLoading] = useState(false);
     const [suggestedPrompts, setSuggestedPrompts] = useState<string[]>(DEFAULT_SUGGESTIONS);
     const [lastNewMessageId, setLastNewMessageId] = useState<string | null>(null);
+    const [consentVisible, setConsentVisible] = useState(false);
 
     const flatListRef = useRef<FlatList>(null);
 
@@ -183,14 +187,48 @@ export default function ChatbotScreen() {
             }
         };
 
-        initChat();
+        const checkConsent = async () => {
+            try {
+                const hasConsented = await AsyncStorage.getItem('ai_consent');
+                if (hasConsented !== 'true') {
+                    setConsentVisible(true);
+                } else {
+                    initChat();
+                }
+            } catch (err) {
+                setConsentVisible(true);
+            }
+        };
+
+        checkConsent();
     }, []);
 
-    const sendMessage = async (overrideText?: string) => {
-        const text = (overrideText || inputText).trim();
-        if (!text || loading) return;
+    const handleAcceptConsent = async () => {
+        await AsyncStorage.setItem('ai_consent', 'true');
+        setConsentVisible(false);
+        // Only run after checking is done or if it just accepted
+        // However, this means we can't extract initChat easily out of useEffect.
+        // We can just rely on a separate useEffect or copy the initChat fetch above, but
+        // for simplicity let's reload the screen logic or just toggle initializing. 
+        // A simple way:
+        router.replace('/chatbot');
+    };
 
-        const userMsg: UIMessage = { id: Date.now().toString(), text, isUser: true };
+    const handleDeclineConsent = () => {
+        setConsentVisible(false);
+        router.back();
+    };
+
+    const ChatInputSchema = z.string().min(1).max(500);
+
+    const sendMessage = async (overrideText?: string) => {
+        const textToValidate = (overrideText || inputText).trim();
+        const validation = ChatInputSchema.safeParse(textToValidate);
+        
+        if (!validation.success || loading) return;
+        const validText = validation.data;
+
+        const userMsg: UIMessage = { id: Date.now().toString(), text: validText, isUser: true };
 
         const uiMessages = getUIMessages();
         uiMessages.push(userMsg);
@@ -200,7 +238,7 @@ export default function ChatbotScreen() {
         setLoading(true);
 
         try {
-            const responseText = await sendMessageToGroq(text);
+            const responseText = await sendMessageToGroq(validText);
 
             const aiMsg: UIMessage = { id: (Date.now() + 1).toString(), text: responseText, isUser: false };
             const uiMessages = getUIMessages();
@@ -208,12 +246,13 @@ export default function ChatbotScreen() {
             setLastNewMessageId(aiMsg.id);
             setMessages([...uiMessages]);
         } catch (error: unknown) {
-            console.error("Groq Error:", error);
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            const apiKeyPreview = process.env.EXPO_PUBLIC_GROQ_API_KEY ? `(Key length: ${process.env.EXPO_PUBLIC_GROQ_API_KEY.length})` : '(Key is EMPTY)';
+            // Use safe generic errors for production to avoid spilling API details
+            if (__DEV__) {
+                console.log("[DEV_ONLY] Chatbot API error:", error instanceof Error ? error.message : error);
+            }
             const errorMsg: UIMessage = {
                 id: (Date.now() + 1).toString(),
-                text: `Error: ${errorMessage} ${apiKeyPreview}`,
+                text: `I'm having trouble connecting to the kitchen right now. Please try again!`,
                 isUser: false,
             };
             const uiMessages = getUIMessages();
@@ -350,6 +389,12 @@ export default function ChatbotScreen() {
                     </>
                 )}
             </KeyboardAvoidingView>
+
+            <AIConsentModal
+                visible={consentVisible}
+                onAccept={handleAcceptConsent}
+                onDecline={handleDeclineConsent}
+            />
         </View>
     );
 }

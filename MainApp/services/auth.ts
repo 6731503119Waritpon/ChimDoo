@@ -6,9 +6,12 @@ import {
     updateProfile,
     onAuthStateChanged,
     User,
+    deleteUser
 } from 'firebase/auth';
-import { auth } from '@/config/firebase';
+import { db, auth } from '@/config/firebase';
 import { clearChatHistory } from '@/services/groq';
+import { doc, deleteDoc, collection, query, where, getDocs, writeBatch } from 'firebase/firestore';
+import { Collections } from '@/constants/collections';
 
 export const signUp = async (
     email: string,
@@ -44,4 +47,30 @@ export const subscribeToAuthChanges = (callback: (user: User | null) => void) =>
 
 export const getCurrentUser = (): User | null => {
     return auth.currentUser;
+};
+
+export const deleteUserAccount = async (): Promise<void> => {
+    const user = auth.currentUser;
+    if (!user) throw new Error("No user is currently signed in.");
+    
+    const uid = user.uid;
+    
+    try {
+        const batch = writeBatch(db);
+        batch.delete(doc(db, Collections.users, uid));
+        
+        const reviewsQuery = query(collection(db, Collections.reviews), where('userId', '==', uid));
+        const reviewsSnap = await getDocs(reviewsQuery);
+        reviewsSnap.forEach(docSnap => batch.delete(docSnap.ref));
+        
+        await batch.commit();
+        
+        clearChatHistory();
+        await deleteUser(user);
+    } catch (err: any) {
+        if (err.code === 'auth/requires-recent-login') {
+            throw new Error("For security, please log out and log back in before deleting your account.");
+        }
+        throw err;
+    }
 };

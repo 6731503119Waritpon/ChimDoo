@@ -19,13 +19,13 @@ import { useCommunity } from '@/hooks/useCommunity';
 
 interface PostCardProps {
     item: CommunityPost;
-    onLike: () => void;
-    onComment: () => void;
-    onShare: () => void;
+    onLike: (id: string) => void;
+    onComment: (id: string) => void;
+    onShare: (item: CommunityPost) => void;
     onImagePress: (uri: string) => void;
     isLiked: boolean;
-    onAddFriend: () => void;
-    onCancelFriend?: () => void;
+    onAddFriend: (item: CommunityPost) => void;
+    onCancelFriend?: (item: CommunityPost) => void;
     friendStatus: 'none' | 'pending_sent' | 'pending_received' | 'accepted';
     isOwnPost: boolean;
 }
@@ -87,7 +87,7 @@ const PostCard = memo(({
             triggerHeartAnimation();
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             if (!isLiked) {
-                onLike();
+                onLike(item.id);
             }
         });
 
@@ -106,7 +106,7 @@ const PostCard = memo(({
             withSpring(1)
         );
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        onComment();
+        onComment(item.id);
     };
 
     const renderFriendButton = () => {
@@ -123,7 +123,7 @@ const PostCard = memo(({
                 return (
                     <TouchableOpacity
                         style={styles.friendBadgePending}
-                        onPress={onCancelFriend}
+                        onPress={() => onCancelFriend?.(item)}
                         activeOpacity={0.7}
                     >
                         <UserMinus size={12} color="#f59e0b" />
@@ -141,7 +141,7 @@ const PostCard = memo(({
                 return (
                     <TouchableOpacity
                         style={styles.addFriendButton}
-                        onPress={onAddFriend}
+                        onPress={() => onAddFriend(item)}
                         activeOpacity={0.6}
                     >
                         <UserPlus size={14} color={AppColors.navy} />
@@ -193,7 +193,7 @@ const PostCard = memo(({
                     <View style={styles.postActionsLeft}>
                         <TouchableOpacity
                             style={styles.actionButton}
-                            onPress={onLike}
+                            onPress={() => onLike(item.id)}
                             activeOpacity={0.6}
                         >
                             <Heart
@@ -205,7 +205,7 @@ const PostCard = memo(({
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={styles.actionButton}
-                            onPress={onShare}
+                            onPress={() => onShare(item)}
                             activeOpacity={0.6}
                         >
                             <Share2 size={18} color="#777" />

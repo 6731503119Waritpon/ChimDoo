@@ -4,15 +4,7 @@ import { View, Image, StyleSheet, Dimensions, Animated } from 'react-native';
 const { width, height } = Dimensions.get('window');
 
 export const WebSplashScreen = () => {
-  const fadeAnim = new Animated.Value(0);
-
-  useEffect(() => {
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 800,
-      useNativeDriver: true,
-    }).start();
-  }, []);
+  const fadeAnim = new Animated.Value(1);
 
   return (
     <View style={styles.container}>
