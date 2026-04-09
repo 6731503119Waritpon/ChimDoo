@@ -4,6 +4,9 @@ import { type PropsWithChildren } from 'react';
 /**
  * This file is web-only and used to configure the root HTML for every
  * web page during static rendering.
+ * 
+ * Font files are served from /fonts/ directory (copied from node_modules to public/fonts/).
+ * This avoids pnpm's '+' character in paths which Firebase URL-decodes incorrectly.
  */
 export default function Root({ children }: PropsWithChildren) {
   return (
@@ -13,35 +16,83 @@ export default function Root({ children }: PropsWithChildren) {
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
 
-        {/* 
-          Add the Google Fonts link directly to the HTML head.
-          This ensures the 'Prompt' font is loaded as early as possible on the web.
-        */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link 
-          href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" 
-          rel="stylesheet" 
-        />
-
         <style dangerouslySetInnerHTML={{ __html: `
-          html, body { 
+          @font-face {
+            font-family: 'Prompt_300Light';
+            font-style: normal;
+            font-display: swap;
+            src: url('/fonts/Prompt_300Light.ttf') format('truetype');
+          }
+          @font-face {
+            font-family: 'Prompt_400Regular';
+            font-style: normal;
+            font-display: swap;
+            src: url('/fonts/Prompt_400Regular.ttf') format('truetype');
+          }
+          @font-face {
+            font-family: 'Prompt_500Medium';
+            font-style: normal;
+            font-display: swap;
+            src: url('/fonts/Prompt_500Medium.ttf') format('truetype');
+          }
+          @font-face {
+            font-family: 'Prompt_600SemiBold';
+            font-style: normal;
+            font-display: swap;
+            src: url('/fonts/Prompt_600SemiBold.ttf') format('truetype');
+          }
+          @font-face {
+            font-family: 'Prompt_700Bold';
+            font-style: normal;
+            font-display: swap;
+            src: url('/fonts/Prompt_700Bold.ttf') format('truetype');
+          }
+
+          html, body, #root {
             height: 100%;
             margin: 0;
             padding: 0;
             background-color: #ffffff;
-            font-family: 'Prompt', sans-serif !important;
           }
-          #root {
-            height: 100%;
+
+          /* Nuclear Splash Screen - pure HTML, no React needed */
+          #splash-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2147483647;
+            transition: opacity 0.4s ease-out;
+          }
+          #splash-overlay img {
+            width: 45%;
+            max-width: 280px;
+            object-fit: contain;
           }
         `}} />
 
-        <ScrollViewStyleReset />
+        <script dangerouslySetInnerHTML={{ __html: `
+          window.addEventListener('load', function() {
+            setTimeout(function() {
+              var s = document.getElementById('splash-overlay');
+              if (s) {
+                s.style.opacity = '0';
+                setTimeout(function() { s.remove(); }, 400);
+              }
+            }, 2000);
+          });
+        `}} />
 
-        {/* Add any additional <head> elements here */}
+        <ScrollViewStyleReset />
       </head>
-      <body>{children}</body>
+      <body>
+        <div id="splash-overlay">
+          <img src="/fonts/ChimDooLogo2.png" alt="ChimDoo" />
+        </div>
+        {children}
+      </body>
     </html>
   );
 }
