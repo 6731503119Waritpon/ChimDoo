@@ -25,48 +25,12 @@ export default function Root({ children }: PropsWithChildren) {
         />
 
         <style dangerouslySetInnerHTML={{ __html: `
-          @font-face {
-            font-family: 'Prompt_300Light';
-            font-style: normal;
-            font-weight: normal;
-            src: url('https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-thai-300-normal.woff2') format('woff2'),
-                 url('https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-latin-300-normal.woff2') format('woff2');
-          }
-          @font-face {
-            font-family: 'Prompt_400Regular';
-            font-style: normal;
-            font-weight: normal;
-            src: url('https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-thai-400-normal.woff2') format('woff2'),
-                 url('https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-latin-400-normal.woff2') format('woff2');
-          }
-          @font-face {
-            font-family: 'Prompt_500Medium';
-            font-style: normal;
-            font-weight: normal;
-            src: url('https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-thai-500-normal.woff2') format('woff2'),
-                 url('https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-latin-500-normal.woff2') format('woff2');
-          }
-          @font-face {
-            font-family: 'Prompt_600SemiBold';
-            font-style: normal;
-            font-weight: normal;
-            src: url('https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-thai-600-normal.woff2') format('woff2'),
-                 url('https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-latin-600-normal.woff2') format('woff2');
-          }
-          @font-face {
-            font-family: 'Prompt_700Bold';
-            font-style: normal;
-            font-weight: normal;
-            src: url('https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-thai-700-normal.woff2') format('woff2'),
-                 url('https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-latin-700-normal.woff2') format('woff2');
-          }
-
           html, body { 
             height: 100%;
             margin: 0;
             padding: 0;
             background-color: #ffffff;
-            font-family: 'Prompt_400Regular', sans-serif !important;
+            font-family: 'Prompt', sans-serif !important;
           }
           #root {
             height: 100%;

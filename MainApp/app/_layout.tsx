@@ -52,11 +52,11 @@ export const unstable_settings = {
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded, error] = useFonts({
-    Prompt_300Light: Platform.OS === 'web' ? 'https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-thai-300-normal.woff2' : Prompt_300Light,
-    Prompt_400Regular: Platform.OS === 'web' ? 'https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-thai-400-normal.woff2' : Prompt_400Regular,
-    Prompt_500Medium: Platform.OS === 'web' ? 'https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-thai-500-normal.woff2' : Prompt_500Medium,
-    Prompt_600SemiBold: Platform.OS === 'web' ? 'https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-thai-600-normal.woff2' : Prompt_600SemiBold,
-    Prompt_700Bold: Platform.OS === 'web' ? 'https://cdn.jsdelivr.net/npm/@fontsource/prompt@5.0.8/files/prompt-thai-700-normal.woff2' : Prompt_700Bold,
+    Prompt_300Light: Platform.OS === 'web' ? 'https://cdn.jsdelivr.net/npm/@expo-google-fonts/prompt@0.2.3/300Light/Prompt_300Light.ttf' : Prompt_300Light,
+    Prompt_400Regular: Platform.OS === 'web' ? 'https://cdn.jsdelivr.net/npm/@expo-google-fonts/prompt@0.2.3/400Regular/Prompt_400Regular.ttf' : Prompt_400Regular,
+    Prompt_500Medium: Platform.OS === 'web' ? 'https://cdn.jsdelivr.net/npm/@expo-google-fonts/prompt@0.2.3/500Medium/Prompt_500Medium.ttf' : Prompt_500Medium,
+    Prompt_600SemiBold: Platform.OS === 'web' ? 'https://cdn.jsdelivr.net/npm/@expo-google-fonts/prompt@0.2.3/600SemiBold/Prompt_600SemiBold.ttf' : Prompt_600SemiBold,
+    Prompt_700Bold: Platform.OS === 'web' ? 'https://cdn.jsdelivr.net/npm/@expo-google-fonts/prompt@0.2.3/700Bold/Prompt_700Bold.ttf' : Prompt_700Bold,
   });
 
   const [webReady, setWebReady] = useState(false);
