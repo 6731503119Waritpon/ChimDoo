@@ -12,6 +12,7 @@ import { db, auth } from '@/config/firebase';
 import { clearChatHistory } from '@/services/groq';
 import { doc, deleteDoc, collection, query, where, getDocs, writeBatch } from 'firebase/firestore';
 import { Collections } from '@/constants/collections';
+import { isFirebaseError } from '@/types/firebase';
 
 export const signUp = async (
     email: string,
@@ -67,8 +68,8 @@ export const deleteUserAccount = async (): Promise<void> => {
         
         clearChatHistory();
         await deleteUser(user);
-    } catch (err: any) {
-        if (err.code === 'auth/requires-recent-login') {
+    } catch (err) {
+        if (isFirebaseError(err) && err.code === 'auth/requires-recent-login') {
             throw new Error("For security, please log out and log back in before deleting your account.");
         }
         throw err;

@@ -51,8 +51,6 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  // On web: fonts are loaded via @font-face in +html.tsx from /fonts/ directory.
-  // On native: fonts are loaded from the bundled assets via useFonts.
   const [loaded, error] = useFonts(
     Platform.OS === 'web'
       ? {}
@@ -87,7 +85,6 @@ export default function RootLayout() {
   const isLoading = !webReady || (!loaded && !error);
 
   if (isLoading) {
-    // On web: pure HTML splash overlay in +html.tsx handles this
     return null;
   }
 

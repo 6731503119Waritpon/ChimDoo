@@ -1,13 +1,9 @@
 import React from 'react';
 import { View, Text, Image } from 'react-native';
-import { AppColors } from '@/constants/colors';
 
-interface FooterSectionProps {
-    isDesktop: boolean;
-    styles: any;
-}
+import { FooterSectionProps } from '@/types/landingPage';
 
-export const FooterSection = ({ isDesktop, styles }: FooterSectionProps) => (
+export const FooterSection = ({ styles }: FooterSectionProps) => (
     <View style={styles.footer}>
         <View style={styles.footerTop}>
             <View style={styles.footerBrand}>

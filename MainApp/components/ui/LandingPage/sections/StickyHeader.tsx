@@ -1,12 +1,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, Image } from 'react-native';
 
-interface StickyHeaderProps {
-    scrollY: number;
-    onEnter: () => void;
-    styles: any;
-    scrollToSection: (name: string) => void;
-}
+import { StickyHeaderProps } from '@/types/landingPage';
 
 export const StickyHeader = ({ scrollY, onEnter, styles, scrollToSection }: StickyHeaderProps) => (
     <View style={[styles.stickyHeader, scrollY > 50 && styles.stickyHeaderActive]}>
@@ -18,7 +13,7 @@ export const StickyHeader = ({ scrollY, onEnter, styles, scrollToSection }: Stic
                     resizeMode="contain"
                 />
             </TouchableOpacity>
-            
+
             <View style={styles.navLinks}>
                 <TouchableOpacity onPress={() => scrollToSection('experience')} style={styles.navLink}>
                     <Text style={styles.navLinkText}>Experience</Text>

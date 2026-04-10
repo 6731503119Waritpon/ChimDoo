@@ -1,17 +1,12 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Sparkles, Download, ChevronRight } from 'lucide-react-native';
 import Animated, { FadeInLeft, FadeInRight, FadeInUp } from 'react-native-reanimated';
 import { AppColors } from '@/constants/colors';
-import { DeviceMockup } from '../shared';
+import { DeviceMockup, FloatingParticles } from '../shared';
 
-interface HeroSectionProps {
-    isDesktop: boolean;
-    isMobile: boolean;
-    onEnter: () => void;
-    styles: any;
-}
+import { HeroSectionProps } from '@/types/landingPage';
 
 export const HeroSection = ({ isDesktop, isMobile, onEnter, styles }: HeroSectionProps) => (
     <View style={styles.heroSection}>
@@ -23,6 +18,8 @@ export const HeroSection = ({ isDesktop, isMobile, onEnter, styles }: HeroSectio
         />
         <View style={[styles.meshGradient, { top: -200, right: -200, backgroundColor: AppColors.primary, opacity: 0.15 }]} />
         <View style={[styles.meshGradient, { bottom: -200, left: -200, backgroundColor: AppColors.info, opacity: 0.1 }]} />
+
+        <FloatingParticles />
 
         <View style={[styles.heroContent, isDesktop && styles.heroContentDesktop]}>
             <Animated.View
@@ -40,7 +37,7 @@ export const HeroSection = ({ isDesktop, isMobile, onEnter, styles }: HeroSectio
                 </Text>
 
                 <Text style={[styles.heroSubtitle, isMobile && { fontSize: 16, lineHeight: 24 }]}>
-                    ChimDoo brings global culinary traditions straight to your kitchen. 
+                    ChimDoo brings global culinary traditions straight to your kitchen.
                     Uncover secret recipes and expert techniques from the world's most vibrant food cultures.
                 </Text>
 

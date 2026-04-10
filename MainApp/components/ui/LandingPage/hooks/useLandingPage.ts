@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
-import { Platform, useWindowDimensions, Dimensions, ScrollView } from 'react-native';
+import { Platform, useWindowDimensions, Dimensions, ScrollView, NativeSyntheticEvent, NativeScrollEvent } from 'react-native';
 
 export const useLandingPage = () => {
     const { width, height } = useWindowDimensions();
@@ -13,7 +13,7 @@ export const useLandingPage = () => {
 
     const initialHeight = Dimensions.get('window').height;
 
-    const handleScroll = (event: any) => {
+    const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
         setScrollY(event.nativeEvent.contentOffset.y);
     };
 
@@ -25,16 +25,11 @@ export const useLandingPage = () => {
 
     const scrollToSection = useCallback((name: string) => {
         const offset = sectionOffsets[name];
-        
-        console.log(`[scrollToSection] Navigating to: ${name} at offset: ${offset}`);
-
         if (offset !== undefined && scrollViewRef.current) {
             scrollViewRef.current.scrollTo({
                 y: Math.max(0, offset - 70),
                 animated: true,
             });
-        } else {
-            console.warn(`[scrollToSection] Target ${name} not ready or offset is missing.`);
         }
     }, [sectionOffsets]);
 

@@ -1,13 +1,6 @@
 import { ScrollViewStyleReset } from 'expo-router/html';
 import { type PropsWithChildren } from 'react';
 
-/**
- * This file is web-only and used to configure the root HTML for every
- * web page during static rendering.
- * 
- * Font files are served from /fonts/ directory (copied from node_modules to public/fonts/).
- * This avoids pnpm's '+' character in paths which Firebase URL-decodes incorrectly.
- */
 export default function Root({ children }: PropsWithChildren) {
   return (
     <html lang="en">

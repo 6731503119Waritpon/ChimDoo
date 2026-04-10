@@ -1,17 +1,20 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { AppColors } from '@/constants/colors';
-import { GlassCard, DeviceMockup } from '../shared';
+import { DeviceMockup } from '../shared';
 
-interface CTASectionProps {
-    isDesktop: boolean;
-    onEnter: () => void;
-    styles: any;
-}
+import { CTASectionProps } from '@/types/landingPage';
 
-export const CTASection = ({ isDesktop, onEnter, styles }: CTASectionProps) => (
+export const CTASection = ({ onEnter, styles }: CTASectionProps) => (
     <View style={styles.ctaSection}>
-        <GlassCard style={styles.ctaContainer} styles={styles}>
+        <View style={styles.ctaContainer}>
+            <LinearGradient
+                colors={[AppColors.primary, '#F97316']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.ctaBackground}
+            />
             <Text style={styles.ctaTitle}>Ready to spice up your life?</Text>
             <Text style={styles.ctaSubtitle}>
                 Join the future of global culinary discovery. Download ChimDoo today.
@@ -27,6 +30,6 @@ export const CTASection = ({ isDesktop, onEnter, styles }: CTASectionProps) => (
                     <DeviceMockup scale={0.6} shadow={false} source={require('@/assets/images/Back1.jpg')} styles={styles} />
                 </View>
             </View>
-        </GlassCard>
+        </View>
     </View>
 );
