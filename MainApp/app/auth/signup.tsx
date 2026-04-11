@@ -49,15 +49,7 @@ export default function SignupScreen() {
             await signUp(email, password, displayName);
             router.replace('/(tabs)');
         } catch (err: unknown) {
-            let errorMessage = 'Please try again';
-
-            if (isFirebaseError(err) && err.code === 'auth/email-already-in-use') {
-                errorMessage = 'This email is already registered. Please sign in instead.';
-            } else {
-                errorMessage = getErrorMessage(err);
-            }
-
-            toast.error('Signup Failed', errorMessage);
+            toast.error('Signup Failed', getErrorMessage(err));
         }
     };
 

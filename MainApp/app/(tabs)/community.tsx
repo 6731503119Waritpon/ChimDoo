@@ -8,7 +8,7 @@ import {
     Platform,
     RefreshControl,
 } from 'react-native';
-import { UsersRound, CircleHelp } from 'lucide-react-native';
+import { UsersRound, CircleHelp, Flag, UserX } from 'lucide-react-native';
 import { CommunityPost } from '@/types/community';
 import { useCommunity } from '@/hooks/useCommunity';
 import { useFriends } from '@/hooks/useFriends';
@@ -23,6 +23,9 @@ import ConfirmCancelModal from '@/components/modals/ConfirmCancelModal';
 import CommunityInfoModal from '@/components/modals/CommunityInfoModal';
 import SharePostModal from '@/components/modals/SharePostModal';
 import ImageFullscreenModal from '@/components/modals/ImageFullscreenModal';
+import ReportModal from '@/components/modals/ReportModal';
+import ActionOptionsModal from '@/components/modals/ActionOptionsModal';
+import BlockConfirmationModal from '@/components/modals/BlockConfirmationModal';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
 
@@ -48,7 +51,14 @@ const Page = () => {
         paginatedPosts, totalItems, ITEMS_PER_PAGE,
         displayPosts,
         handleLike, handleComment, handleShare, handleImagePress,
-        handleAddFriend, handleCancelPress, handleConfirmCancel
+        handleAddFriend, handleCancelPress, handleConfirmCancel,
+        reportModalVisible, setReportModalVisible, isReporting,
+        handleMorePress, handleReportConfirm,
+        optionsModalVisible, setOptionsModalVisible,
+        activePost, handleBlockUser,
+        blockModalVisible, setBlockModalVisible,
+        handleBlockConfirm, isBlocking,
+        setReportingItem
     } = useCommunityUI();
 
     if (!isLoggedIn) {
@@ -135,6 +145,7 @@ const Page = () => {
                                 friendStatus={getFriendStatus(item.userId)}
                                 onCancelFriend={handleCancelPress}
                                 isOwnPost={item.userId === currentUserId}
+                                onMorePress={handleMorePress}
                             />
                         )}
                         contentContainerStyle={styles.feedContent}
@@ -184,6 +195,51 @@ const Page = () => {
                     visible={!!selectedFullImage}
                     imageUri={selectedFullImage}
                     onClose={() => setSelectedFullImage(null)}
+                />
+
+                <ReportModal
+                    visible={reportModalVisible}
+                    onClose={() => setReportModalVisible(false)}
+                    onConfirm={handleReportConfirm}
+                    loading={isReporting}
+                    type="review"
+                />
+
+                <ActionOptionsModal
+                    visible={optionsModalVisible}
+                    onClose={() => setOptionsModalVisible(false)}
+                    title="Post Options"
+                    options={[
+                        {
+                            label: 'Report Content',
+                            icon: Flag,
+                            destructive: true,
+                            onPress: () => {
+                                if (activePost) {
+                                    setReportingItem(activePost);
+                                    setReportModalVisible(true);
+                                }
+                            }
+                        },
+                        {
+                            label: 'Block User',
+                            icon: UserX,
+                            destructive: true,
+                            onPress: () => {
+                                if (activePost) {
+                                    handleBlockUser(activePost.userId, activePost.userName);
+                                }
+                            }
+                        }
+                    ]}
+                />
+
+                <BlockConfirmationModal
+                    visible={blockModalVisible}
+                    onClose={() => setBlockModalVisible(false)}
+                    onConfirm={handleBlockConfirm}
+                    userName={activePost?.userName || ''}
+                    loading={isBlocking}
                 />
             </View>
         </>

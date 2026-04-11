@@ -29,6 +29,7 @@ export const profileMenuConfig: ProfileMenuSection[] = [
       { label: 'Edit Profile', icon: UserPen, iconColor: '#1D3557', href: '/profile/account/edit-profile' },
       { label: 'Change Password', icon: KeyRound, iconColor: '#1D3557', href: '/profile/account/change-password' },
       { label: 'Notifications', icon: Bell, iconColor: '#1D3557', href: '/profile/account/notifications' },
+      { label: 'Blocked Users', icon: Users, iconColor: '#1D3557', href: '/profile/account/blocked-users' },
       { label: 'Language', icon: Globe, iconColor: '#1D3557', href: '/profile/account/language-settings' },
     ],
   },

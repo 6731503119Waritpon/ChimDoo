@@ -3,6 +3,8 @@ import { CommunityPost } from '@/types/community';
 import { useCommunity } from '@/hooks/useCommunity';
 import { useFriends } from '@/hooks/useFriends';
 import { useToast } from '@/components/ui/ToastProvider';
+import { submitReport, blockUser } from '@/services/reportService';
+import { Alert, Platform } from 'react-native';
 
 type FeedTab = 'global' | 'friends';
 
@@ -21,6 +23,13 @@ export function useCommunityUI() {
     const [selectedFullImage, setSelectedFullImage] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [refreshing, setRefreshing] = useState(false);
+    const [reportModalVisible, setReportModalVisible] = useState(false);
+    const [reportingItem, setReportingItem] = useState<CommunityPost | null>(null);
+    const [isReporting, setIsReporting] = useState(false);
+    const [optionsModalVisible, setOptionsModalVisible] = useState(false);
+    const [activePost, setActivePost] = useState<CommunityPost | null>(null);
+    const [blockModalVisible, setBlockModalVisible] = useState(false);
+    const [isBlocking, setIsBlocking] = useState(false);
 
     const ITEMS_PER_PAGE = 10;
 
@@ -118,11 +127,67 @@ export function useCommunityUI() {
         }
     }, [pendingCancelInfo, cancelFriendRequest, toast]);
 
+    const handleMorePress = useCallback((post: CommunityPost) => {
+        if (!isLoggedIn) {
+            toast.info('Login Required', 'Please log in to see options!');
+            return;
+        }
+        
+        setActivePost(post);
+        setOptionsModalVisible(true);
+    }, [isLoggedIn, toast]);
+
+    const handleReportConfirm = useCallback(async (reason: string) => {
+        if (!reportingItem || !currentUserId) return;
+        setIsReporting(true);
+        try {
+            await submitReport({
+                reporterId: currentUserId,
+                targetId: reportingItem.id,
+                targetType: 'review',
+                reason,
+                details: `Reported from Community feed. Post by ${reportingItem.userName}`,
+            });
+            toast.success('Report Submitted', 'Thank you for helping us keep ChimDoo safe.');
+            setReportModalVisible(false);
+        } catch (err) {
+            console.error('[Community] Report error:', err);
+            toast.error('Error', 'Failed to submit report. Please try again.');
+        } finally {
+            setIsReporting(false);
+            setReportingItem(null);
+        }
+    }, [reportingItem, currentUserId, toast]);
+
+    const handleBlockUser = useCallback(async (targetUserId: string, targetUserName: string) => {
+        if (!currentUserId) return;
+        setBlockModalVisible(true);
+    }, [currentUserId]);
+
+    const handleBlockConfirm = useCallback(async () => {
+        if (!activePost || !currentUserId) return;
+        
+        setIsBlocking(true);
+        try {
+            await blockUser(currentUserId, activePost.userId);
+            toast.success('User Blocked', `${activePost.userName} has been blocked.`);
+            setBlockModalVisible(false);
+            setOptionsModalVisible(false);
+        } catch (err) {
+            console.error('[Community] Block error:', err);
+            toast.error('Error', 'Failed to block user.');
+        } finally {
+            setIsBlocking(false);
+        }
+    }, [activePost, currentUserId, toast]);
+
     return {
         feedTab, setFeedTab,
         commentReviewId, setCommentReviewId,
         cancelModalVisible, setCancelModalVisible,
         infoModalVisible, setInfoModalVisible,
+        reportModalVisible, setReportModalVisible,
+        reportingItem, isReporting,
         pendingCancelInfo, isCanceling,
         sharingPost, setSharingPost,
         selectedFullImage, setSelectedFullImage,
@@ -131,6 +196,12 @@ export function useCommunityUI() {
         paginatedPosts, totalItems, ITEMS_PER_PAGE,
         displayPosts,
         handleLike, handleComment, handleShare, handleImagePress,
-        handleAddFriend, handleCancelPress, handleConfirmCancel
+        handleAddFriend, handleCancelPress, handleConfirmCancel,
+        handleMorePress, handleReportConfirm,
+        optionsModalVisible, setOptionsModalVisible,
+        activePost, handleBlockUser,
+        blockModalVisible, setBlockModalVisible,
+        handleBlockConfirm, isBlocking,
+        setReportingItem
     };
 }

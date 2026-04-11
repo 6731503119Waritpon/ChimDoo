@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import {
     collection,
     query,
@@ -210,8 +210,16 @@ export const useCommunity = () => {
         [user]
     );
 
+    const filteredPosts = useMemo(() => {
+        const blockedIds = profile?.blockedUsers || [];
+        if (blockedIds.length === 0) {
+            return posts;
+        }
+        return posts.filter((post) => !blockedIds.includes(post.userId));
+    }, [posts, profile?.blockedUsers]);
+
     return {
-        posts,
+        posts: filteredPosts,
         loading,
         addReview,
         toggleLike,

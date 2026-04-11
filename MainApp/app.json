@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": " ",
+    "name": "ChimDoo",
     "slug": "MainApp",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,10 +10,19 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.chimdoo.app"
+      "bundleIdentifier": "com.chimdoo.app",
+      "infoPlist": {
+        "NSCameraUsageDescription": "ChimDoo needs access to your camera to let you take photos of your dishes and update your profile picture.",
+        "NSPhotoLibraryUsageDescription": "ChimDoo needs access to your photo library to let you upload photos of your favorite recipes and profile pictures."
+      }
     },
     "android": {
       "package": "com.chimdoo.app",
+      "permissions": [
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
       "adaptiveIcon": {
         "backgroundColor": "#FFFFFF",
         "foregroundImage": "./assets/images/ChimDooLogo2.png"

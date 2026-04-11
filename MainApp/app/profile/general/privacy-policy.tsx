@@ -9,14 +9,19 @@ import {
     ActivityIndicator,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { ChevronLeft, FileText } from 'lucide-react-native';
+import { ChevronLeft, FileText, ExternalLink } from 'lucide-react-native';
 import { usePrivacyPolicy } from '../../../hooks/usePrivacyPolicy';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
+import * as WebBrowser from 'expo-web-browser';
 
 export default function PrivacyPolicyScreen() {
     const router = useRouter();
     const { data, loading, error } = usePrivacyPolicy();
+
+    const handleOpenOnline = async () => {
+        await WebBrowser.openBrowserAsync('https://chimdoo-72103.web.app/profile/general/privacy-policy');
+    };
 
     return (
         <View style={styles.container}>
@@ -25,7 +30,9 @@ export default function PrivacyPolicyScreen() {
                     <ChevronLeft size={28} color="#fff" />
                 </TouchableOpacity>
                 <Text style={styles.headerTitle}>Privacy & Terms</Text>
-                <View style={{ width: 40 }} />
+                <TouchableOpacity style={styles.headerRightButton} onPress={handleOpenOnline}>
+                    <ExternalLink size={24} color="#fff" />
+                </TouchableOpacity>
             </View>
 
             <View style={styles.banner}>
@@ -89,6 +96,14 @@ const styles = StyleSheet.create({
         fontFamily: AppFonts.bold,
         fontSize: 20,
         color: '#fff',
+    },
+    headerRightButton: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: 'rgba(255,255,255,0.15)',
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     banner: {
         alignItems: 'center',

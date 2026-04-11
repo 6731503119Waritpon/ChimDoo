@@ -2,6 +2,7 @@ import { User } from 'firebase/auth';
 
 export interface UserProfile {
     photoBase64?: string | null;
+    blockedUsers?: string[];
 }
 
 export interface AuthState {

@@ -7,4 +7,5 @@ export const Collections = {
   appContent: 'appContent',
   appVersions: 'appVersions',
   countries: 'countries',
+  reports: 'reports',
 } as const;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, memo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { Heart, Share2, UserPlus, UserCheck, Clock, UserMinus } from 'lucide-react-native';
+import { Heart, Share2, UserPlus, UserCheck, Clock, UserMinus, MoreVertical } from 'lucide-react-native';
 import Animated, {
     useSharedValue,
     useAnimatedStyle,
@@ -28,6 +28,7 @@ interface PostCardProps {
     onCancelFriend?: (item: CommunityPost) => void;
     friendStatus: 'none' | 'pending_sent' | 'pending_received' | 'accepted';
     isOwnPost: boolean;
+    onMorePress?: (item: CommunityPost) => void;
 }
 
 const PostCard = memo(({
@@ -41,6 +42,7 @@ const PostCard = memo(({
     onCancelFriend,
     friendStatus,
     isOwnPost,
+    onMorePress,
 }: PostCardProps) => {
     const { subscribeToComments, profile, currentUserId } = useCommunity();
     const [recentComments, setRecentComments] = useState<Comment[]>([]);
@@ -173,6 +175,15 @@ const PostCard = memo(({
                     </View>
                 </View>
                 {renderFriendButton()}
+                {!isOwnPost && onMorePress && (
+                    <TouchableOpacity
+                        style={styles.moreButton}
+                        onPress={() => onMorePress(item)}
+                        activeOpacity={0.6}
+                    >
+                        <MoreVertical size={20} color="#94A3B8" />
+                    </TouchableOpacity>
+                )}
             </View>
 
             <GestureDetector gesture={composedGesture}>
@@ -305,6 +316,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: AppColors.navy,
         letterSpacing: -0.3,
+        flex: 1,
     },
     postMeta: {
         flexDirection: 'row',
@@ -505,5 +517,9 @@ const styles = StyleSheet.create({
         fontSize: 9,
         color: '#3b82f6',
         letterSpacing: 0.8,
+    },
+    moreButton: {
+        padding: 4,
+        marginLeft: 4,
     },
 });

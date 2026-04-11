@@ -33,9 +33,10 @@ export const EmptyFeedState: FC<EmptyFeedStateProps> = ({ feedTab }) => {
 const styles = StyleSheet.create({
     emptyContainer: {
         flex: 1,
+        justifyContent: 'flex-start',
         alignItems: 'center',
-        justifyContent: 'center',
-        padding: 40,
+        paddingTop: 60,
+        paddingHorizontal: 40,
     },
     emptyTitle: {
         fontFamily: AppFonts.bold,

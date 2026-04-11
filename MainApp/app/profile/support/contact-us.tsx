@@ -85,7 +85,8 @@ export default function ContactUsScreen() {
                 </View>
                 <Text style={styles.bannerTitle}>Get in Touch</Text>
                 <Text style={styles.bannerSub}>
-                    Have a question, feedback, or issue? We'd love to hear from you!
+                    Have a question or feedback? We'd love to hear from you!{'\n'}
+                    Contact us at: <Text style={{ fontFamily: AppFonts.bold, color: AppColors.primary }}>6731503119@lamduan.mfu.ac.th</Text>
                 </Text>
             </View>
 
