@@ -133,13 +133,6 @@ export default function ForgotPasswordScreen() {
                                 <Text style={s.buttonText}>Send Reset Link</Text>
                             )}
                         </TouchableOpacity>
-
-                        <View style={styles.infoBox}>
-                            <Text style={styles.infoText}>
-                                <Text style={{ fontFamily: AppFonts.bold }}>Note: </Text>
-                                This system is currently in development. Password recovery may not be fully functional yet.
-                            </Text>
-                        </View>
                     </View>
                 </View>
             </View>
@@ -192,21 +185,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: AppColors.textDark,
         height: '100%',
-    },
-    infoBox: {
-        marginTop: 40,
-        padding: 16,
-        backgroundColor: '#FFF5F5',
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: '#FED7D7',
-    },
-    infoText: {
-        fontFamily: AppFonts.regular,
-        fontSize: 13,
-        color: '#C53030',
-        textAlign: 'center',
-        lineHeight: 18,
     },
     successContainer: {
         alignItems: 'center',
