@@ -50,3 +50,11 @@ export interface UnblockConfirmationModalProps {
     userName: string;
     loading?: boolean;
 }
+
+export interface DeleteFriendModalProps {
+    visible: boolean;
+    onClose: () => void;
+    onConfirm: () => void;
+    friendName: string;
+    loading?: boolean;
+}

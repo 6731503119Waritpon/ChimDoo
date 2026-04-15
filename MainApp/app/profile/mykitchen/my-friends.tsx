@@ -28,6 +28,7 @@ import EmptyState from '@/components/ui/EmptyState';
 import FriendCard from '@/components/cards/FriendCard';
 import FriendRequestCard from '@/components/cards/FriendRequestCard';
 import AddFriendModal from '@/components/modals/AddFriendModal';
+import DeleteFriendModal from '@/components/modals/DeleteFriendModal';
 
 type Tab = 'friends' | 'requests';
 
@@ -46,6 +47,9 @@ const MyFriends = () => {
     const [showAddModal, setShowAddModal] = useState(false);
     const [emailInput, setEmailInput] = useState('');
     const [sending, setSending] = useState(false);
+    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [pendingDelete, setPendingDelete] = useState<{ id: string, name: string } | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const handleAccept = async (friendshipId: string) => {
         try {
@@ -65,12 +69,24 @@ const MyFriends = () => {
         }
     };
 
-    const handleRemove = async (friendshipId: string, friendName: string) => {
+    const handleRemove = (friendshipId: string, friendName: string) => {
+        setPendingDelete({ id: friendshipId, name: friendName });
+        setDeleteModalVisible(true);
+    };
+
+    const confirmRemove = async () => {
+        if (!pendingDelete) return;
+        
+        setIsDeleting(true);
         try {
-            await removeFriend(friendshipId);
-            toast.info('Removed', `${friendName} removed from friends`);
+            await removeFriend(pendingDelete.id);
+            toast.info('Removed', `${pendingDelete.name} removed from friends`);
+            setDeleteModalVisible(false);
         } catch {
             toast.error('Error', 'Failed to remove friend');
+        } finally {
+            setIsDeleting(false);
+            setPendingDelete(null);
         }
     };
 
@@ -218,6 +234,14 @@ const MyFriends = () => {
                 setEmailInput={setEmailInput}
                 sending={sending}
                 onSend={handleSendByEmail}
+            />
+
+            <DeleteFriendModal
+                visible={deleteModalVisible}
+                onClose={() => setDeleteModalVisible(false)}
+                onConfirm={confirmRemove}
+                friendName={pendingDelete?.name || ''}
+                loading={isDeleting}
             />
         </View>
     );

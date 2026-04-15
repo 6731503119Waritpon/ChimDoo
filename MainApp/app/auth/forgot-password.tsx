@@ -7,6 +7,10 @@ import {
     StyleSheet,
     Platform,
     ActivityIndicator,
+    KeyboardAvoidingView,
+    ScrollView,
+    TouchableWithoutFeedback,
+    Keyboard,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -85,57 +89,68 @@ export default function ForgotPasswordScreen() {
     return (
         <SafeAreaView style={s.container}>
             <View style={styles.backgroundAccent} />
-            <View style={{ flex: 1 }}>
-                <TouchableOpacity
-                    style={s.backButton}
-                    onPress={() => router.back()}
-                >
-                    <ArrowLeft size={22} color={AppColors.navy} />
-                </TouchableOpacity>
+            <KeyboardAvoidingView 
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={{ flex: 1 }}
+            >
+                <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                    <ScrollView 
+                        contentContainerStyle={{ flexGrow: 1 }}
+                        showsVerticalScrollIndicator={false}
+                        keyboardShouldPersistTaps="handled"
+                    >
+                        <TouchableOpacity
+                            style={s.backButton}
+                            onPress={() => router.back()}
+                        >
+                            <ArrowLeft size={22} color={AppColors.navy} />
+                        </TouchableOpacity>
 
-                <View style={s.content}>
-                    <View style={s.header}>
-                        <View style={styles.iconCircle}>
-                            <KeyRound size={32} color={AppColors.white} />
-                        </View>
-                        <Text style={s.title}>Forgot Password?</Text>
-                        <Text style={[s.subtitle, { textAlign: 'center', paddingHorizontal: 20 }]}>
-                            Don't worry! It happens. Please enter the email address associated with your account.
-                        </Text>
-                    </View>
+                        <View style={s.content}>
+                            <View style={s.header}>
+                                <View style={styles.iconCircle}>
+                                    <KeyRound size={32} color={AppColors.white} />
+                                </View>
+                                <Text style={s.title}>Forgot Password?</Text>
+                                <Text style={[s.subtitle, { textAlign: 'center', paddingHorizontal: 20 }]}>
+                                    Don't worry! It happens. Please enter the email address associated with your account.
+                                </Text>
+                            </View>
 
-                    <View style={s.form}>
-                        <View style={s.inputContainer}>
-                            <Text style={s.label}>Email Address</Text>
-                            <View style={styles.inputWrapper}>
-                                <Mail size={20} color={AppColors.textMuted} style={styles.inputIcon} />
-                                <TextInput
-                                    style={styles.inputField}
-                                    placeholder="Enter your email"
-                                    placeholderTextColor={AppColors.textPlaceholder}
-                                    value={email}
-                                    onChangeText={setEmail}
-                                    keyboardType="email-address"
-                                    autoCapitalize="none"
-                                    autoCorrect={false}
-                                />
+                            <View style={s.form}>
+                                <View style={s.inputContainer}>
+                                    <Text style={s.label}>Email Address</Text>
+                                    <View style={styles.inputWrapper}>
+                                        <Mail size={20} color={AppColors.textMuted} style={styles.inputIcon} />
+                                        <TextInput
+                                            style={styles.inputField}
+                                            placeholder="Enter your email"
+                                            placeholderTextColor={AppColors.textPlaceholder}
+                                            value={email}
+                                            onChangeText={setEmail}
+                                            keyboardType="email-address"
+                                            autoCapitalize="none"
+                                            autoCorrect={false}
+                                        />
+                                    </View>
+                                </View>
+
+                                <TouchableOpacity
+                                    style={[s.button, loading && s.buttonDisabled]}
+                                    onPress={handleResetPassword}
+                                    disabled={loading}
+                                >
+                                    {loading ? (
+                                        <ActivityIndicator color={AppColors.white} />
+                                    ) : (
+                                        <Text style={s.buttonText}>Send Reset Link</Text>
+                                    )}
+                                </TouchableOpacity>
                             </View>
                         </View>
-
-                        <TouchableOpacity
-                            style={[s.button, loading && s.buttonDisabled]}
-                            onPress={handleResetPassword}
-                            disabled={loading}
-                        >
-                            {loading ? (
-                                <ActivityIndicator color={AppColors.white} />
-                            ) : (
-                                <Text style={s.buttonText}>Send Reset Link</Text>
-                            )}
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </View>
+                    </ScrollView>
+                </TouchableWithoutFeedback>
+            </KeyboardAvoidingView>
         </SafeAreaView>
     );
 }

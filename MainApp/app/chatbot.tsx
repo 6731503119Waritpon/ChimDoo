@@ -2,126 +2,26 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
     View, Text, TextInput, TouchableOpacity, StyleSheet,
     KeyboardAvoidingView, Platform, FlatList, ActivityIndicator,
-    ScrollView, TouchableWithoutFeedback, Keyboard
+    ScrollView, Pressable, Keyboard
 } from 'react-native';
 import { useRouter, Stack, useFocusEffect } from 'expo-router';
 import { ChevronLeft, Send, ChefHat } from 'lucide-react-native';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
 import { initOrRestoreChat, sendMessageToGroq, getUIMessages } from '@/services/groq';
-import { Message, UIMessage } from '@/types/common';
+import { UIMessage } from '@/types/common';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { db } from '@/config/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 import { z } from 'zod';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AIConsentModal from '@/components/modals/AIConsentModal';
+import { BouncingDots } from '@/components/ui/BouncingDots';
+import { ChatMessage } from '@/components/ui/ChatMessage';
 import Animated, {
     FadeInLeft,
     FadeInRight,
-    withRepeat,
-    withSequence,
-    withTiming,
-    useSharedValue,
-    useAnimatedStyle,
-    Layout
 } from 'react-native-reanimated';
-
-const BouncingDots = () => {
-    const dot1 = useSharedValue(0);
-    const dot2 = useSharedValue(0);
-    const dot3 = useSharedValue(0);
-
-    useEffect(() => {
-        const animate = (v: { value: number }, _delay: number) => {
-            v.value = withRepeat(
-                withSequence(
-                    withTiming(-6, { duration: 400 }),
-                    withTiming(0, { duration: 400 })
-                ),
-                -1,
-                true
-            );
-        };
-        animate(dot1, 0);
-        setTimeout(() => animate(dot2, 0), 200);
-        setTimeout(() => animate(dot3, 0), 400);
-    }, []);
-
-    const s1 = useAnimatedStyle(() => ({ transform: [{ translateY: dot1.value }] }));
-    const s2 = useAnimatedStyle(() => ({ transform: [{ translateY: dot2.value }] }));
-    const s3 = useAnimatedStyle(() => ({ transform: [{ translateY: dot3.value }] }));
-
-    return (
-        <View style={styles.dotsWrapper}>
-            <Animated.View style={[styles.dot, s1]} />
-            <Animated.View style={[styles.dot, s2]} />
-            <Animated.View style={[styles.dot, s3]} />
-        </View>
-    );
-};
-
-const isLeadingVowel = (char: string) => {
-    if (!char) return false;
-    const code = char.charCodeAt(0);
-    return code >= 0x0E40 && code <= 0x0E44;
-};
-
-const isCombiningMark = (char: string) => {
-    if (!char) return false;
-    const code = char.charCodeAt(0);
-    return (code === 0x0E31) || (code >= 0x0E34 && code <= 0x0E3A) || (code >= 0x0E47 && code <= 0x0E4E);
-};
-
-const segmentThaiText = (text: string) => {
-    const segments: string[] = [];
-    let i = 0;
-    while (i < text.length) {
-        let cluster = text[i];
-        i++;
-        if (isLeadingVowel(cluster) && i < text.length) {
-            cluster += text[i];
-            i++;
-        }
-        while (i < text.length && isCombiningMark(text[i])) {
-            cluster += text[i];
-            i++;
-        }
-        segments.push(cluster);
-    }
-    return segments;
-};
-
-const TypewriterText = ({ text, isLatest }: { text: string; isLatest: boolean }) => {
-    const [displayedText, setDisplayedText] = useState(isLatest ? '' : text);
-
-    useEffect(() => {
-        if (!isLatest || displayedText === text) {
-            if (!isLatest && displayedText !== text) {
-                setDisplayedText(text);
-            }
-            return;
-        }
-
-        const segments = segmentThaiText(text);
-        let index = segmentThaiText(displayedText).length;
-        let currentString = displayedText;
-
-        const interval = setInterval(() => {
-            if (index < segments.length) {
-                currentString += segments[index];
-                setDisplayedText(currentString);
-                index++;
-            } else {
-                clearInterval(interval);
-            }
-        }, 30);
-
-        return () => clearInterval(interval);
-    }, [text, isLatest]);
-
-    return <Text style={styles.messageTextAI}>{displayedText}</Text>;
-};
 
 const DEFAULT_SUGGESTIONS = [
     "What's good to eat today? \nวันนี้กินอะไรดี",
@@ -155,6 +55,7 @@ export default function ChatbotScreen() {
         const initChat = async () => {
             try {
                 const uiMessages = getUIMessages();
+
                 if (uiMessages.length > 0) {
                     setMessages([...uiMessages]);
                     setInitializing(false);
@@ -178,7 +79,6 @@ export default function ChatbotScreen() {
                 initOrRestoreChat(sysInstruction, initMessageText);
                 setMessages([...getUIMessages()]);
             } catch (error) {
-                console.warn("Failed to init chat settings from Firebase", error);
                 const defaultInitMsg = 'Loading message...';
                 initOrRestoreChat(undefined, defaultInitMsg);
                 setMessages([...getUIMessages()]);
@@ -206,11 +106,6 @@ export default function ChatbotScreen() {
     const handleAcceptConsent = async () => {
         await AsyncStorage.setItem('ai_consent', 'true');
         setConsentVisible(false);
-        // Only run after checking is done or if it just accepted
-        // However, this means we can't extract initChat easily out of useEffect.
-        // We can just rely on a separate useEffect or copy the initChat fetch above, but
-        // for simplicity let's reload the screen logic or just toggle initializing. 
-        // A simple way:
         router.replace('/chatbot');
     };
 
@@ -224,7 +119,7 @@ export default function ChatbotScreen() {
     const sendMessage = async (overrideText?: string) => {
         const textToValidate = (overrideText || inputText).trim();
         const validation = ChatInputSchema.safeParse(textToValidate);
-        
+
         if (!validation.success || loading) return;
         const validText = validation.data;
 
@@ -246,7 +141,6 @@ export default function ChatbotScreen() {
             setLastNewMessageId(aiMsg.id);
             setMessages([...uiMessages]);
         } catch (error: unknown) {
-            // Use safe generic errors for production to avoid spilling API details
             if (__DEV__) {
                 console.log("[DEV_ONLY] Chatbot API error:", error instanceof Error ? error.message : error);
             }
@@ -267,31 +161,16 @@ export default function ChatbotScreen() {
         sendMessage(prompt);
     };
 
-    const renderMessage = ({ item, index }: { item: UIMessage, index: number }) => {
-        const isUser = item.isUser;
+    const renderMessage = ({ item }: { item: UIMessage }) => {
         const isNew = item.id === lastNewMessageId;
-        const isLatestAI = !isUser && isNew;
+        const isLatestAI = !item.isUser && isNew;
 
         return (
-            <Animated.View
-                entering={isNew ? (isUser ? FadeInRight.springify().damping(18) : FadeInLeft.springify().damping(18)) : undefined}
-                style={[styles.messageWrapper, isUser ? styles.messageWrapperUser : styles.messageWrapperAI]}
-            >
-                {!isUser && (
-                    <View style={styles.aiAvatar}>
-                        <ChefHat size={14} color="#fff" />
-                    </View>
-                )}
-                <View style={[styles.messageBubble, isUser ? styles.messageUser : styles.messageAI]}>
-                    {isUser ? (
-                        <Text style={[styles.messageText, styles.messageTextUser]}>
-                            {item.text}
-                        </Text>
-                    ) : (
-                        <TypewriterText text={item.text} isLatest={isLatestAI} />
-                    )}
-                </View>
-            </Animated.View>
+            <ChatMessage
+                item={item}
+                isNew={isNew}
+                isLatestAI={isLatestAI}
+            />
         );
     };
 
@@ -322,18 +201,23 @@ export default function ChatbotScreen() {
                     </View>
                 ) : (
                     <>
-                        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                            <FlatList
-                                ref={flatListRef}
-                                data={messages}
-                                keyExtractor={item => item.id}
-                                renderItem={renderMessage}
-                                contentContainerStyle={styles.chatContainer}
-                                onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
-                                onLayout={() => flatListRef.current?.scrollToEnd({ animated: false })}
-                                keyboardDismissMode="on-drag"
-                            />
-                        </TouchableWithoutFeedback>
+                        <FlatList
+                            ref={flatListRef}
+                            data={messages}
+                            keyExtractor={item => item.id}
+                            renderItem={renderMessage}
+                            contentContainerStyle={styles.chatContainer}
+                            onContentSizeChange={() => {
+                                flatListRef.current?.scrollToEnd({ animated: true });
+                            }}
+                            onLayout={() => flatListRef.current?.scrollToEnd({ animated: false })}
+                            keyboardDismissMode="on-drag"
+                            keyboardShouldPersistTaps="handled"
+                            removeClippedSubviews={Platform.OS === 'android'}
+                            initialNumToRender={15}
+                            maxToRenderPerBatch={10}
+                            windowSize={10}
+                        />
 
                         {loading && (
                             <View style={styles.typingIndicatorWrapper}>
@@ -432,53 +316,6 @@ const styles = StyleSheet.create({
 
     chatContainer: { padding: 16, paddingBottom: 24 },
 
-    messageWrapper: {
-        flexDirection: 'row',
-        marginBottom: 16,
-        alignItems: 'flex-end',
-        maxWidth: Platform.OS === 'web' ? '70%' : '88%'
-    },
-
-    messageWrapperUser: { alignSelf: 'flex-end', justifyContent: 'flex-end' },
-    messageWrapperAI: { alignSelf: 'flex-start' },
-
-    aiAvatar: {
-        width: 28, height: 28, borderRadius: 14,
-        backgroundColor: AppColors.primary,
-        justifyContent: 'center', alignItems: 'center',
-        marginRight: 8,
-    },
-
-    messageBubble: {
-        paddingHorizontal: 16,
-        paddingVertical: 12,
-        borderRadius: 20,
-        flexShrink: 1,
-    },
-
-    messageUser: {
-        backgroundColor: AppColors.primary,
-        borderBottomRightRadius: 4,
-    },
-    messageAI: {
-        backgroundColor: '#fff',
-        borderBottomLeftRadius: 4,
-        borderWidth: 1, borderColor: '#eee',
-    },
-
-    messageText: {
-        fontFamily: AppFonts.regular,
-        fontSize: 15,
-        lineHeight: 22
-    },
-    messageTextUser: { color: '#fff' },
-    messageTextAI: {
-        fontFamily: AppFonts.regular,
-        fontSize: 15,
-        lineHeight: 22,
-        color: AppColors.navy
-    },
-
     typingIndicatorWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -497,8 +334,6 @@ const styles = StyleSheet.create({
         color: '#64748B',
         marginLeft: 4
     },
-    dotsWrapper: { flexDirection: 'row', gap: 4, alignItems: 'center' },
-    dot: { width: 5, height: 5, borderRadius: 2.5, backgroundColor: AppColors.primary },
 
     suggestionsWrapper: { paddingVertical: 12 },
     suggestionsScrollContent: { paddingHorizontal: 16, gap: 10 },

@@ -92,8 +92,12 @@ export const RecipeFilterBar: FC<RecipeFilterBarProps> = ({
                         onChangeText={setSearch}
                     />
                     {search.length > 0 && (
-                        <TouchableOpacity onPress={() => setSearch('')} style={styles.clearBtn}>
-                            <X size={16} color="#FFF" />
+                        <TouchableOpacity 
+                            onPress={() => setSearch('')} 
+                            style={styles.clearBtn}
+                            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                        >
+                            <X size={14} color="#FFF" />
                         </TouchableOpacity>
                     )}
                 </View>
@@ -196,6 +200,8 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         paddingHorizontal: 12,
         height: 44,
+        position: 'relative',
+        overflow: 'hidden',
     },
     searchInput: {
         flex: 1,
@@ -203,9 +209,12 @@ const styles = StyleSheet.create({
         fontSize: 15,
         color: AppColors.navy,
         marginLeft: 8,
+        paddingRight: 32,
         height: '100%',
     },
     clearBtn: {
+        position: 'absolute',
+        right: 8,
         backgroundColor: '#9CA3AF',
         borderRadius: 10,
         width: 20,
