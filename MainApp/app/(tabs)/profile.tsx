@@ -19,7 +19,6 @@ import { ProfileMenuItem } from '@/types/menuProfile';
 import { profileMenuConfig } from '@/config/menuProfile';
 import { useToast } from '@/components/ui/ToastProvider';
 import LogoutModal from '@/components/modals/LogoutModal';
-import DeleteAccountModal from '@/components/modals/DeleteAccountModal';
 import AppVersionModal from '@/components/modals/AppVersionModal';
 import GuestState from '@/components/ui/GuestState';
 import ProfileMenuSection from '@/components/cards/ProfileMenuSection';
@@ -45,8 +44,6 @@ const Page = () => {
     const { getUserReviews } = useCommunity();
     const [showLogoutModal, setShowLogoutModal] = useState(false);
     const [loggingOut, setLoggingOut] = useState(false);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    const [deletingAccount, setDeletingAccount] = useState(false);
     const [showVersionModal, setShowVersionModal] = useState(false);
     const [profilePhoto, setProfilePhoto] = useState<string | null>(null);
     const [displayName, setDisplayName] = useState(user?.displayName || '');
@@ -81,18 +78,7 @@ const Page = () => {
         }
     };
 
-    const handleDeleteAccount = async () => {
-        setDeletingAccount(true);
-        try {
-            await deleteAccount();
-            setShowDeleteModal(false);
-            toast.success("Account Deleted", "Your account and data have been wiped.");
-        } catch (err: unknown) {
-            toast.error('Error', getErrorMessage(err));
-        } finally {
-            setDeletingAccount(false);
-        }
-    };
+
 
     const handleMenuPress = (item: ProfileMenuItem) => {
         if (item.label === 'App Version') {
@@ -225,7 +211,7 @@ const Page = () => {
 
             <TouchableOpacity
                 style={styles.deleteAccountButton}
-                onPress={() => setShowDeleteModal(true)}
+                onPress={() => router.push('/delete-account')}
                 activeOpacity={0.7}
             >
                 <Text style={styles.deleteAccountText}>Delete Account</Text>
@@ -238,12 +224,6 @@ const Page = () => {
                 loading={loggingOut}
             />
             
-            <DeleteAccountModal
-                visible={showDeleteModal}
-                onClose={() => setShowDeleteModal(false)}
-                onConfirm={handleDeleteAccount}
-                loading={deletingAccount}
-            />
             <AppVersionModal
                 visible={showVersionModal}
                 onClose={() => setShowVersionModal(false)}
