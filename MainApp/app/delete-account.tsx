@@ -23,6 +23,7 @@ export default function DeleteAccountPage() {
     const [email, setEmail] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [wasLoggedIn, setWasLoggedIn] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
 
     const router = useRouter();
@@ -51,13 +52,15 @@ export default function DeleteAccountPage() {
 
     const handleConfirmDelete = async () => {
         setShowModal(false);
+        const loggedIn = !!user;
+        setWasLoggedIn(loggedIn);
 
-        if (user) {
+        if (loggedIn) {
             setIsDeleting(true);
             try {
                 await deleteAccount();
                 setIsSubmitted(true);
-                toast.success('Account Deleted', 'Your account has been permanently removed.');
+                toast.success('Account Deleted', 'Your account has been removed.');
             } catch (err: unknown) {
                 toast.error('Deletion Failed', getErrorMessage(err));
             } finally {
@@ -65,7 +68,7 @@ export default function DeleteAccountPage() {
             }
         } else {
             setIsSubmitted(true);
-            toast.success('Request Sent', 'Your deletion request has been received and will be processed.');
+            toast.success('Request Submitted', 'Your request has been received.');
         }
     };
 
@@ -114,7 +117,7 @@ export default function DeleteAccountPage() {
                             {isDeleting ? (
                                 <ActivityIndicator color="#fff" />
                             ) : (
-                                <Text style={styles.submitButtonText}>{user ? 'Delete My Account' : 'Request Deletion'}</Text>
+                                <Text style={styles.submitButtonText}>Delete Account</Text>
                             )}
                         </TouchableOpacity>
 
@@ -127,18 +130,20 @@ export default function DeleteAccountPage() {
                         <View style={[styles.iconContainer, { backgroundColor: 'rgba(34, 197, 94, 0.1)' }]}>
                             <AlertCircle size={32} color={AppColors.success} />
                         </View>
-                        <Text style={styles.successTitle}>{user ? 'Account Deleted' : 'Request Received'}</Text>
+                        <Text style={styles.successTitle}>
+                            {wasLoggedIn ? 'Account Deleted' : 'Request Submitted'}
+                        </Text>
                         <Text style={styles.successMessage}>
-                            {user
-                                ? "Your account and all associated data have been permanently removed. We're sorry to see you go."
-                                : `We have received your request to delete the account associated with \n\n ${email} \n\n Please allow 7-14 business days for our team to process this request.`
+                            {wasLoggedIn
+                                ? "Your account and data have been permanently removed. Thank you for using ChimDoo."
+                                : `Your request to delete the account (${email}) has been submitted successfully.`
                             }
                         </Text>
                         <TouchableOpacity
                             style={styles.backToHomeButton}
-                            onPress={() => user ? router.replace('/auth/login') : setIsSubmitted(false)}
+                            onPress={() => router.replace('/profile')}
                         >
-                            <Text style={styles.backToHomeText}>{user ? 'Go to Login' : 'Done'}</Text>
+                            <Text style={styles.backToHomeText}>Done</Text>
                         </TouchableOpacity>
                     </View>
                 )}

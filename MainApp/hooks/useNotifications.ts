@@ -66,7 +66,12 @@ export function useNotifications() {
     const deleteNotification = useCallback(
         async (notifId: string) => {
             if (!user) return;
-            await deleteDoc(doc(db, Collections.notifications, user.uid, 'items', notifId));
+            try {
+                await deleteDoc(doc(db, Collections.notifications, user.uid, 'items', notifId));
+            } catch (err) {
+                console.error('[deleteNotification] Error:', err);
+                throw err;
+            }
         },
         [user]
     );

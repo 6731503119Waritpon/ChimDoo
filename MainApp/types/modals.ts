@@ -58,3 +58,10 @@ export interface DeleteFriendModalProps {
     friendName: string;
     loading?: boolean;
 }
+
+export interface ConfirmDeleteNotificationModalProps {
+    visible: boolean;
+    onClose: () => void;
+    onConfirm: () => void;
+    loading?: boolean;
+}

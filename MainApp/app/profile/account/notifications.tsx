@@ -16,6 +16,8 @@ import { ChevronLeft, ChevronRight, Bell, UserPlus, Heart, MessageCircle, Star, 
 import { useNotifications, AppNotification, NotificationType } from '../../../hooks/useNotifications';
 import { useNotificationSettings } from '../../../hooks/useNotificationSettings';
 import { formatRelativeTime } from '../../../utils/formatTime';
+import { useToast } from '@/components/ui/ToastProvider';
+import ConfirmDeleteNotificationModal from '@/components/modals/ConfirmDeleteNotificationModal';
 import { AppColors } from '@/constants/colors';
 import { AppFonts } from '@/constants/theme';
 
@@ -29,47 +31,72 @@ const TYPE_META: Record<NotificationType, { label: string; icon: LucideIcon; col
 
 export default function NotificationsScreen() {
     const router = useRouter();
+    const toast = useToast();
     const { notifications, deleteNotification } = useNotifications();
     const { settings, updateSetting } = useNotificationSettings();
     const [selected, setSelected] = useState<AppNotification | null>(null);
     const [showSettingsModal, setShowSettingsModal] = useState(false);
+    const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+    const [notificationToDelete, setNotificationToDelete] = useState<string | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const handleDelete = (id: string) => {
-        Alert.alert('Delete Notification', 'Remove this notification?', [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', style: 'destructive', onPress: () => deleteNotification(id) },
-        ]);
+        setNotificationToDelete(id);
+        setDeleteModalVisible(true);
+    };
+
+    const confirmDelete = async () => {
+        if (!notificationToDelete) return;
+
+        setIsDeleting(true);
+        try {
+            await deleteNotification(notificationToDelete);
+            toast.success('Deleted', 'Notification removed successfully.');
+            setDeleteModalVisible(false);
+            setNotificationToDelete(null);
+        } catch (err) {
+            toast.error('Deletion Failed', 'You might not have permission to delete this.');
+        } finally {
+            setIsDeleting(false);
+        }
     };
 
     const renderItem = ({ item }: { item: AppNotification }) => {
         const meta = TYPE_META[item.type] ?? TYPE_META.chimdoo;
         const Icon = meta.icon;
         return (
-            <TouchableOpacity
-                style={[styles.card, !item.read && styles.cardUnread]}
-                onPress={() => setSelected(item)}
-                activeOpacity={0.7}
-            >
-                <View style={[styles.iconCircle, { backgroundColor: `${meta.color}18` }]}>
-                    {item.fromAvatar ? (
-                        <Image source={{ uri: item.fromAvatar }} style={styles.avatar} />
-                    ) : (
-                        <Icon size={20} color={meta.color} />
-                    )}
-                </View>
-                <View style={styles.cardContent}>
-                    <View style={styles.cardTop}>
-                        <Text style={styles.cardTitle} numberOfLines={1}>{item.title}</Text>
-                        <Text style={styles.cardTime}>
-                            {item.createdAt ? formatRelativeTime(item.createdAt.toDate()) : ''}
-                        </Text>
+            <View style={[styles.card, !item.read && styles.cardUnread]}>
+                <TouchableOpacity
+                    style={styles.cardMainAction}
+                    onPress={() => setSelected(item)}
+                    activeOpacity={0.7}
+                >
+                    <View style={[styles.iconCircle, { backgroundColor: `${meta.color}18` }]}>
+                        {item.fromAvatar ? (
+                            <Image source={{ uri: item.fromAvatar }} style={styles.avatar} />
+                        ) : (
+                            <Icon size={20} color={meta.color} />
+                        )}
                     </View>
-                    <Text style={styles.cardBody} numberOfLines={2}>{item.body}</Text>
-                </View>
-                <TouchableOpacity style={styles.deleteBtn} onPress={() => handleDelete(item.id)}>
+                    <View style={styles.cardContent}>
+                        <View style={styles.cardTop}>
+                            <Text style={styles.cardTitle} numberOfLines={1}>{item.title}</Text>
+                            <Text style={styles.cardTime}>
+                                {item.createdAt ? formatRelativeTime(item.createdAt.toDate()) : ''}
+                            </Text>
+                        </View>
+                        <Text style={styles.cardBody} numberOfLines={2}>{item.body}</Text>
+                    </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style={styles.deleteBtn}
+                    onPress={() => handleDelete(item.id)}
+                    hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                >
                     <Trash2 size={16} color="#ccc" />
                 </TouchableOpacity>
-            </TouchableOpacity>
+            </View>
         );
     };
 
@@ -173,6 +200,13 @@ export default function NotificationsScreen() {
                     </View>
                 </TouchableOpacity>
             </Modal>
+
+            <ConfirmDeleteNotificationModal
+                visible={deleteModalVisible}
+                onClose={() => setDeleteModalVisible(false)}
+                onConfirm={confirmDelete}
+                loading={isDeleting}
+            />
         </View>
     );
 }
@@ -235,10 +269,17 @@ const styles = StyleSheet.create({
     card: {
         flexDirection: 'row', alignItems: 'center',
         backgroundColor: '#fff', marginHorizontal: 20,
-        marginBottom: 8, borderRadius: 16, padding: 14, gap: 12,
+        marginBottom: 8, borderRadius: 16, paddingRight: 8, gap: 4,
         borderWidth: 1, borderColor: '#f0f0f0',
         shadowColor: '#000', shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.04, shadowRadius: 4, elevation: 1,
+    },
+    cardMainAction: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 14,
+        gap: 12,
     },
     cardUnread: {
         backgroundColor: 'rgba(230,57,70,0.03)',
